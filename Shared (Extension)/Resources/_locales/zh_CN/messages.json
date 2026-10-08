@@ -1,0 +1,137 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "将 Instagram 图片、视频和 X 视频直接存储到照片。"
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · 照片"
+  },
+  "popupInstruction": {
+    "message": "点击 Instagram 发送按钮右侧、或 X 视频帖分享按钮右侧的下载按钮，将帖子里的所有媒体存储到照片。"
+  },
+  "photosLibrary": {
+    "message": "照片图库"
+  },
+  "checkingStatus": {
+    "message": "正在检查权限…"
+  },
+  "videoService": {
+    "message": "视频服务"
+  },
+  "serviceExplanation": {
+    "message": "视频由你的 yt-dlp 服务处理。Instagram 图片直接从帖子提取。"
+  },
+  "serviceURL": {
+    "message": "服务地址"
+  },
+  "accessToken": {
+    "message": "访问令牌"
+  },
+  "tokenPrivacy": {
+    "message": "令牌保存在扩展设置中，仅发送给你的视频服务。"
+  },
+  "saveSettings": {
+    "message": "保存设置"
+  },
+  "footerNote": {
+    "message": "请保存你有权使用的媒体。下载视频需要本设备可访问的运行中服务。"
+  },
+  "invalidSettings": {
+    "message": "请输入 HTTPS 服务地址和访问令牌。HTTP 仅限 localhost。清空两项可移除设置。"
+  },
+  "servicePermissionDenied": {
+    "message": "请允许 Safari 访问该服务以处理视频。"
+  },
+  "settingsSaved": {
+    "message": "设置已保存。"
+  },
+  "settingsSaveFailed": {
+    "message": "无法保存设置。"
+  },
+  "photosReady": {
+    "message": "可以存储到照片"
+  },
+  "photosFirstSave": {
+    "message": "首次存储时会请求照片权限"
+  },
+  "photosDenied": {
+    "message": "请在设置中允许 Downloader 访问照片"
+  },
+  "photosRestricted": {
+    "message": "此设备的照片访问受到限制"
+  },
+  "downloadToPhotos": {
+    "message": "下载全部媒体到照片"
+  },
+  "readingPost": {
+    "message": "正在读取帖子…"
+  },
+  "readingCarousel": {
+    "message": "正在读取轮播的每一页…"
+  },
+  "carouselUnavailable": {
+    "message": "无法读取轮播的全部媒体。请打开帖子，等待加载完成后重试。"
+  },
+  "noMedia": {
+    "message": "没有找到可下载的媒体。"
+  },
+  "postURLUnavailable": {
+    "message": "无法找到帖子链接。请打开帖子后重试。"
+  },
+  "processingVideo": {
+    "message": "正在处理视频… 可能需要几分钟。"
+  },
+  "savingProgress": {
+    "message": "正在存储到照片：$arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "已将 $arg1$ 个媒体存储到照片。",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "已存储 $arg2$ 个媒体中的 $arg1$ 个。",
+    "placeholders": {
+      "arg2": {
+        "content": "$2"
+      },
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "再次点击可重试失败的媒体。"
+  },
+  "downloadFailed": {
+    "message": "下载失败。再次点击可重试。"
+  },
+  "configureService": {
+    "message": "请在扩展弹窗中设置视频服务地址和访问令牌。"
+  },
+  "serviceUnauthorized": {
+    "message": "视频服务拒绝了访问令牌。"
+  },
+  "serviceTimeout": {
+    "message": "视频处理超时。请重试。"
+  },
+  "resolveFailed": {
+    "message": "视频服务无法处理此帖子。"
+  },
+  "nativeUnavailable": {
+    "message": "无法连接 Downloader 原生应用。请启用扩展并重新打开 Safari。"
+  }
+}

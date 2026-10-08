@@ -1,0 +1,137 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "Enregistrez les photos et vidéos Instagram et les vidéos X dans Photos."
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · Photos"
+  },
+  "popupInstruction": {
+    "message": "Touchez le bouton de téléchargement à droite de Envoyer sur Instagram ou de Partager sur une vidéo X pour enregistrer tous les médias dans Photos."
+  },
+  "photosLibrary": {
+    "message": "Photothèque"
+  },
+  "checkingStatus": {
+    "message": "Vérification de l’accès…"
+  },
+  "videoService": {
+    "message": "Service vidéo"
+  },
+  "serviceExplanation": {
+    "message": "Votre service yt-dlp traite les vidéos. Les photos Instagram sont extraites directement de la publication."
+  },
+  "serviceURL": {
+    "message": "URL du service"
+  },
+  "accessToken": {
+    "message": "Jeton d’accès"
+  },
+  "tokenPrivacy": {
+    "message": "Le jeton reste dans les réglages de l’extension et est envoyé uniquement à votre service."
+  },
+  "saveSettings": {
+    "message": "Enregistrer"
+  },
+  "footerNote": {
+    "message": "Enregistrez les médias que vous êtes autorisé à utiliser. Les vidéos nécessitent un service accessible depuis cet appareil."
+  },
+  "invalidSettings": {
+    "message": "Saisissez une URL HTTPS et son jeton. HTTP est limité à localhost. Effacez les deux champs pour supprimer les réglages."
+  },
+  "servicePermissionDenied": {
+    "message": "Autorisez Safari à accéder au service pour traiter les vidéos."
+  },
+  "settingsSaved": {
+    "message": "Réglages enregistrés."
+  },
+  "settingsSaveFailed": {
+    "message": "Impossible d’enregistrer les réglages."
+  },
+  "photosReady": {
+    "message": "Prêt à enregistrer"
+  },
+  "photosFirstSave": {
+    "message": "Photos demandera l’accès au premier enregistrement"
+  },
+  "photosDenied": {
+    "message": "Autorisez l’accès de Downloader à Photos dans Réglages"
+  },
+  "photosRestricted": {
+    "message": "L’accès à Photos est limité sur cet appareil"
+  },
+  "downloadToPhotos": {
+    "message": "Enregistrer tous les médias dans Photos"
+  },
+  "readingPost": {
+    "message": "Lecture de la publication…"
+  },
+  "readingCarousel": {
+    "message": "Lecture de toutes les diapositives…"
+  },
+  "carouselUnavailable": {
+    "message": "Impossible de lire tout le carrousel. Ouvrez la publication, attendez son chargement puis réessayez."
+  },
+  "noMedia": {
+    "message": "Aucun média téléchargeable dans cette publication."
+  },
+  "postURLUnavailable": {
+    "message": "Lien introuvable. Ouvrez la publication puis réessayez."
+  },
+  "processingVideo": {
+    "message": "Traitement vidéo… Cela peut prendre quelques minutes."
+  },
+  "savingProgress": {
+    "message": "Enregistrement dans Photos : $arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "$arg1$ média(s) enregistré(s) dans Photos.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "$arg1$ média(s) enregistré(s) sur $arg2$.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "Touchez à nouveau pour réessayer les médias en échec."
+  },
+  "downloadFailed": {
+    "message": "Échec du téléchargement. Touchez à nouveau pour réessayer."
+  },
+  "configureService": {
+    "message": "Configurez l’URL et le jeton du service vidéo dans l’extension."
+  },
+  "serviceUnauthorized": {
+    "message": "Le service vidéo a refusé le jeton d’accès."
+  },
+  "serviceTimeout": {
+    "message": "Le traitement vidéo a expiré. Réessayez."
+  },
+  "resolveFailed": {
+    "message": "Le service vidéo ne peut pas traiter cette publication."
+  },
+  "nativeUnavailable": {
+    "message": "L’app Downloader est inaccessible. Activez l’extension puis rouvrez Safari."
+  }
+}

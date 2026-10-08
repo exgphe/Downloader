@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		010B0F633077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 010B0F623077C1FE00422D6E /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		010B0F6D3077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D10000000000000000000014 /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D10000000000000000000004 /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +26,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 010B0F6B3077C1FE00422D6E;
 			remoteInfo = "Downloader Extension (macOS)";
+		};
+		D10000000000000000000015 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 010B0F293077C1FD00422D6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D10000000000000000000002;
+			remoteInfo = "Downloader Extension (visionOS)";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -47,6 +55,15 @@
 			);
 			name = "Embed Foundation Extensions";
 		};
+		D10000000000000000000010 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				D10000000000000000000014 /* Downloader Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -54,21 +71,11 @@
 		010B0F573077C1FE00422D6E /* Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		010B0F623077C1FE00422D6E /* Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10000000000000000000003 /* Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10000000000000000000004 /* Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		010B0F903077C1FE00422D6E /* Exceptions for "Shared (App)" folder in "Downloader (iOS)" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"/Localized: Resources/Main.html",
-				Assets.xcassets,
-				Resources/Icon.png,
-				Resources/Script.js,
-				Resources/Style.css,
-				ViewController.swift,
-			);
-			target = 010B0F443077C1FE00422D6E /* Downloader (iOS) */;
-		};
 		010B0F943077C1FE00422D6E /* Exceptions for "iOS (Extension)" folder in "Downloader Extension (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -83,18 +90,6 @@
 			);
 			target = 010B0F443077C1FE00422D6E /* Downloader (iOS) */;
 		};
-		010B0F9A3077C1FE00422D6E /* Exceptions for "Shared (App)" folder in "Downloader (macOS)" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"/Localized: Resources/Main.html",
-				Assets.xcassets,
-				Resources/Icon.png,
-				Resources/Script.js,
-				Resources/Style.css,
-				ViewController.swift,
-			);
-			target = 010B0F563077C1FE00422D6E /* Downloader (macOS) */;
-		};
 		010B0F9E3077C1FE00422D6E /* Exceptions for "macOS (Extension)" folder in "Downloader Extension (macOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -102,54 +97,30 @@
 			);
 			target = 010B0F6B3077C1FE00422D6E /* Downloader Extension (macOS) */;
 		};
-		010B0FA33077C1FE00422D6E /* Exceptions for "Shared (Extension)" folder in "Downloader Extension (iOS)" target */ = {
+		D10000000000000000000017 /* Exceptions for "visionOS (App)" folder in "Downloader (visionOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Resources/_locales,
-				Resources/background.js,
-				Resources/content.js,
-				Resources/images,
-				Resources/manifest.json,
-				Resources/popup.css,
-				Resources/popup.html,
-				Resources/popup.js,
-				SafariWebExtensionHandler.swift,
+				Info.plist,
 			);
-			target = 010B0F613077C1FE00422D6E /* Downloader Extension (iOS) */;
+			target = D10000000000000000000001 /* Downloader (visionOS) */;
 		};
-		010B0FA43077C1FE00422D6E /* Exceptions for "Shared (Extension)" folder in "Downloader Extension (macOS)" target */ = {
+		D10000000000000000000018 /* Exceptions for "visionOS (Extension)" folder in "Downloader Extension (visionOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Resources/_locales,
-				Resources/background.js,
-				Resources/content.js,
-				Resources/images,
-				Resources/manifest.json,
-				Resources/popup.css,
-				Resources/popup.html,
-				Resources/popup.js,
-				SafariWebExtensionHandler.swift,
+				Info.plist,
 			);
-			target = 010B0F6B3077C1FE00422D6E /* Downloader Extension (macOS) */;
+			target = D10000000000000000000002 /* Downloader Extension (visionOS) */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		010B0F2D3077C1FD00422D6E /* Shared (App) */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				010B0F903077C1FE00422D6E /* Exceptions for "Shared (App)" folder in "Downloader (iOS)" target */,
-				010B0F9A3077C1FE00422D6E /* Exceptions for "Shared (App)" folder in "Downloader (macOS)" target */,
-			);
 			path = "Shared (App)";
 			sourceTree = "<group>";
 		};
 		010B0F363077C1FE00422D6E /* Shared (Extension) */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				010B0FA33077C1FE00422D6E /* Exceptions for "Shared (Extension)" folder in "Downloader Extension (iOS)" target */,
-				010B0FA43077C1FE00422D6E /* Exceptions for "Shared (Extension)" folder in "Downloader Extension (macOS)" target */,
-			);
 			explicitFolders = (
 				Resources/_locales,
 				Resources/images,
@@ -186,6 +157,22 @@
 			path = "macOS (Extension)";
 			sourceTree = "<group>";
 		};
+		D10000000000000000000005 /* visionOS (App) */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D10000000000000000000017 /* Exceptions for "visionOS (App)" folder in "Downloader (visionOS)" target */,
+			);
+			path = "visionOS (App)";
+			sourceTree = "<group>";
+		};
+		D10000000000000000000006 /* visionOS (Extension) */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D10000000000000000000018 /* Exceptions for "visionOS (Extension)" folder in "Downloader Extension (visionOS)" target */,
+			);
+			path = "visionOS (Extension)";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,12 +196,24 @@
 			files = (
 			);
 		};
+		D1000000000000000000000E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		D10000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		010B0F283077C1FD00422D6E = {
 			isa = PBXGroup;
 			children = (
+				D10000000000000000000005 /* visionOS (App) */,
+				D10000000000000000000006 /* visionOS (Extension) */,
 				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				010B0F473077C1FE00422D6E /* iOS (App) */,
@@ -228,6 +227,8 @@
 		010B0F463077C1FE00422D6E /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				D10000000000000000000003 /* Downloader.app */,
+				D10000000000000000000004 /* Downloader Extension.appex */,
 				010B0F453077C1FE00422D6E /* Downloader.app */,
 				010B0F573077C1FE00422D6E /* Downloader.app */,
 				010B0F623077C1FE00422D6E /* Downloader Extension.appex */,
@@ -254,6 +255,7 @@
 				010B0F653077C1FE00422D6E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				010B0F473077C1FE00422D6E /* iOS (App) */,
 			);
 			name = "Downloader (iOS)";
@@ -276,6 +278,7 @@
 				010B0F6F3077C1FE00422D6E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				010B0F583077C1FE00422D6E /* macOS (App) */,
 			);
 			name = "Downloader (macOS)";
@@ -294,6 +297,7 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
+				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				010B0F663077C1FE00422D6E /* iOS (Extension) */,
 			);
 			name = "Downloader Extension (iOS)";
@@ -312,11 +316,54 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
+				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				010B0F703077C1FE00422D6E /* macOS (Extension) */,
 			);
 			name = "Downloader Extension (macOS)";
 			productName = "Downloader Extension (macOS)";
 			productReference = 010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		D10000000000000000000001 /* Downloader (visionOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10000000000000000000007 /* Build configuration list for PBXNativeTarget "Downloader (visionOS)" */;
+			buildPhases = (
+				D1000000000000000000000D /* Sources */,
+				D1000000000000000000000E /* Frameworks */,
+				D1000000000000000000000F /* Resources */,
+				D10000000000000000000010 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D10000000000000000000016 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				010B0F2D3077C1FD00422D6E /* Shared (App) */,
+				D10000000000000000000005 /* visionOS (App) */,
+			);
+			name = "Downloader (visionOS)";
+			productName = "Downloader (visionOS)";
+			productReference = D10000000000000000000003 /* Downloader.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D10000000000000000000002 /* Downloader Extension (visionOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10000000000000000000008 /* Build configuration list for PBXNativeTarget "Downloader Extension (visionOS)" */;
+			buildPhases = (
+				D10000000000000000000011 /* Sources */,
+				D10000000000000000000012 /* Frameworks */,
+				D10000000000000000000013 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				010B0F363077C1FE00422D6E /* Shared (Extension) */,
+				D10000000000000000000006 /* visionOS (Extension) */,
+			);
+			name = "Downloader Extension (visionOS)";
+			productName = "Downloader Extension (visionOS)";
+			productReference = D10000000000000000000004 /* Downloader Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -357,6 +404,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				D10000000000000000000001 /* Downloader (visionOS) */,
+				D10000000000000000000002 /* Downloader Extension (visionOS) */,
 				010B0F443077C1FE00422D6E /* Downloader (iOS) */,
 				010B0F563077C1FE00422D6E /* Downloader (macOS) */,
 				010B0F613077C1FE00422D6E /* Downloader Extension (iOS) */,
@@ -386,6 +435,16 @@
 			files = (
 			);
 		};
+		D1000000000000000000000F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		D10000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -409,6 +468,16 @@
 			files = (
 			);
 		};
+		D1000000000000000000000D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		D10000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -421,6 +490,11 @@
 			isa = PBXTargetDependency;
 			target = 010B0F6B3077C1FE00422D6E /* Downloader Extension (macOS) */;
 			targetProxy = 010B0F6E3077C1FE00422D6E /* PBXContainerItemProxy */;
+		};
+		D10000000000000000000016 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D10000000000000000000002 /* Downloader Extension (visionOS) */;
+			targetProxy = D10000000000000000000015 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -435,6 +509,7 @@
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -469,6 +544,7 @@
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -505,6 +581,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -546,6 +624,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -580,16 +660,19 @@
 		010B0F9C3077C1FE00422D6E /* Debug configuration for PBXNativeTarget "Downloader Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -616,16 +699,19 @@
 		010B0F9D3077C1FE00422D6E /* Release configuration for PBXNativeTarget "Downloader Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -654,6 +740,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -664,6 +751,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -695,6 +783,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -705,6 +794,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -847,6 +937,122 @@
 			};
 			name = Release;
 		};
+		D10000000000000000000009 /* Debug configuration for PBXNativeTarget "Downloader (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "visionOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
+				PRODUCT_NAME = Downloader;
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		D1000000000000000000000A /* Release configuration for PBXNativeTarget "Downloader (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "visionOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
+				PRODUCT_NAME = Downloader;
+				SDKROOT = xros;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		D1000000000000000000000B /* Debug configuration for PBXNativeTarget "Downloader Extension (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
+				PRODUCT_NAME = "Downloader Extension";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		D1000000000000000000000C /* Release configuration for PBXNativeTarget "Downloader Extension (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
+				PRODUCT_NAME = "Downloader Extension";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -887,6 +1093,22 @@
 			buildConfigurations = (
 				010B0FA13077C1FE00422D6E /* Debug configuration for PBXNativeTarget "Downloader (macOS)" */,
 				010B0FA23077C1FE00422D6E /* Release configuration for PBXNativeTarget "Downloader (macOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D10000000000000000000007 /* Build configuration list for PBXNativeTarget "Downloader (visionOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D10000000000000000000009 /* Debug configuration for PBXNativeTarget "Downloader (visionOS)" */,
+				D1000000000000000000000A /* Release configuration for PBXNativeTarget "Downloader (visionOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D10000000000000000000008 /* Build configuration list for PBXNativeTarget "Downloader Extension (visionOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1000000000000000000000B /* Debug configuration for PBXNativeTarget "Downloader Extension (visionOS)" */,
+				D1000000000000000000000C /* Release configuration for PBXNativeTarget "Downloader Extension (visionOS)" */,
 			);
 			defaultConfigurationName = Release;
 		};

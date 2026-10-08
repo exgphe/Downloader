@@ -1,10 +1,137 @@
 {
-    "extension_name": {
-        "message": "Downloader",
-        "description": "The display name for the extension."
-    },
-    "extension_description": {
-        "message": "This is Downloader. You should tell us what your extension does here.",
-        "description": "Description of what the extension does."
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "Save Instagram photos and videos, and X videos, directly to Photos."
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · Photos"
+  },
+  "popupInstruction": {
+    "message": "Tap the download button beside Send on Instagram or Share on an X video post to save all its media to Photos."
+  },
+  "photosLibrary": {
+    "message": "Photos library"
+  },
+  "checkingStatus": {
+    "message": "Checking access…"
+  },
+  "videoService": {
+    "message": "Video service"
+  },
+  "serviceExplanation": {
+    "message": "Videos are processed by your yt-dlp service. Instagram photos are read directly from the post."
+  },
+  "serviceURL": {
+    "message": "Service URL"
+  },
+  "accessToken": {
+    "message": "Access token"
+  },
+  "tokenPrivacy": {
+    "message": "Your token is kept in extension settings and sent only to your video service."
+  },
+  "saveSettings": {
+    "message": "Save settings"
+  },
+  "footerNote": {
+    "message": "Use media you have permission to save. Videos require a running service reachable from this device."
+  },
+  "invalidSettings": {
+    "message": "Enter an HTTPS service URL and its access token. HTTP is allowed only on localhost. Clear both fields to remove settings."
+  },
+  "servicePermissionDenied": {
+    "message": "Allow Safari access to this service to process videos."
+  },
+  "settingsSaved": {
+    "message": "Settings saved."
+  },
+  "settingsSaveFailed": {
+    "message": "Could not save settings."
+  },
+  "photosReady": {
+    "message": "Ready to save"
+  },
+  "photosFirstSave": {
+    "message": "Photos will ask for access on the first save"
+  },
+  "photosDenied": {
+    "message": "Allow Photos access for Downloader in Settings"
+  },
+  "photosRestricted": {
+    "message": "Photos access is restricted on this device"
+  },
+  "downloadToPhotos": {
+    "message": "Download all media to Photos"
+  },
+  "readingPost": {
+    "message": "Reading post…"
+  },
+  "readingCarousel": {
+    "message": "Reading every carousel slide…"
+  },
+  "carouselUnavailable": {
+    "message": "Could not read every carousel slide. Open the post, wait for it to load, then try again."
+  },
+  "noMedia": {
+    "message": "No downloadable media found in this post."
+  },
+  "postURLUnavailable": {
+    "message": "Could not find the post link. Open the post, then try again."
+  },
+  "processingVideo": {
+    "message": "Processing video… This may take a few minutes."
+  },
+  "savingProgress": {
+    "message": "Saving to Photos: $arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
     }
+  },
+  "savedCount": {
+    "message": "Saved $arg1$ item(s) to Photos.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "Saved $arg1$ of $arg2$ items.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "Tap again to retry failed items."
+  },
+  "downloadFailed": {
+    "message": "Download failed. Tap again to retry."
+  },
+  "configureService": {
+    "message": "Set the video service URL and access token in the extension popup."
+  },
+  "serviceUnauthorized": {
+    "message": "The video service rejected the access token."
+  },
+  "serviceTimeout": {
+    "message": "Video processing timed out. Try again."
+  },
+  "resolveFailed": {
+    "message": "The video service could not process this post."
+  },
+  "nativeUnavailable": {
+    "message": "Downloader could not reach the native app. Enable the extension and reopen Safari."
+  }
 }

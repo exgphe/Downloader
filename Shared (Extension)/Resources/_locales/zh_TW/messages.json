@@ -1,0 +1,137 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "將 Instagram 圖片、影片及 X 影片直接儲存到照片。"
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · 照片"
+  },
+  "popupInstruction": {
+    "message": "點選 Instagram 傳送按鈕右側，或 X 影片貼文分享按鈕右側的下載按鈕，將貼文的所有媒體儲存到照片。"
+  },
+  "photosLibrary": {
+    "message": "照片圖庫"
+  },
+  "checkingStatus": {
+    "message": "正在檢查權限…"
+  },
+  "videoService": {
+    "message": "影片服務"
+  },
+  "serviceExplanation": {
+    "message": "影片由你的 yt-dlp 服務處理。Instagram 圖片直接從貼文擷取。"
+  },
+  "serviceURL": {
+    "message": "服務網址"
+  },
+  "accessToken": {
+    "message": "存取權杖"
+  },
+  "tokenPrivacy": {
+    "message": "權杖儲存在擴充功能設定中，僅傳送給你的影片服務。"
+  },
+  "saveSettings": {
+    "message": "儲存設定"
+  },
+  "footerNote": {
+    "message": "請儲存你有權使用的媒體。下載影片需要本裝置可存取的執行中服務。"
+  },
+  "invalidSettings": {
+    "message": "請輸入 HTTPS 服務網址及存取權杖。HTTP 僅限 localhost。清空兩項即可移除設定。"
+  },
+  "servicePermissionDenied": {
+    "message": "請允許 Safari 存取此服務以處理影片。"
+  },
+  "settingsSaved": {
+    "message": "設定已儲存。"
+  },
+  "settingsSaveFailed": {
+    "message": "無法儲存設定。"
+  },
+  "photosReady": {
+    "message": "可以儲存到照片"
+  },
+  "photosFirstSave": {
+    "message": "首次儲存時會要求照片權限"
+  },
+  "photosDenied": {
+    "message": "請在設定中允許 Downloader 存取照片"
+  },
+  "photosRestricted": {
+    "message": "此裝置的照片存取受到限制"
+  },
+  "downloadToPhotos": {
+    "message": "下載全部媒體到照片"
+  },
+  "readingPost": {
+    "message": "正在讀取貼文…"
+  },
+  "readingCarousel": {
+    "message": "正在讀取輪播的每一頁…"
+  },
+  "carouselUnavailable": {
+    "message": "無法讀取輪播的全部媒體。請開啟貼文，等待載入完成後重試。"
+  },
+  "noMedia": {
+    "message": "沒有找到可下載的媒體。"
+  },
+  "postURLUnavailable": {
+    "message": "無法找到貼文連結。請開啟貼文後重試。"
+  },
+  "processingVideo": {
+    "message": "正在處理影片… 可能需要幾分鐘。"
+  },
+  "savingProgress": {
+    "message": "正在儲存到照片：$arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "已將 $arg1$ 個媒體儲存到照片。",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "已儲存 $arg2$ 個媒體中的 $arg1$ 個。",
+    "placeholders": {
+      "arg2": {
+        "content": "$2"
+      },
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "再次點選即可重試失敗的媒體。"
+  },
+  "downloadFailed": {
+    "message": "下載失敗。再次點選即可重試。"
+  },
+  "configureService": {
+    "message": "請在擴充功能彈出視窗中設定影片服務網址及存取權杖。"
+  },
+  "serviceUnauthorized": {
+    "message": "影片服務拒絕了存取權杖。"
+  },
+  "serviceTimeout": {
+    "message": "影片處理逾時。請重試。"
+  },
+  "resolveFailed": {
+    "message": "影片服務無法處理此貼文。"
+  },
+  "nativeUnavailable": {
+    "message": "無法連接 Downloader 原生應用程式。請啟用擴充功能並重新開啟 Safari。"
+  }
+}

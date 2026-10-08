@@ -1,0 +1,33 @@
+button.downloader-post-button {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    margin: 0 0 0 4px !important;
+    padding: 5px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    color: inherit !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
+    touch-action: manipulation;
+}
+button.downloader-post-button.downloader-x { color: rgb(113, 118, 123) !important; width: 32px !important; min-width: 32px !important; height: 32px !important; }
+button.downloader-post-button:hover { background: rgba(29, 155, 240, .12) !important; color: #1d9bf0 !important; }
+button.downloader-post-button:focus-visible { outline: 2px solid #1d9bf0 !important; outline-offset: 2px !important; }
+button.downloader-post-button:disabled { cursor: progress !important; opacity: .65 !important; }
+button.downloader-post-button[data-state="complete"] { color: #21965a !important; }
+button.downloader-post-button[data-state="error"] { color: #ce4b47 !important; }
+button.downloader-post-button svg { display: block !important; width: 24px !important; height: 24px !important; fill: none !important; stroke: currentColor !important; stroke-width: 1.8 !important; stroke-linecap: round !important; stroke-linejoin: round !important; }
+button.downloader-post-button[aria-busy="true"] svg { animation: downloader-pulse 1s ease-in-out infinite; }
+.downloader-notice { position: fixed !important; z-index: 2147483647 !important; left: 50% !important; bottom: max(28px, env(safe-area-inset-bottom)) !important; transform: translateX(-50%) !important; width: max-content !important; max-width: min(520px, calc(100vw - 40px)) !important; padding: 12px 18px !important; border-radius: 12px !important; background: #202226 !important; color: #fff !important; box-shadow: 0 4px 24px #0003 !important; font: 14px/1.5 -apple-system, BlinkMacSystemFont, sans-serif !important; text-align: center !important; overflow-wrap: anywhere !important; }
+.downloader-notice[data-error="true"] { background: #672e2e !important; }
+.downloader-notice[hidden] { display: none !important; }
+@keyframes downloader-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { button.downloader-post-button[aria-busy="true"] svg { animation: none; } }

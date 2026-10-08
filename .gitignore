@@ -1,0 +1,13 @@
+.DS_Store
+DerivedData/
+.build/
+*.xcuserstate
+xcuserdata/
+Server/.venv/
+Server/.cache/
+Server/__pycache__/
+**/__pycache__/
+Server/*.egg-info/
+Server/cookies.txt
+.env
+node_modules/

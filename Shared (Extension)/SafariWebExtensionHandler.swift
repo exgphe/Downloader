@@ -1,42 +1,40 @@
-//
-//  SafariWebExtensionHandler.swift
-//  Shared (Extension)
-//
-//  Created by Xiaolin Wang on 08/10/2026.
-//
-
+import Foundation
 import SafariServices
-import os.log
-
-class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
-
+/// The background script sends one media item per request and owns the post queue.
+final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
     func beginRequest(with context: NSExtensionContext) {
         let request = context.inputItems.first as? NSExtensionItem
-
-        let profile: UUID?
-        if #available(iOS 17.0, macOS 14.0, *) {
-            profile = request?.userInfo?[SFExtensionProfileKey] as? UUID
-        } else {
-            profile = request?.userInfo?["profile"] as? UUID
+        guard let message = request?.userInfo?[SFExtensionMessageKey] as? [String: Any],
+              let type = message["type"] as? String else {
+            reply(["ok": false, "code": "invalidRequest", "error": "Invalid native message."], to: context)
+            return
         }
-
-        let message: Any?
-        if #available(iOS 15.0, macOS 11.0, *) {
-            message = request?.userInfo?[SFExtensionMessageKey]
-        } else {
-            message = request?.userInfo?["message"]
+        if type == "status" {
+            reply(["ok": true, "platform": NativePhotoSaver.platform,
+                   "photosAuthorization": NativePhotoSaver.authorizationName], to: context)
+            return
         }
-
-        os_log(.default, "Received message from browser.runtime.sendNativeMessage: %@ (profile: %@)", String(describing: message), profile?.uuidString ?? "none")
-
-        let response = NSExtensionItem()
-        if #available(iOS 15.0, macOS 11.0, *) {
-            response.userInfo = [ SFExtensionMessageKey: [ "echo": message ] ]
-        } else {
-            response.userInfo = [ "message": [ "echo": message ] ]
+        guard type == "saveMedia" else {
+            reply(["ok": false, "code": "unsupportedRequest", "error": "Unknown native message type."], to: context)
+            return
         }
-
-        context.completeRequest(returningItems: [ response ], completionHandler: nil)
+        Task {
+            let response: [String: Any]
+            do {
+                try await NativePhotoSaver.save(NativeMediaRequest(message))
+                response = ["ok": true, "saved": 1]
+            } catch let failure as MediaSaveError {
+                response = ["ok": false, "code": failure.code, "error": failure.message]
+            } catch {
+                response = ["ok": false, "code": "saveFailed", "error": error.localizedDescription]
+            }
+            self.reply(response, to: context)
+        }
     }
 
+    private func reply(_ message: [String: Any], to context: NSExtensionContext) {
+        let response = NSExtensionItem()
+        response.userInfo = [SFExtensionMessageKey: message]
+        context.completeRequest(returningItems: [response], completionHandler: nil)
+    }
 }
