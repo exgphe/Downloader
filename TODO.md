@@ -1,0 +1,3 @@
+Youtube下载（只能靠app，没法靠网页）
+支持iOS最新的后台下载接口
+iPhone上Instagram用的是app，可以分享链接到app，然后instagram用gallery-dl下载
