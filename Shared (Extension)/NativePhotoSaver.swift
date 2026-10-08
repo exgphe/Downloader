@@ -90,7 +90,7 @@ enum NativePhotoSaver {
             }
         case .video:
             guard generic || ["video/mp4", "video/quicktime", "video/x-m4v"].contains(mime) else {
-                throw MediaSaveError(code: "invalidMedia", message: "The video server did not return an MP4 or QuickTime video.")
+                throw MediaSaveError(code: "invalidMedia", message: "The downloaded video is not an MP4 or QuickTime video.")
             }
             let handle = try FileHandle(forReadingFrom: file)
             defer { try? handle.close() }

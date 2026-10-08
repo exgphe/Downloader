@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "python": {
+    "version": "3.13.16",
+    "abiVersion": "3.13",
+    "release": "3.13-b16",
+    "frameworks": {
+      "macOS": {
+        "filename": "Python-3.13-macOS-support.b16.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-macOS-support.b16.tar.gz",
+        "sha256": "29334305ef0e1e7e58198c195c7e3707afe38be9ebf134840b156c369f84f737"
+      },
+      "iOS": {
+        "filename": "Python-3.13-iOS-support.b16.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-iOS-support.b16.tar.gz",
+        "sha256": "22b96f3d0c3663225f078556b036d2ee6ce3ff98c885706585240681335c71ea"
+      },
+      "visionOS": {
+        "filename": "Python-3.13-visionOS-support.b16.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-visionOS-support.b16.tar.gz",
+        "sha256": "303a629ba0a2d83c4e9ee5e003c5852fc02efa456af36d29fbc034f881a2cd96"
+      }
+    }
+  },
+  "packages": [
+    {
+      "name": "yt-dlp",
+      "version": "2026.8.19",
+      "filename": "yt_dlp-2026.8.19-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/69/b2/8cd1613f56eed7ceb64fbd4df3f1c01246bfb098e6f398228bafda22b80b/yt_dlp-2026.8.19-py3-none-any.whl",
+      "sha256": "1d57897e94c6665a0a6f9bc54b34e584284e32c034ffab3a7df25d8f7b24eedf"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "filename": "certifi-2026.7.22-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl",
+      "sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+    }
+  ]
+}

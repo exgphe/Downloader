@@ -1,60 +1,70 @@
 # Downloader
 
-面向 macOS、iOS 和 visionOS 的 Safari Web Extension。Instagram 帖子的发送按钮右侧、X 视频帖子的分享按钮右侧会出现下载按钮。点击后收集帖子的媒体，通过原生 PhotoKit 保存到系统“照片”。
+跨 macOS、iOS、visionOS 的 Safari Web Extension。在 Instagram 每个帖子的发送按钮右侧、X 视频帖子的分享按钮右侧添加下载按钮，按帖收集媒体并保存到系统「照片」。支持 Instagram 图片、视频和混合轮播，以及 X 多视频帖子。页面动态加载与单页导航后会重新检查按钮，避免重复插入。
 
-## 当前实现
+视频解析在设备本地完成：应用打包 CPython 和 yt-dlp，原生扩展直接调用 Python API。图片与完整的 Instagram 视频元数据优先从 Safari 网页收集，媒体文件由 Swift 下载，再交给 PhotoKit。
 
-- Instagram：图片、视频、混合轮播；优先读取当前登录会话下的帖子元数据，选取最大的图片版本。元数据不可用时读取页面中的结构化数据，再尝试逐页读取轮播并恢复原来的位置。无法确认完整时显示错误。
-- X：仅为含视频的帖子添加按钮，支持动态时间线和帖子详情。
-- 照片：仅申请添加权限，下载逐项写入临时文件，保存完成后清理。显示处理进度和失败原因；30 分钟内重试跳过已经保存的项目，后台重启后也可读取本地保存记录。
-- 视频：随项目提供可自行运行的 yt-dlp 服务，处理视频下载、音轨合并和 H.264/AAC MP4 转换。Safari 扩展通过令牌访问该服务，再由设备原生保存到照片。
-- 配置：Safari 工具栏弹窗中设置服务地址和令牌；提供英语、简体中文、繁体中文和法语扩展文案。
+## 通信与运行时
 
-## 为什么需要视频服务
+```text
+Safari content script → background.js → sendNativeMessage
+                                         ↓
+                              SafariWebExtensionHandler
+                                  ↓               ↓
+                         CPython + yt-dlp    URLSession → PhotoKit
+                            视频地址            保存到照片
+```
 
-yt-dlp 是 Python 程序，iOS / visionOS 的 Safari 扩展无法直接启动普通 Python/命令行子进程。macOS 扩展也受到 App Sandbox 限制。本实现让三端共享一个可配置的视频服务；图片下载不依赖服务。这里的服务是随仓库提供的独立程序，需要先运行并在扩展中配置，没有预设的公共服务器。
+Apple 的 [Safari Web Extension 消息文档](https://developer.apple.com/documentation/safariservices/messaging-between-the-app-and-javascript-in-a-safari-web-extension) 区分网页脚本、原生扩展与包含扩展的 App。`browser.runtime.sendNativeMessage` 到达原生扩展的 `NSExtensionRequestHandling`；它不直接调用主 App。App Group 可以共享数据，但不能保证启动或唤醒主 App。macOS 提供原生向扩展发送消息的额外 API，iOS 没有同等的直接推送能力。
 
-服务会接收点击下载的视频帖子链接。照片链接直接交给原生层下载；扩展不会向服务发送 Safari 的登录 Cookie。私有视频需要时可在自己的服务器上配置 Cookie 文件，参见 [服务说明](Server/README.md)。
+本项目把解析与照片保存放在原生扩展中，因此无需唤醒主 App。主 App 提供设置引导并承载 `Frameworks`；扩展经父应用的运行时搜索路径加载框架。iOS / visionOS 的 Python 原生模块转换为独立框架，并使用 CPython 的 `.fwork` / `.origin` 机制加载，移动端扩展资源中不留 `.so` 文件。这符合 [Python 官方 iOS 嵌入布局](https://docs.python.org/3.13/using/ios.html)。
 
-## 在 Xcode 中运行
+[a-shell](https://github.com/holzschu/a-shell) 证实 iOS 可以内嵌 Python 与 yt-dlp。本项目使用 [BeeWare Python Apple Support](https://github.com/beeware/Python-Apple-support)，通过 C API 初始化一个隔离解释器，在串行队列中管理 GIL。yt-dlp 只提取元数据，`download=False`，不会启动 shell、FFmpeg 或外部下载器。
 
-打开 `Downloader.xcodeproj`，选择对应的共享 Scheme：
+## 开发与构建
 
-| Scheme | 最低系统 | 原生入口 |
+需要 Xcode 和 uv。开发机 Python 由 uv 管理；终端和 Xcode 的打包脚本都通过 uv 执行。首次构建前准备固定版本的依赖：
+
+```sh
+uv run --no-project --script Scripts/bootstrap_runtime.py
+```
+
+可以用 `--platform macOS`、`--platform iOS` 或 `--platform visionOS` 只准备对应平台。版本与 SHA-256 在 `Dependencies/runtime-lock.json`：CPython 3.13.16（3.13-b16 框架）、yt-dlp 2026.8.19、certifi 2026.7.22。开发依赖目录被 Git 忽略；用户安装应用后无需安装 Python。
+
+首次准备依赖需要访问 GitHub 和 PyPI。Xcode 构建阶段仅离线打包已经准备好的文件，选择正确设备或模拟器切片、裁剪架构、嵌入框架，并在修改扩展资源后重新签名。CPython 的许可证与 Python 包的 dist-info 许可证保留在扩展资源中。更换依赖时应更新锁文件、校验和并重新执行检查。
+
+打开 `Downloader.xcodeproj`，选择相应 Scheme：
+
+| Scheme | 最低系统 | 主应用 |
 | --- | --- | --- |
 | Downloader (macOS) | macOS 12 | AppKit |
 | Downloader (iOS) | iOS 17 | UIKit，iPhone / iPad |
-| Downloader (visionOS) | visionOS 26 | SwiftUI 窗口 |
+| Downloader (visionOS) | visionOS 26 | SwiftUI |
 
-三个 Scheme 都嵌入对应平台的 Safari 扩展，共享扩展资源和原生下载代码。选择自己的签名团队后运行应用，按应用中的引导开启扩展、允许访问 Instagram 和 X，并允许添加到照片。macOS 的应用与扩展已配置网络和照片沙盒 entitlement。
+选择自己的签名团队后运行。根据应用引导开启 Safari 扩展，允许访问 Instagram 和 X，首次下载时允许添加到照片。macOS 本地开发的未签名扩展需要 Safari 开发设置允许未签名扩展。三端均需要正常签名才能进行完整设备测试。
 
-在 Safari 中登录网站并刷新页面。首次下载时系统可能再次请求照片权限。macOS 本地开发若使用未签名扩展，需要在 Safari 开发设置中允许未签名扩展；设备安装和正式分发需要正常签名。
-
-## 运行视频服务
-
-机器需要 `uv`、`ffmpeg` 和 `ffprobe`。在 `Server` 目录运行：
+无签名编译示例：
 
 ```sh
-uv sync --locked
-export DOWNLOADER_TOKEN="$(openssl rand -hex 32)"
-uv run downloader-video-service
+xcodebuild -project Downloader.xcodeproj -scheme 'Downloader (macOS)' \
+  -destination 'generic/platform=macOS' -configuration Debug \
+  -derivedDataPath /tmp/DownloaderBuild-macOS CODE_SIGNING_ALLOWED=NO build
 ```
 
-服务默认监听 `127.0.0.1:8787`。在同一台 Mac 的 Safari 扩展弹窗中填写 `http://127.0.0.1:8787` 和上述令牌，并允许访问这个服务。可在启动服务前运行 `printenv DOWNLOADER_TOKEN` 查看令牌并复制到弹窗；令牌只应提供给自己的设备。
+将 Scheme 与平台改为 `iOS` 或 `visionOS` 可以编译移动端；模拟器目标分别为 `generic/platform=iOS Simulator` 与 `generic/platform=visionOS Simulator`。
 
-iPhone / iPad / Apple Vision Pro 必须填写设备可访问的 HTTPS 服务地址，例如自己服务器的 `https://downloads.example.com`，或者带有效证书的局域网服务。设备上的 `127.0.0.1` 指向设备自身。服务也支持置于反向代理路径下；代理应去掉该前缀再转发到服务。
-
-详细配置、认证接口、Cookie 设置、容量限制和测试命令见 [Server/README.md](Server/README.md)。
+固定版本的 visionOS Python 框架仅提供 arm64 模拟器切片，项目相应排除了 x86_64；iOS 模拟器支持 arm64 与 x86_64。
 
 ## 检查
 
-网页提取、下载编排和按钮注入的离线测试：
-
 ```sh
 node --test Tests/extension/*.test.cjs
+uv run --no-project python Tests/test_embedded_resolver.py
+uv run --no-project python Tests/test_runtime_packaging.py
+uv run --no-project --script Scripts/test_embedded_runtime.py
 ```
 
-原生 URL / 来源 / 令牌校验测试：
+原生媒体来源校验：
 
 ```sh
 xcrun swiftc -module-cache-path /tmp/downloader-native-tests \
@@ -63,7 +73,7 @@ xcrun swiftc -module-cache-path /tmp/downloader-native-tests \
 /tmp/downloader-native-policy-tests
 ```
 
-原生文件验证测试（图片原始字节保留、格式转换和无效内容拒绝）：
+原生文件格式与图片转换验证：
 
 ```sh
 xcrun swiftc -module-cache-path /tmp/downloader-native-tests \
@@ -74,16 +84,12 @@ xcrun swiftc -module-cache-path /tmp/downloader-native-tests \
 /tmp/downloader-native-validation-tests
 ```
 
-无签名构建示例，可将 Scheme 和平台替换为 `iOS` 或 `visionOS`：
+自动检查覆盖按钮位置、动态注入、混合轮播、消息接口、失败重试、CDN 校验、Python 视频格式选择与运行时打包。还验证了实际打包的 macOS CPython 能加载 `_ssl`、certifi 与 yt-dlp，并处理连续和并发解析调用；提取使用离线数据，完整网站下载到照片仍须在 Safari 与已签名设备上验证。
 
-```sh
-xcodebuild -project Downloader.xcodeproj -scheme 'Downloader (macOS)' \
-  -destination 'generic/platform=macOS' -configuration Debug \
-  -derivedDataPath /tmp/DownloaderBuild-macOS CODE_SIGNING_ALLOWED=NO build
-```
+## 当前边界
 
-## 实际验证范围
-
-自动检查覆盖三端编译、媒体解析、下载重试、原生 URL 校验，以及服务认证/作业/传输逻辑。完整下载到照片仍需在已签名的设备上、使用真实登录会话验证。Instagram 和 X 会调整网页和接口，私有内容、过期链接、网站限流与 yt-dlp 提取器变化可能导致失败；界面会显示具体错误。视频处理默认限制五分钟，原生单个文件下载限制 90 秒 / 512 MB。
-
-已经保存的媒体序号会在设备本地保留 30 分钟作为重试记录，不包含视频服务令牌或媒体地址；超过记录有效期再次点击会重新保存。请在下载完成前保留 Safari 运行。当前没有长期后台任务恢复或跨设备下载记录。
+- yt-dlp 选择最高分辨率的直接 MP4 地址。只有 HLS、直播或分离音视频的内容会报不支持；某项视频不可解析时，不会将其跳过后报告整帖成功。
+- 内嵌 Python 的 CookieJar 与 Safari 登录会话独立。Instagram 完整网页元数据可直接使用已经取得的视频地址；需要登录、受保护或年龄限制的内容若走 yt-dlp，可能失败。当前没有导出 Safari Cookie 的桥接。
+- Instagram / X 的网页和接口变更、限流、过期链接都可能造成失败。视频解析使用 8 秒网络超时与 40 秒 Python 执行期限，但系统 DNS 阻塞不能保证严格的墙钟期限；原生单文件下载上限为 90 秒 / 512 MB。
+- 已保存的媒体序号在设备本地保留 30 分钟用于重试，不保留签名 CDN 地址。下载完成前请保留 Safari 运行；当前没有长期后台恢复。
+- BeeWare 预编译 Python 框架没有 `MH_APP_EXTENSION_SAFE` 标记。三端编译与 macOS 内嵌解释器运行成功不等于已通过扩展生命周期、内存限制或 App Store 检查。发布前应审计运行时并使用扩展兼容编译选项重建，完成真实设备验证。

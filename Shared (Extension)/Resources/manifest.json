@@ -21,6 +21,5 @@
   "action": {"default_popup": "popup.html", "default_icon": "images/toolbar-icon.svg", "default_title": "Downloader"},
   "permissions": ["storage", "nativeMessaging"],
   "host_permissions": ["https://instagram.com/*", "https://www.instagram.com/*", "https://x.com/*", "https://www.x.com/*", "https://twitter.com/*", "https://www.twitter.com/*"],
-  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'"}
 }

@@ -22,7 +22,11 @@
                         if (checkpoint && now() - checkpoint.created < 30 * 60 * 1000 && checkpoint.created <= now() &&
                             Array.isArray(checkpoint.saved) && checkpoint.saved.length <= 20 && checkpoint.saved.every(key => /^(image|video):\d{1,2}$/.test(key)) &&
                             Number.isInteger(checkpoint.imageCount) && checkpoint.imageCount >= 0 && checkpoint.imageCount <= 20 &&
-                            Number.isInteger(checkpoint.videoCount) && checkpoint.videoCount >= 0 && checkpoint.videoCount <= 20) {
+                            Number.isInteger(checkpoint.videoCount) && checkpoint.videoCount >= 0 && checkpoint.videoCount <= 20 &&
+                            checkpoint.imageCount + checkpoint.videoCount <= 20 && new Set(checkpoint.saved).size === checkpoint.saved.length &&
+                            (request.hasVideo ? checkpoint.videoCount > 0 : checkpoint.videoCount === 0) &&
+                            (!Number.isInteger(request.expectedVideoCount) || checkpoint.videoCount === request.expectedVideoCount) &&
+                            checkpoint.saved.every(key => { const [kind, index] = key.split(":"); return Number(index) < checkpoint[kind + "Count"]; })) {
                             state.created = checkpoint.created;
                             state.saved = new Set(checkpoint.saved);
                             state.imageCount = checkpoint.imageCount;
@@ -34,15 +38,17 @@
                     const images = request.media.filter(item => item.kind === "image");
                     if (state.imageCount !== null && state.imageCount !== images.length) throw new Error("The post changed. Reload the page before retrying.");
                     state.imageCount = images.length;
+                    if (state.videoCount !== null && Number.isInteger(request.expectedVideoCount) && state.videoCount !== request.expectedVideoCount) throw new Error("The post changed. Reload the page before retrying.");
                     const knownVideoCount = state.videos?.length ?? state.videoCount ?? request.expectedVideoCount;
                     const unsavedVideos = request.hasVideo && (!Number.isInteger(knownVideoCount) ||
                         Array.from({length: knownVideoCount}, (_, index) => index).some(index => !state.saved.has(`video:${index}`)));
-                    if (unsavedVideos && (!state.videos || now() - state.resolvedAt > 10 * 60 * 1000)) {
+                    const refreshedMetadata = request.platform === "instagram" && request.mediaSource === "metadata";
+                    if (unsavedVideos && (refreshedMetadata || !state.videos || now() - state.resolvedAt > 10 * 60 * 1000)) {
                         progress({phase: "resolving", saved: state.saved.size, total: images.length});
-                        const videos = await resolveVideos(request.postURL);
-                        if (request.hasVideo && !videos.length) throw new Error("The video service returned no videos.");
-                        if (Number.isInteger(request.expectedVideoCount) && videos.length !== request.expectedVideoCount) throw new Error("The video service did not return every video in this post. Try again.");
-                        if (state.videoCount !== null && videos.length !== state.videoCount) throw new Error("The video service returned a different video count. Try again.");
+                        const videos = await resolveVideos(request.postURL, request);
+                        if (request.hasVideo && !videos.length) throw new Error("The built-in video engine returned no videos.");
+                        if (Number.isInteger(request.expectedVideoCount) && videos.length !== request.expectedVideoCount) throw new Error("The built-in video engine did not return every video in this post. Try again.");
+                        if (state.videoCount !== null && videos.length !== state.videoCount) throw new Error("The built-in video engine returned a different video count. Try again.");
                         state.videos = videos;
                         state.videoCount = videos.length;
                         state.resolvedAt = now();
@@ -50,6 +56,7 @@
                     const items = [...images, ...(state.videos || [])];
                     if (items.length > 20) throw new Error("The post contains too many media items.");
                     const failed = [];
+                    let refreshVideos = false;
                     const kindIndices = {image: 0, video: 0};
                     for (let index = 0; index < items.length; index++) {
                         const item = items[index];
@@ -58,18 +65,26 @@
                         progress({phase: "saving", saved: state.saved.size, total: items.length});
                         try {
                             const result = await saveMedia(item, request.postURL);
-                            if (!result?.ok || result.saved !== 1) throw new Error(result?.error || "Photos did not confirm that this item was saved.");
+                            if (!result?.ok || result.saved !== 1) {
+                                const error = new Error(result?.error || "Photos did not confirm that this item was saved.");
+                                error.code = result?.code;
+                                throw error;
+                            }
                             state.saved.add(key);
                             try { await saveCheckpoint(request.postURL, {created: state.created, saved: [...state.saved], imageCount: images.length, videoCount: state.videoCount || 0}); }
                             catch { /* The item is already in Photos even if its retry checkpoint cannot be stored. */ }
-                        } catch (error) { failed.push({index, error: error.message || "Could not save this item."}); }
+                        } catch (error) {
+                            failed.push({index, error: error.message || "Could not save this item."});
+                            if (item.kind === "video" && ["downloadHTTPError", "unsafeURL", "unsafeRedirect", "invalidMedia", "emptyMedia"].includes(error.code)) refreshVideos = true;
+                        }
                     }
+                    if (refreshVideos) { state.videos = null; state.resolvedAt = 0; }
                     const result = {ok: !failed.length, saved: state.saved.size, total: images.length + (state.videoCount || 0), failed: failed.length,
                         ...(failed.length ? {error: failed[0].error, retryable: true} : {})};
                     progress({phase: failed.length ? "partial" : "complete", ...result});
                     return result;
                 } catch (error) {
-                    return {ok: false, saved: state.saved.size, total: (state.imageCount || 0) + (state.videos?.length || 0), error: error.message || "Download failed.", retryable: true};
+                    return {ok: false, saved: state.saved.size, total: (state.imageCount || 0) + (state.videos?.length ?? state.videoCount ?? request.expectedVideoCount ?? 0), error: error.message || "Download failed.", retryable: true};
                 }
             };
             state.pending = execute();

@@ -259,7 +259,7 @@
         try {
             const extracted = platform === "instagram" ? await instagramMedia(root, postURL) : {media: [], complete: true, hasVideo: true};
             const result = await browser.runtime.sendMessage({type: "downloadPost", platform, postURL,
-                media: extracted.media, complete: extracted.complete, requiresResolver: extracted.hasVideo});
+                media: extracted.media, mediaSource: extracted.source, complete: extracted.complete, requiresVideoResolution: extracted.hasVideo});
             if (!result?.ok) {
                 const partial = result?.saved ? `${t("partialSaved", [String(result.saved), String(result.total)])} ` : "";
                 throw new Error(partial + (result?.error || t("downloadFailed")));

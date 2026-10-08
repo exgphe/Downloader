@@ -15,40 +15,10 @@
     "message": "照片图库"
   },
   "checkingStatus": {
-    "message": "正在检查权限…"
-  },
-  "videoService": {
-    "message": "视频服务"
-  },
-  "serviceExplanation": {
-    "message": "视频由你的 yt-dlp 服务处理。Instagram 图片直接从帖子提取。"
-  },
-  "serviceURL": {
-    "message": "服务地址"
-  },
-  "accessToken": {
-    "message": "访问令牌"
-  },
-  "tokenPrivacy": {
-    "message": "令牌保存在扩展设置中，仅发送给你的视频服务。"
-  },
-  "saveSettings": {
-    "message": "保存设置"
+    "message": "正在检查状态…"
   },
   "footerNote": {
-    "message": "请保存你有权使用的媒体。下载视频需要本设备可访问的运行中服务。"
-  },
-  "invalidSettings": {
-    "message": "请输入 HTTPS 服务地址和访问令牌。HTTP 仅限 localhost。清空两项可移除设置。"
-  },
-  "servicePermissionDenied": {
-    "message": "请允许 Safari 访问该服务以处理视频。"
-  },
-  "settingsSaved": {
-    "message": "设置已保存。"
-  },
-  "settingsSaveFailed": {
-    "message": "无法保存设置。"
+    "message": "图片和视频会保存到本设备的照片图库。"
   },
   "photosReady": {
     "message": "可以存储到照片"
@@ -119,19 +89,36 @@
   "downloadFailed": {
     "message": "下载失败。再次点击可重试。"
   },
-  "configureService": {
-    "message": "请在扩展弹窗中设置视频服务地址和访问令牌。"
-  },
-  "serviceUnauthorized": {
-    "message": "视频服务拒绝了访问令牌。"
-  },
-  "serviceTimeout": {
-    "message": "视频处理超时。请重试。"
-  },
   "resolveFailed": {
-    "message": "视频服务无法处理此帖子。"
+    "message": "内置视频引擎无法处理此帖子。"
   },
   "nativeUnavailable": {
-    "message": "无法连接 Downloader 原生应用。请启用扩展并重新打开 Safari。"
+    "message": "无法连接 Downloader 原生扩展。请启用扩展并重新打开 Safari。"
+  },
+  "videoEngine": {
+    "message": "内置视频引擎"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp 在本设备的扩展内运行。Instagram 媒体有直接链接时，会从帖子提取并保存。"
+  },
+  "videoEngineReady": {
+    "message": "可以在本设备上处理视频"
+  },
+  "videoEngineUnavailable": {
+    "message": "内置视频引擎不可用。请重新安装或更新 Downloader。"
+  },
+  "invalidVideoResult": {
+    "message": "内置视频引擎返回了无效的媒体列表。"
+  },
+  "unsafeVideoURL": {
+    "message": "内置视频引擎返回了不支持的媒体地址。"
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · 已就绪",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   }
 }

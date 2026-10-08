@@ -15,40 +15,10 @@
     "message": "照片圖庫"
   },
   "checkingStatus": {
-    "message": "正在檢查權限…"
-  },
-  "videoService": {
-    "message": "影片服務"
-  },
-  "serviceExplanation": {
-    "message": "影片由你的 yt-dlp 服務處理。Instagram 圖片直接從貼文擷取。"
-  },
-  "serviceURL": {
-    "message": "服務網址"
-  },
-  "accessToken": {
-    "message": "存取權杖"
-  },
-  "tokenPrivacy": {
-    "message": "權杖儲存在擴充功能設定中，僅傳送給你的影片服務。"
-  },
-  "saveSettings": {
-    "message": "儲存設定"
+    "message": "正在檢查狀態…"
   },
   "footerNote": {
-    "message": "請儲存你有權使用的媒體。下載影片需要本裝置可存取的執行中服務。"
-  },
-  "invalidSettings": {
-    "message": "請輸入 HTTPS 服務網址及存取權杖。HTTP 僅限 localhost。清空兩項即可移除設定。"
-  },
-  "servicePermissionDenied": {
-    "message": "請允許 Safari 存取此服務以處理影片。"
-  },
-  "settingsSaved": {
-    "message": "設定已儲存。"
-  },
-  "settingsSaveFailed": {
-    "message": "無法儲存設定。"
+    "message": "照片和影片會儲存至此裝置的照片圖庫。"
   },
   "photosReady": {
     "message": "可以儲存到照片"
@@ -119,19 +89,36 @@
   "downloadFailed": {
     "message": "下載失敗。再次點選即可重試。"
   },
-  "configureService": {
-    "message": "請在擴充功能彈出視窗中設定影片服務網址及存取權杖。"
-  },
-  "serviceUnauthorized": {
-    "message": "影片服務拒絕了存取權杖。"
-  },
-  "serviceTimeout": {
-    "message": "影片處理逾時。請重試。"
-  },
   "resolveFailed": {
-    "message": "影片服務無法處理此貼文。"
+    "message": "內建影片引擎無法處理此貼文。"
   },
   "nativeUnavailable": {
-    "message": "無法連接 Downloader 原生應用程式。請啟用擴充功能並重新開啟 Safari。"
+    "message": "無法連接 Downloader 原生擴充功能。請啟用擴充功能並重新開啟 Safari。"
+  },
+  "videoEngine": {
+    "message": "內建影片引擎"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp 在此裝置的擴充功能內執行。Instagram 媒體有直接連結時，會從貼文擷取並儲存。"
+  },
+  "videoEngineReady": {
+    "message": "可以在此裝置上處理影片"
+  },
+  "videoEngineUnavailable": {
+    "message": "內建影片引擎無法使用。請重新安裝或更新 Downloader。"
+  },
+  "invalidVideoResult": {
+    "message": "內建影片引擎傳回了無效的媒體清單。"
+  },
+  "unsafeVideoURL": {
+    "message": "內建影片引擎傳回了不支援的媒體網址。"
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · 已就緒",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   }
 }

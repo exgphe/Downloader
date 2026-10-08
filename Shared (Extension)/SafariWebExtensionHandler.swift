@@ -11,7 +11,34 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         }
         if type == "status" {
             reply(["ok": true, "platform": NativePhotoSaver.platform,
-                   "photosAuthorization": NativePhotoSaver.authorizationName], to: context)
+                   "photosAuthorization": NativePhotoSaver.authorizationName,
+                   "videoEngine": EmbeddedVideoResolver.status], to: context)
+            return
+        }
+        if type == "resolvePost" {
+            guard let address = message["postURL"] as? String,
+                  let postURL = NativeMediaRequest.postURL(address) else {
+                reply(["ok": false, "code": "invalidPost", "error": "Provide a supported Instagram or X post URL."], to: context)
+                return
+            }
+            Task {
+                do {
+                    let media = try await EmbeddedVideoResolver.resolve(postURL: postURL)
+                    guard !media.isEmpty, media.count <= 20,
+                          media.allSatisfy({ item in
+                              guard item["kind"] as? String == "video", let address = item["url"] as? String,
+                                    let url = URL(string: address) else { return false }
+                              return MediaURLPolicy().allows(url)
+                          }) else {
+                        throw MediaSaveError(code: "invalidVideoResult", message: "The built-in video engine returned an unsupported media location.")
+                    }
+                    self.reply(["ok": true, "media": media], to: context)
+                } catch let failure as MediaSaveError {
+                    self.reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+                } catch {
+                    self.reply(["ok": false, "code": "videoResolutionFailed", "error": error.localizedDescription], to: context)
+                }
+            }
             return
         }
         guard type == "saveMedia" else {

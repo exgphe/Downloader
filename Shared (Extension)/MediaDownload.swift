@@ -69,11 +69,8 @@ final class MediaDownload: NSObject, URLSessionDownloadDelegate {
             return
         }
         var safeRequest = request
-        // Never preserve URLSession's copied Authorization header on a redirect.
+        // Downloads never attach account credentials to CDN redirects.
         safeRequest.setValue(nil, forHTTPHeaderField: "Authorization")
-        if item.policy.isResolverURL(url), let token = item.policy.service?.token, !token.isEmpty {
-            safeRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
         completionHandler(safeRequest)
     }
 

@@ -15,40 +15,10 @@
     "message": "Photothèque"
   },
   "checkingStatus": {
-    "message": "Vérification de l’accès…"
-  },
-  "videoService": {
-    "message": "Service vidéo"
-  },
-  "serviceExplanation": {
-    "message": "Votre service yt-dlp traite les vidéos. Les photos Instagram sont extraites directement de la publication."
-  },
-  "serviceURL": {
-    "message": "URL du service"
-  },
-  "accessToken": {
-    "message": "Jeton d’accès"
-  },
-  "tokenPrivacy": {
-    "message": "Le jeton reste dans les réglages de l’extension et est envoyé uniquement à votre service."
-  },
-  "saveSettings": {
-    "message": "Enregistrer"
+    "message": "Vérification de l’état…"
   },
   "footerNote": {
-    "message": "Enregistrez les médias que vous êtes autorisé à utiliser. Les vidéos nécessitent un service accessible depuis cet appareil."
-  },
-  "invalidSettings": {
-    "message": "Saisissez une URL HTTPS et son jeton. HTTP est limité à localhost. Effacez les deux champs pour supprimer les réglages."
-  },
-  "servicePermissionDenied": {
-    "message": "Autorisez Safari à accéder au service pour traiter les vidéos."
-  },
-  "settingsSaved": {
-    "message": "Réglages enregistrés."
-  },
-  "settingsSaveFailed": {
-    "message": "Impossible d’enregistrer les réglages."
+    "message": "Les photos et vidéos sont enregistrées dans la photothèque de cet appareil."
   },
   "photosReady": {
     "message": "Prêt à enregistrer"
@@ -119,19 +89,36 @@
   "downloadFailed": {
     "message": "Échec du téléchargement. Touchez à nouveau pour réessayer."
   },
-  "configureService": {
-    "message": "Configurez l’URL et le jeton du service vidéo dans l’extension."
-  },
-  "serviceUnauthorized": {
-    "message": "Le service vidéo a refusé le jeton d’accès."
-  },
-  "serviceTimeout": {
-    "message": "Le traitement vidéo a expiré. Réessayez."
-  },
   "resolveFailed": {
-    "message": "Le service vidéo ne peut pas traiter cette publication."
+    "message": "Le moteur vidéo intégré ne peut pas traiter cette publication."
   },
   "nativeUnavailable": {
-    "message": "L’app Downloader est inaccessible. Activez l’extension puis rouvrez Safari."
+    "message": "Downloader ne peut pas joindre l’extension native. Activez l’extension et rouvrez Safari."
+  },
+  "videoEngine": {
+    "message": "Moteur vidéo intégré"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp fonctionne dans l’extension sur cet appareil. Les médias Instagram sont extraits directement de la publication lorsque leurs liens sont disponibles."
+  },
+  "videoEngineReady": {
+    "message": "Prêt à traiter les vidéos sur cet appareil"
+  },
+  "videoEngineUnavailable": {
+    "message": "Le moteur vidéo intégré est indisponible. Réinstallez ou mettez à jour Downloader."
+  },
+  "invalidVideoResult": {
+    "message": "Le moteur vidéo intégré a renvoyé une liste de médias non valide."
+  },
+  "unsafeVideoURL": {
+    "message": "Le moteur vidéo intégré a renvoyé une URL de média non prise en charge."
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · prêt",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   }
 }

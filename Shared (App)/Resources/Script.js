@@ -5,8 +5,8 @@ const copy = chinese ? {
     destination: "→ 照片", setup: "设置一次，轻点即可保存。", enable: "启用 Safari 扩展",
     enableHint: "开启 Downloader，并允许访问 Instagram 和 X。", settings: "打开设置",
     photos: "允许保存到照片", photosHint: "Downloader 只需要添加图片和视频的权限。",
-    authorize: "允许添加到照片", video: "连接视频服务",
-    videoHint: "在 Safari 工具栏中打开 Downloader，填写 yt-dlp 服务地址和访问令牌。保存图片无需此服务。",
+    authorize: "允许添加到照片", video: "内置视频下载引擎",
+    videoHint: "yt-dlp 已随扩展集成，直接在设备上解析视频。在 Safari 工具栏打开 Downloader 可查看引擎状态。",
     use: "浏览帖子时，点击 Instagram 发送按钮或 X 分享按钮右侧新增的下载按钮，保存帖子的全部媒体。",
     footer: "macOS · iOS · visionOS"
 } : {};

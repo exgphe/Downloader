@@ -4,6 +4,7 @@
     const MAX_ITEMS = 20;
     function parsedURL(value) {
         if (typeof value !== "string" || value.length > 8192) return null;
+        if (value !== value.trim() || /^[A-Za-z][A-Za-z0-9+.-]*:\/\/[^/?#]*@/.test(value)) return null;
         try {
             const url = new URL(value);
             return url.username || url.password ? null : url;
@@ -29,34 +30,11 @@
     }
     function allowedMediaURL(value) {
         const url = parsedURL(value);
-        if (!url || url.protocol !== "https:" || (url.port && url.port !== "443")) return false;
+        if (!url || url.protocol !== "https:" || (url.port && url.port !== "443") || url.href.includes("#")) return false;
         const host = url.hostname.toLowerCase();
         return host === "cdninstagram.com" || host.endsWith(".cdninstagram.com") ||
             host === "fbcdn.net" || host.endsWith(".fbcdn.net") ||
             host === "video.twimg.com" || host === "pbs.twimg.com";
-    }
-    function validateResolverURL(value) {
-        const url = parsedURL(value);
-        if (!url || url.search || url.hash) return null;
-        const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
-        if (url.protocol !== "https:" && !(local && url.protocol === "http:")) return null;
-        if (/[%\\]/.test(url.pathname) || url.pathname.includes("//")) return null;
-        return url.href.replace(/\/+$/, "");
-    }
-    function serviceMediaURL(value, baseURL, jobID) {
-        const base = validateResolverURL(baseURL);
-        if (!base || typeof value !== "string" || typeof jobID !== "string") return null;
-        try {
-            // The service is proxy-prefix-agnostic: /v1/... is relative to its configured base.
-            const url = new URL(value.startsWith(`/v1/jobs/${jobID}/media/`) ? `${base}${value}` : value, `${base}/`);
-            const baseParsed = new URL(base);
-            if (url.origin !== baseParsed.origin || url.username || url.password || url.search || url.hash) return null;
-            const expected = `${baseParsed.pathname.replace(/\/$/, "")}/v1/jobs/${jobID}/media/`;
-            if (!url.pathname.startsWith(expected)) return null;
-            const filename = url.pathname.slice(expected.length);
-            if (!/^[A-Za-z0-9_.-]{1,180}\.mp4$/i.test(filename) || filename.includes("..")) return null;
-            return url.href;
-        } catch { return null; }
     }
     function shortcodeToMediaID(shortcode) {
         if (!/^[A-Za-z0-9_-]{3,32}$/.test(shortcode)) return null;
@@ -80,7 +58,13 @@
     }
     function instagramMetadata(payload, shortcode) {
         const candidates = [];
-        if (payload?.items?.[0]) candidates.push(payload.items[0]);
+        const requestedID = shortcodeToMediaID(shortcode);
+        const matchesPost = node => node && (node.code === shortcode || node.shortcode === shortcode ||
+            [node.id, node.pk].some(value => {
+                if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0) return String(value) === requestedID;
+                return typeof value === "string" && value.split("_")[0] === requestedID;
+            }));
+        if (matchesPost(payload?.items?.[0])) candidates.push(payload.items[0]);
         const stack = [payload];
         let visited = 0;
         while (stack.length && visited++ < 30000) {
@@ -118,13 +102,14 @@
             if (item.url && !allowedMediaURL(item.url)) throw new Error("A media URL is not from an approved media host.");
             return {kind: item.kind, ...(item.url ? {url: item.url} : {}), filename: `${platform}-${index + 1}.${item.kind === "video" ? "mp4" : "jpg"}`};
         });
-        const hasVideo = request.requiresResolver === true || media.some(item => item.kind === "video");
+        const hasVideo = request.requiresVideoResolution === true || media.some(item => item.kind === "video");
         if (!media.length && !hasVideo) throw new Error("No downloadable media found.");
         if (platform === "x" && !hasVideo) throw new Error("This X post has no video.");
         const expectedVideoCount = platform === "instagram" ? media.filter(item => item.kind === "video").length : null;
-        return {platform, postURL, media, hasVideo, expectedVideoCount};
+        const mediaSource = platform === "instagram" && request.mediaSource === "metadata" ? "metadata" : "page";
+        return {platform, postURL, media, mediaSource, hasVideo, expectedVideoCount};
     }
-    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, validateResolverURL, serviceMediaURL, shortcodeToMediaID, instagramMetadata, validatePostRequest};
+    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, shortcodeToMediaID, instagramMetadata, validatePostRequest};
     root.DownloaderCore = core;
     if (typeof module === "object" && module.exports) module.exports = core;
 })(globalThis);

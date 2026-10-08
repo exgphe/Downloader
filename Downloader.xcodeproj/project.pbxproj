@@ -124,6 +124,7 @@
 			explicitFolders = (
 				Resources/_locales,
 				Resources/images,
+				Resources/Python,
 			);
 			path = "Shared (Extension)";
 			sourceTree = "<group>";
@@ -248,6 +249,7 @@
 				010B0F423077C1FE00422D6E /* Frameworks */,
 				010B0F433077C1FE00422D6E /* Resources */,
 				010B0F953077C1FE00422D6E /* Embed Foundation Extensions */,
+				D20000000000000000000001 /* Embed Python Runtime */,
 			);
 			buildRules = (
 			);
@@ -271,6 +273,7 @@
 				010B0F543077C1FE00422D6E /* Frameworks */,
 				010B0F553077C1FE00422D6E /* Resources */,
 				010B0F9F3077C1FE00422D6E /* Embed Foundation Extensions */,
+				D20000000000000000000002 /* Embed Python Runtime */,
 			);
 			buildRules = (
 			);
@@ -332,6 +335,7 @@
 				D1000000000000000000000E /* Frameworks */,
 				D1000000000000000000000F /* Resources */,
 				D10000000000000000000010 /* Embed Foundation Extensions */,
+				D20000000000000000000003 /* Embed Python Runtime */,
 			);
 			buildRules = (
 			);
@@ -447,6 +451,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		D20000000000000000000001 /* Embed Python Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			name = "Embed Python Runtime";
+			shellPath = /bin/sh;
+			shellScript = (
+				"\"$SRCROOT/Scripts/embed_runtime.sh\"",
+				"",
+			);
+		};
+		D20000000000000000000002 /* Embed Python Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			name = "Embed Python Runtime";
+			shellPath = /bin/sh;
+			shellScript = (
+				"\"$SRCROOT/Scripts/embed_runtime.sh\"",
+				"",
+			);
+		};
+		D20000000000000000000003 /* Embed Python Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			name = "Embed Python Runtime";
+			shellPath = /bin/sh;
+			shellScript = (
+				"\"$SRCROOT/Scripts/embed_runtime.sh\"",
+				"",
+			);
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		010B0F413077C1FE00422D6E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -505,6 +542,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -518,6 +563,9 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
 					"-framework",
 					SafariServices,
 				);
@@ -540,6 +588,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -553,6 +609,9 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
 					"-framework",
 					SafariServices,
 				);
@@ -578,10 +637,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -621,10 +680,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -668,6 +727,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -681,6 +744,9 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
 					"-framework",
 					SafariServices,
 				);
@@ -707,6 +773,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -720,6 +790,9 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
 					"-framework",
 					SafariServices,
 				);
@@ -747,9 +820,11 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -790,9 +865,11 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -944,10 +1021,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "visionOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -973,10 +1051,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "visionOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Connect to your configured video service on your local network.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1002,6 +1081,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -1012,6 +1100,11 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
 				SDKROOT = xros;
@@ -1031,6 +1124,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
@@ -1041,6 +1143,11 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
 				SDKROOT = xros;

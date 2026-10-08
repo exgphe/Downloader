@@ -15,40 +15,10 @@
     "message": "Photos library"
   },
   "checkingStatus": {
-    "message": "Checking access…"
-  },
-  "videoService": {
-    "message": "Video service"
-  },
-  "serviceExplanation": {
-    "message": "Videos are processed by your yt-dlp service. Instagram photos are read directly from the post."
-  },
-  "serviceURL": {
-    "message": "Service URL"
-  },
-  "accessToken": {
-    "message": "Access token"
-  },
-  "tokenPrivacy": {
-    "message": "Your token is kept in extension settings and sent only to your video service."
-  },
-  "saveSettings": {
-    "message": "Save settings"
+    "message": "Checking status…"
   },
   "footerNote": {
-    "message": "Use media you have permission to save. Videos require a running service reachable from this device."
-  },
-  "invalidSettings": {
-    "message": "Enter an HTTPS service URL and its access token. HTTP is allowed only on localhost. Clear both fields to remove settings."
-  },
-  "servicePermissionDenied": {
-    "message": "Allow Safari access to this service to process videos."
-  },
-  "settingsSaved": {
-    "message": "Settings saved."
-  },
-  "settingsSaveFailed": {
-    "message": "Could not save settings."
+    "message": "Photos and videos are saved to this device’s Photos library."
   },
   "photosReady": {
     "message": "Ready to save"
@@ -119,19 +89,36 @@
   "downloadFailed": {
     "message": "Download failed. Tap again to retry."
   },
-  "configureService": {
-    "message": "Set the video service URL and access token in the extension popup."
-  },
-  "serviceUnauthorized": {
-    "message": "The video service rejected the access token."
-  },
-  "serviceTimeout": {
-    "message": "Video processing timed out. Try again."
-  },
   "resolveFailed": {
-    "message": "The video service could not process this post."
+    "message": "The built-in video engine could not process this post."
   },
   "nativeUnavailable": {
-    "message": "Downloader could not reach the native app. Enable the extension and reopen Safari."
+    "message": "Downloader could not reach the native extension. Enable the extension and reopen Safari."
+  },
+  "videoEngine": {
+    "message": "Built-in video engine"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp runs inside the extension on this device. Instagram media is read directly from the post when available."
+  },
+  "videoEngineReady": {
+    "message": "Ready to process videos on this device"
+  },
+  "videoEngineUnavailable": {
+    "message": "The built-in video engine is unavailable. Reinstall or update Downloader."
+  },
+  "invalidVideoResult": {
+    "message": "The built-in video engine returned an invalid media list."
+  },
+  "unsafeVideoURL": {
+    "message": "The built-in video engine returned an unsupported media URL."
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · ready",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
   }
 }
