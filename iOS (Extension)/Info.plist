@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>DownloaderKeychainAccessGroup</key>
+    <string>$(AppIdentifierPrefix)wang.xiaolin.Downloader.instagram-session</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save the Instagram and X media you download to Photos.</string>
 	<key>NSExtension</key>

@@ -9,6 +9,8 @@ xcuserdata/
 node_modules/
 Dependencies/Python/
 Dependencies/PythonPackages/
+Dependencies/FFmpeg/
+Dependencies/FFmpegBuild/
 Dependencies/archives/
 Dependencies/.downloads/
 Dependencies/.runtime-lock-installed.json

@@ -1,20 +1,32 @@
 :root { color-scheme: light dark; font: 13px/1.5 -apple-system, BlinkMacSystemFont, sans-serif; color: #252832; background: #f7f8fb; }
 * { box-sizing: border-box; }
-body { width: 350px; max-width: 100vw; margin: 0; padding: 22px; }
+/* Safari sizes its popover from the root element. A viewport-dependent body
+   width can keep the first measurement at Safari's narrow default. */
+html { width: 350px; min-width: 350px; }
+body { width: 350px; max-height: 600px; overflow-y: auto; margin: 0; padding: 22px; overflow-wrap: break-word; }
 header { display: flex; align-items: center; gap: 12px; }
-.mark { display: grid; place-items: center; width: 43px; height: 43px; border-radius: 13px; background: #1667df; color: white; }
-.mark svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mark { flex: 0 0 43px; width: 43px; height: 43px; }
+.mark img { display: block; width: 43px; height: 43px; }
 h1 { margin: 0; font-size: 19px; letter-spacing: -.35px; font-weight: 650; }
 h2 { margin: 0; font-size: 13px; font-weight: 650; }
 p { margin: 0; }
 .subtitle { color: #7a7f8b; font-size: 11px; margin-top: 1px; }
 .intro { margin-top: 17px; color: #5c6371; }
 .status-card { display: flex; align-items: center; gap: 10px; margin: 14px 0; padding: 12px; border: 1px solid #e3e7ee; border-radius: 12px; background: #fff; }
+.status-card > div:last-child { min-width: 0; }
 .status-dot { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: #99a0ac; }
 .status-dot[data-status="ready"] { background: #329d68; }
 .status-dot[data-status="blocked"] { background: #d86552; }
 #photos-status, #video-status { font-size: 11px; color: #787f8b; margin-top: 2px; overflow-wrap: anywhere; }
 .description { color: #717987; font-size: 12px; margin: 5px 0 13px; }
+.session-card { padding-top: 13px; border-top: 1px solid #e3e7ee; }
+.session-note, #instagram-status { color: #717987; font-size: 11px; margin-top: 6px; }
+.session-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.session-actions button { border: 0; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 11px; cursor: pointer; }
+#sync-instagram { background: #1667df; color: #fff; }
+#forget-instagram { background: #e6eaf1; color: inherit; }
+.session-actions button:disabled { opacity: .6; cursor: wait; }
+#instagram-error { color: #bd4939; font-size: 11px; margin-top: 6px; }
 footer { border-top: 1px solid #e3e7ee; padding-top: 11px; margin-top: 8px; color: #9198a3; font-size: 10px; }
 @media (prefers-color-scheme: dark) {
   :root { background: #17191f; color: #e7eaf0; }
@@ -22,4 +34,8 @@ footer { border-top: 1px solid #e3e7ee; padding-top: 11px; margin-top: 8px; colo
   .status-card { background: #22252d; border-color: #333743; }
   footer { border-color: #333743; }
   #photos-status, #video-status, footer { color: #939aa9; }
+  .session-card { border-color: #333743; }
+  .session-note, #instagram-status { color: #a4aab6; }
+  #forget-instagram { background: #333743; }
+  #instagram-error { color: #f39c8c; }
 }

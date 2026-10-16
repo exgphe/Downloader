@@ -15,6 +15,26 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                    "videoEngine": EmbeddedVideoResolver.status], to: context)
             return
         }
+        if ["instagramSession", "importInstagramSession", "clearInstagramSession"].contains(type) {
+            do {
+                let status: InstagramSessionStatus
+                if type == "importInstagramSession" {
+                    guard let cookies = message["cookies"] as? [Any] else {
+                        throw InstagramSessionValidation.invalid
+                    }
+                    status = try InstagramSessionStore.importCookies(cookies)
+                } else {
+                    if type == "clearInstagramSession" { try InstagramSessionStore.clear() }
+                    status = InstagramSessionStore.status()
+                }
+                reply(["ok": true, "instagramSession": status.nativeMessage], to: context)
+            } catch let failure as MediaSaveError {
+                reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+            } catch {
+                reply(["ok": false, "code": "instagramSessionUnavailable", "error": "The Instagram session could not be synced. Try again from the Downloader extension."], to: context)
+            }
+            return
+        }
         if type == "resolvePost" {
             guard let address = message["postURL"] as? String,
                   let postURL = NativeMediaRequest.postURL(address) else {

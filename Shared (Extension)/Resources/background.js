@@ -1,6 +1,7 @@
 import "./media-core.js";
 import "./download-engine.js";
 import "./video-resolver.js";
+import "./instagram-session.js";
 
 const core = globalThis.DownloaderCore;
 const NATIVE_APP = "wang.xiaolin.Downloader";
@@ -40,8 +41,18 @@ browser.storage.local.get(null).then(async entries => {
 }).catch(() => {});
 
 browser.runtime.onMessage.addListener(async (request, sender) => {
+    if (["importInstagramSession", "instagramSession", "clearInstagramSession"].includes(request?.type)) {
+        if (!globalThis.DownloaderInstagramSession.isPopupSender(sender, path => browser.runtime.getURL(path))) {
+            return {ok: false, code: "unauthorized", error: "Unauthorized request."};
+        }
+        try { return await sendNative(globalThis.DownloaderInstagramSession.nativeRequest(request)); }
+        catch (error) {
+            const code = ["instagramSessionMissing", "invalidInstagramSession"].includes(error.message) ? error.message : "instagramSessionFailed";
+            return {ok: false, code, error: localize(code, "Could not sync Instagram login. Sign in to Instagram in Safari, allow website access, and try again.")};
+        }
+    }
     if (request?.type === "nativeStatus") {
-        if (sender.tab || !sender.url?.startsWith(browser.runtime.getURL(""))) return {ok: false, error: "Unauthorized request."};
+        if (!globalThis.DownloaderInstagramSession.isPopupSender(sender, path => browser.runtime.getURL(path))) return {ok: false, error: "Unauthorized request."};
         try { return await sendNative({type: "status"}); }
         catch (error) { return {ok: false, error: error.message}; }
     }

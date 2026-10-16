@@ -120,5 +120,38 @@
         "content": "$1"
       }
     }
+  },
+  "instagramLogin": {
+    "message": "Connexion Instagram"
+  },
+  "instagramSessionNote": {
+    "message": "Pour les téléchargements Instagram sur cet appareil. Connectez-vous dans votre profil Safari actuel, autorisez Downloader sur Instagram, puis synchronisez. La navigation privée et les autres profils ne sont pas inclus automatiquement."
+  },
+  "instagramSessionReady": {
+    "message": "Connexion synchronisée sur cet appareil"
+  },
+  "instagramSessionNotSynced": {
+    "message": "Connexion non synchronisée"
+  },
+  "syncInstagramSession": {
+    "message": "Synchroniser la connexion"
+  },
+  "forgetInstagramSession": {
+    "message": "Effacer la connexion"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "Safari 18 ou ultérieur est requis. Autorisez Downloader sur Instagram dans Safari, puis réessayez."
+  },
+  "instagramSessionMissing": {
+    "message": "Connectez-vous à instagram.com dans votre profil Safari actuel, autorisez Downloader sur ce site, puis synchronisez à nouveau."
+  },
+  "invalidInstagramSession": {
+    "message": "Cette connexion ne peut pas être synchronisée de façon sûre. Connectez-vous à Instagram dans Safari, puis réessayez."
+  },
+  "instagramSessionFailed": {
+    "message": "Impossible de synchroniser la connexion Instagram. Activez Downloader dans Safari, puis réessayez."
+  },
+  "instagramSessionUnavailable": {
+    "message": "Connexion synchronisée indisponible"
   }
 }

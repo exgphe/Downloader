@@ -5,7 +5,10 @@
   "description": "__MSG_extension_description__",
   "version": "1.0.0",
   "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
     "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
     "96": "images/icon-96.png",
     "128": "images/icon-128.png",
     "256": "images/icon-256.png",
@@ -18,8 +21,8 @@
     "matches": ["https://instagram.com/*", "https://www.instagram.com/*", "https://x.com/*", "https://www.x.com/*", "https://twitter.com/*", "https://www.twitter.com/*"],
     "run_at": "document_idle"
   }],
-  "action": {"default_popup": "popup.html", "default_icon": "images/toolbar-icon.svg", "default_title": "Downloader"},
-  "permissions": ["storage", "nativeMessaging"],
+  "action": {"default_popup": "popup.html", "default_icon": "images/download-toolbar.svg", "default_title": "Downloader"},
+  "permissions": ["storage", "nativeMessaging", "cookies"],
   "host_permissions": ["https://instagram.com/*", "https://www.instagram.com/*", "https://x.com/*", "https://www.x.com/*", "https://twitter.com/*", "https://www.twitter.com/*"],
   "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'none'"}
 }

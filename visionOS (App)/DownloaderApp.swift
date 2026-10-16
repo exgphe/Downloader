@@ -4,14 +4,11 @@ import SwiftUI
 struct DownloaderApp: App {
     var body: some Scene {
         WindowGroup {
-            SetupView()
-                .frame(minWidth: 500, idealWidth: 620, minHeight: 650, idealHeight: 780)
+            DownloadView()
+                .frame(minWidth: 500, idealWidth: 620, minHeight: 600, idealHeight: 740)
+                .task { await DownloadCenter.shared.start() }
+                .onOpenURL { DownloadIncomingURL.handle($0) }
         }
-        .defaultSize(width: 620, height: 780)
+        .defaultSize(width: 620, height: 740)
     }
-}
-
-private struct SetupView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> ViewController { ViewController() }
-    func updateUIViewController(_ uiViewController: ViewController, context: Context) {}
 }

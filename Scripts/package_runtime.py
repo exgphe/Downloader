@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = []
 # ///
-"""Package already bootstrapped Python into a containing app and its Safari extension.
+"""Package Python for a containing app and all its native extensions.
 
 Called after Embed PlugIns by the app target. This script never accesses the network.
 """
@@ -28,6 +28,64 @@ PLATFORMS = {
     "xrsimulator": ("visionOS", "xros", "simulator"),
 }
 EXCLUDED = {"__pycache__", "test", "tests", "idlelib", "turtledemo", "ensurepip", "site-packages"}
+BOOTSTRAP_DIRECTORY = "python-bootstrap"
+BOOTSTRAP_SCRIPTS = ("downloader_resolver.py", "app_resolver.py", "apple_jsc_provider.py")
+
+
+def required_runtime_files(abi: str) -> tuple[str, ...]:
+    return (
+        f"python/lib/python{abi}/encodings/__init__.py",
+        f"python/lib/python{abi}/ssl.py",
+        "python-packages/yt_dlp/__init__.py",
+        "python-packages/gallery_dl/__init__.py",
+        "python-packages/certifi/__init__.py",
+        "python-packages/certifi/cacert.pem",
+        "python-packages/requests/__init__.py",
+        "python-packages/urllib3/__init__.py",
+        "python-packages/idna/__init__.py",
+        "python-packages/charset_normalizer/__init__.py",
+        "python-packages/yt_dlp_ejs/__init__.py",
+        "python-packages/yt_dlp_ejs/yt/solver/core.min.js",
+        "python-packages/yt_dlp_ejs/yt/solver/lib.min.js",
+        *(f"{BOOTSTRAP_DIRECTORY}/{name}" for name in BOOTSTRAP_SCRIPTS),
+        "python-runtime.json",
+    )
+
+
+def require_exact_file(root: Path, relative: str) -> Path:
+    """Check directory entries, even when the build volume ignores case.
+
+    Path.exists() on a standard macOS volume accepts Python/ for python/; the
+    resulting bundle will fail when copied to a case-sensitive iPhone volume.
+    """
+    current = root
+    for part in Path(relative).parts:
+        if not current.is_dir():
+            raise FileNotFoundError(f"Runtime preflight failed in {root}: missing {relative}")
+        entries = {entry.name for entry in current.iterdir()}
+        if part not in entries:
+            aliases = sorted(name for name in entries if name.casefold() == part.casefold())
+            detail = f"; found different case: {', '.join(aliases)}" if aliases else ""
+            raise FileNotFoundError(f"Runtime preflight failed in {root}: missing exact path {relative} "
+                                    f"(expected {part}{detail})")
+        current /= part
+    if not current.is_file():
+        raise FileNotFoundError(f"Runtime preflight failed in {root}: expected file {relative}")
+    return current
+
+
+def validate_runtime(resources: Path, abi: str) -> None:
+    for relative in required_runtime_files(abi):
+        require_exact_file(resources, relative)
+
+
+def remove_legacy_bootstrap(resources: Path) -> None:
+    # Xcode may still have copied the old source folder as Python/. Remove it
+    # before creating python/; checking the actual spelling protects the new
+    # standard library on case-insensitive build volumes.
+    for child in resources.iterdir():
+        if child.name == "Python" and child.is_dir():
+            shutil.rmtree(child)
 
 
 def run(*command: str) -> str:
@@ -155,13 +213,13 @@ def package(args: argparse.Namespace) -> None:
         raise ValueError(f"Containing app must already exist after Embed PlugIns: {app}")
     contents = app / "Contents" if family == "macOS" else app
     extensions = sorted((contents / "PlugIns").glob("*.appex"))
-    if len(extensions) != 1:
-        raise ValueError(f"Expected one Safari extension in {contents / 'PlugIns'}, found {len(extensions)}")
-    extension = extensions[0]
-    resources = extension / "Contents/Resources" if family == "macOS" else extension
-    info_path = extension / "Contents/Info.plist" if family == "macOS" else extension / "Info.plist"
+    if not extensions:
+        raise ValueError(f"Expected embedded extensions in {contents / 'PlugIns'}")
+    resources = contents / "Resources" if family == "macOS" else app
+    resources.mkdir(parents=True, exist_ok=True)
+    info_path = contents / "Info.plist"
     info = plistlib.loads(info_path.read_bytes())
-    executable = extension / "Contents/MacOS" / info["CFBundleExecutable"] if family == "macOS" else extension / info["CFBundleExecutable"]
+    executable = contents / "MacOS" / info["CFBundleExecutable"] if family == "macOS" else app / info["CFBundleExecutable"]
     if os.environ.get("CODE_SIGNING_ALLOWED") == "YES":
         identity = os.environ.get("EXPANDED_CODE_SIGN_IDENTITY")
         if not identity:
@@ -186,6 +244,7 @@ def package(args: argparse.Namespace) -> None:
                 shutil.move(str(root_modules), str(version_modules))
         if not root_modules.exists():
             root_modules.symlink_to("Versions/Current/Modules", target_is_directory=True)
+    remove_legacy_bootstrap(resources)
     python_home = resources / "python"
     if python_home.exists():
         shutil.rmtree(python_home)
@@ -220,11 +279,10 @@ def package(args: argparse.Namespace) -> None:
                         temporary.unlink(missing_ok=True)
     packages = resources / "python-packages"
     copy_tree(args.dependencies / "PythonPackages", packages, fresh=True)
-    bootstrap_source = ROOT / "Shared (Extension)/Resources/Python/downloader_resolver.py"
-    if not bootstrap_source.is_file():
-        raise FileNotFoundError(f"Missing Python resolver source: {bootstrap_source}")
-    (resources / "Python").mkdir(exist_ok=True)
-    shutil.copy2(bootstrap_source, resources / "Python/downloader_resolver.py")
+    bootstrap_source = ROOT / "Shared (Extension)/Resources/Python"
+    for name in BOOTSTRAP_SCRIPTS:
+        require_exact_file(bootstrap_source, name)
+    copy_tree(bootstrap_source, resources / BOOTSTRAP_DIRECTORY, fresh=True)
     generated = [embedded_framework]
     dynamic_modules = list(stdlib.glob("lib-dynload/*.so")) + list(packages.rglob("*.so"))
     if family == "macOS":
@@ -247,20 +305,55 @@ def package(args: argparse.Namespace) -> None:
     sign(embedded_framework, identity)
     versions = {"pythonVersion": lock["python"]["version"],
                 "ytDlpVersion": next(entry["version"] for entry in lock["packages"] if entry["name"] == "yt-dlp"),
+                "galleryDlVersion": next((entry["version"] for entry in lock["packages"] if entry["name"] == "gallery-dl"), None),
+                "bootstrapDirectory": BOOTSTRAP_DIRECTORY,
                 "slice": slice_info["LibraryIdentifier"],
                 "frameworks": [str(path.relative_to(app)) for path in generated]}
     (resources / "python-runtime.json").write_text(json.dumps(versions, indent=2) + "\n")
-    if executable.is_file():
+    ffmpeg_prefix = {"macosx": "macos", "iphoneos": "ios", "iphonesimulator": "ios-simulator",
+                     "xros": "xros", "xrsimulator": "xros-simulator"}[args.platform]
+    license_source = args.dependencies / "FFmpeg" / f"{ffmpeg_prefix}-{args.architectures[0]}" / "COPYING.LGPLv2.1"
+    if license_source.is_file():
+        licenses = resources / "Licenses"
+        licenses.mkdir(exist_ok=True)
+        shutil.copy2(license_source, licenses / "FFmpeg-LGPL-2.1.txt")
+    validate_runtime(resources, abi)
+    # Only native frameworks are shared. Each process has its own Python home
+    # and bootstrap resources, so Bundle.main works without cross-sandbox reads.
+    # Mobile .origin paths are identical (python/...) in every consumer; .fwork
+    # pointers differ because extension executables live below PlugIns.
+    for extension in extensions:
+        extension_contents = extension / "Contents" if family == "macOS" else extension
+        extension_resources = extension_contents / "Resources" if family == "macOS" else extension
+        extension_resources.mkdir(parents=True, exist_ok=True)
+        extension_info = plistlib.loads((extension_contents / "Info.plist").read_bytes())
+        extension_executable = (extension_contents / "MacOS" / extension_info["CFBundleExecutable"]
+                                if family == "macOS" else extension / extension_info["CFBundleExecutable"])
+        remove_legacy_bootstrap(extension_resources)
+        for name in ("python", "python-packages", BOOTSTRAP_DIRECTORY):
+            copy_tree(resources / name, extension_resources / name, fresh=True)
+        shutil.copy2(resources / "python-runtime.json", extension_resources / "python-runtime.json")
+        if license_source.is_file():
+            (extension_resources / "Licenses").mkdir(exist_ok=True)
+            shutil.copy2(license_source, extension_resources / "Licenses/FFmpeg-LGPL-2.1.txt")
+        if family != "macOS":
+            for name in ("python", "python-packages"):
+                for marker in (extension_resources / name).rglob("*.fwork"):
+                    binary = (executable.parent / marker.read_text().strip()).resolve()
+                    marker.write_text(os.path.relpath(binary, extension_executable.parent) + "\n")
+        validate_runtime(extension_resources, abi)
+        if not extension_executable.is_file() and identity and os.environ.get("CODE_SIGNING_ALLOWED") == "YES":
+            raise FileNotFoundError(f"Extension executable is missing: {extension_executable}")
         # ENABLE_DEBUG_DYLIB produces native sibling libraries even when the
         # outer extension target was built with CODE_SIGNING_ALLOWED=NO.
-        for native_library in executable.parent.glob("*.dylib"):
+        for native_library in extension_executable.parent.glob("*.dylib"):
             if not native_library.is_symlink():
                 sign(native_library, identity, preserve=True)
-        sign(extension, identity, preserve=True)
-    elif identity and os.environ.get("CODE_SIGNING_ALLOWED") == "YES":
-        raise FileNotFoundError(f"Extension executable is missing: {executable}")
+        if extension_executable.is_file():
+            sign(extension, identity, preserve=True)
     print(f"Packaged Python {versions['pythonVersion']} + yt-dlp {versions['ytDlpVersion']} "
-          f"for {args.platform} ({slice_info['LibraryIdentifier']}); {len(dynamic_modules)} native modules.")
+          f"for {args.platform} ({slice_info['LibraryIdentifier']}); {len(dynamic_modules)} native modules, "
+          f"{len(extensions) + 1} consumers.")
 
 
 def main() -> None:

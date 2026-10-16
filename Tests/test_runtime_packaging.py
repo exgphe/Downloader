@@ -27,6 +27,21 @@ packaging = script("package_runtime")
 bootstrap = script("bootstrap_runtime")
 
 
+def runtime_inputs(stdlib: Path, packages: Path) -> None:
+    for relative in ("encodings/__init__.py", "ssl.py"):
+        destination = stdlib / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"stdlib fixture")
+    for relative in (
+        "yt_dlp/__init__.py", "gallery_dl/__init__.py", "certifi/__init__.py", "certifi/cacert.pem",
+        "requests/__init__.py", "urllib3/__init__.py", "idna/__init__.py", "charset_normalizer/__init__.py",
+        "yt_dlp_ejs/__init__.py", "yt_dlp_ejs/yt/solver/core.min.js", "yt_dlp_ejs/yt/solver/lib.min.js",
+    ):
+        destination = packages / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"package fixture")
+
+
 class RuntimePackagingTests(unittest.TestCase):
     def test_xcode_signed_build_uses_parent_certificate_for_every_embedded_binary(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -44,7 +59,7 @@ class RuntimePackagingTests(unittest.TestCase):
                 "LibraryIdentifier": "macos-universal", "LibraryPath": "Python.framework",
                 "SupportedPlatform": "macos", "SupportedArchitectures": ["arm64"],
             }]}))
-            (dependencies / "PythonPackages").mkdir()
+            runtime_inputs(stdlib.parent, dependencies / "PythonPackages")
             app = root / "Downloader.app"
             extension = app / "Contents/PlugIns/Downloader.appex/Contents"
             (extension / "Resources").mkdir(parents=True)
@@ -54,6 +69,16 @@ class RuntimePackagingTests(unittest.TestCase):
             (extension / "Info.plist").write_bytes(plistlib.dumps({
                 "CFBundleIdentifier": "test.downloader.extension", "CFBundleExecutable": "Downloader",
             }))
+            (app / "Contents/Info.plist").write_bytes(plistlib.dumps({
+                "CFBundleIdentifier": "test.downloader", "CFBundleExecutable": "Downloader",
+            }))
+            share = app / "Contents/PlugIns/Share.appex/Contents"
+            (share / "Resources").mkdir(parents=True)
+            (share / "MacOS").mkdir()
+            (share / "MacOS/Share").write_bytes(b"share executable fixture")
+            (share / "Info.plist").write_bytes(plistlib.dumps({
+                "CFBundleIdentifier": "test.downloader.share", "CFBundleExecutable": "Share",
+            }))
             args = argparse.Namespace(platform="macosx", dependencies=dependencies, architectures=["arm64"],
                                       inspect=False, bundle=app)
             certificate = "0123456789ABCDEF0123456789ABCDEF01234567"
@@ -62,10 +87,14 @@ class RuntimePackagingTests(unittest.TestCase):
                     patch.object(packaging, "thin"), patch.object(packaging, "run") as commands:
                 packaging.package(args)
             signatures = [call.args for call in commands.call_args_list if call.args[0] == "/usr/bin/codesign"]
-            self.assertEqual(len(signatures), 5)
+            self.assertEqual(len(signatures), 6)
             self.assertTrue(all(command[command.index("--sign") + 1] == certificate for command in signatures))
-            self.assertEqual(Path(signatures[-1][-1]), extension.parent.resolve())
+            self.assertEqual(Path(signatures[-1][-1]), share.parent.resolve())
             self.assertIn("--preserve-metadata=identifier,entitlements,flags", signatures[-1])
+            for resources in (app / "Contents/Resources", extension / "Resources", share / "Resources"):
+                for name in ("downloader_resolver.py", "app_resolver.py", "apple_jsc_provider.py"):
+                    packaging.require_exact_file(resources, "python-bootstrap/" + name)
+                packaging.require_exact_file(resources, "python/lib/python3.13/encodings/__init__.py")
             environment["CODE_SIGNING_ALLOWED"] = "NO"
             with patch.dict(packaging.os.environ, environment, clear=True), \
                     patch.object(packaging, "thin"), patch.object(packaging, "run") as commands:
@@ -73,6 +102,13 @@ class RuntimePackagingTests(unittest.TestCase):
             signatures = [call.args for call in commands.call_args_list if call.args[0] == "/usr/bin/codesign"]
             self.assertTrue(signatures)
             self.assertTrue(all(command[command.index("--sign") + 1] == "-" for command in signatures))
+            # A stale complete output must not hide an incomplete input on an
+            # incremental build. Missing gallery-dl must stop packaging.
+            (dependencies / "PythonPackages/gallery_dl/__init__.py").unlink()
+            with patch.dict(packaging.os.environ, environment, clear=True), \
+                    patch.object(packaging, "thin"), patch.object(packaging, "run"):
+                with self.assertRaisesRegex(FileNotFoundError, "gallery_dl/__init__.py"):
+                    packaging.package(args)
             with patch.dict(packaging.os.environ, {"CODE_SIGNING_ALLOWED": "YES"}, clear=True), \
                     patch.object(packaging, "run") as commands:
                 with self.assertRaisesRegex(ValueError, "EXPANDED_CODE_SIGN_IDENTITY is empty"):
@@ -150,6 +186,101 @@ class RuntimePackagingTests(unittest.TestCase):
             with patch.object(bootstrap.urllib.request, "urlopen", side_effect=AssertionError("No network")):
                 with self.assertRaises(FileNotFoundError):
                     bootstrap.archive({"filename": "missing.whl"}, cache, True)
+
+    def test_app_and_two_extensions_share_mobile_frameworks_with_correct_loader_paths(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            dependencies = root / "Dependencies"
+            xcframework = dependencies / "Python/iOS/Python.xcframework"
+            slice_path = xcframework / "ios-arm64"
+            framework = slice_path / "Python.framework"
+            framework.mkdir(parents=True)
+            (framework / "Python").write_bytes(b"interpreter fixture")
+            (xcframework / "Info.plist").write_bytes(plistlib.dumps({"AvailableLibraries": [{
+                "LibraryIdentifier": "ios-arm64", "LibraryPath": "Python.framework",
+                "SupportedPlatform": "ios", "SupportedArchitectures": ["arm64"],
+            }]}))
+            (xcframework / "build").mkdir()
+            (xcframework / "build/iOS-dylib-Info-template.plist").write_bytes(plistlib.dumps({
+                "CFBundlePackageType": "FMWK",
+            }))
+            stdlib = slice_path / "lib-arm64/python3.13/lib-dynload"
+            stdlib.mkdir(parents=True)
+            (stdlib / "_ssl.cpython-313-iphoneos.so").write_bytes(b"native fixture")
+            runtime_inputs(stdlib.parent, dependencies / "PythonPackages")
+            license_source = dependencies / "FFmpeg/ios-arm64/COPYING.LGPLv2.1"
+            license_source.parent.mkdir(parents=True)
+            license_source.write_text("LGPL fixture")
+            app = root / "Downloader.app"
+            consumers = [app, app / "PlugIns/Safari.appex", app / "PlugIns/Share.appex"]
+            for index, consumer in enumerate(consumers):
+                consumer.mkdir(parents=True, exist_ok=True)
+                (consumer / "Info.plist").write_bytes(plistlib.dumps({
+                    "CFBundleIdentifier": "test.downloader" if index == 0 else f"test.downloader.extension{index}",
+                    "CFBundleExecutable": "Downloader",
+                }))
+                (consumer / "Downloader").write_bytes(b"executable fixture")
+                # Reproduce Xcode copying the old capitalized bootstrap folder
+                # before the build phase runs on a case-insensitive Mac volume.
+                (consumer / "Python").mkdir()
+                (consumer / "Python/old-bootstrap.py").write_bytes(b"old bootstrap fixture")
+            args = argparse.Namespace(platform="iphoneos", dependencies=dependencies, architectures=["arm64"],
+                                      inspect=False, bundle=app)
+            with patch.dict(packaging.os.environ, {"CODE_SIGNING_ALLOWED": "NO"}, clear=True), \
+                    patch.object(packaging, "thin"), patch.object(packaging, "run"):
+                packaging.package(args)
+            binary = app / "Frameworks/_ssl.framework/_ssl"
+            self.assertTrue(binary.is_file())
+            metadata = plistlib.loads((binary.parent / "Info.plist").read_bytes())
+            self.assertEqual(metadata["CFBundleIdentifier"], "test.downloader.python.-ssl")
+            self.assertEqual(len(list((app / "Frameworks").glob("_ssl.framework"))), 1)
+            for index, consumer in enumerate(consumers):
+                marker = next((consumer / "python").rglob("*.fwork"))
+                pointer = marker.read_text().strip()
+                self.assertTrue(pointer.startswith("Frameworks/" if index == 0 else "../../Frameworks/"))
+                self.assertEqual((consumer / pointer).resolve(), binary.resolve())
+                origin = binary.with_name("_ssl.origin").read_text().strip()
+                self.assertEqual((consumer / origin).resolve(), marker.resolve())
+                self.assertFalse(list((consumer / "python").rglob("*.so")))
+                names = {child.name for child in consumer.iterdir()}
+                self.assertIn("python", names)
+                self.assertIn("python-bootstrap", names)
+                self.assertNotIn("Python", names)
+                packaging.require_exact_file(consumer, "python-bootstrap/app_resolver.py")
+                packaging.require_exact_file(consumer, "python-bootstrap/apple_jsc_provider.py")
+                packaging.validate_runtime(consumer, "3.13")
+                self.assertEqual((consumer / "Licenses/FFmpeg-LGPL-2.1.txt").read_text(), "LGPL fixture")
+                if index:
+                    self.assertFalse((consumer / "Frameworks").exists())
+
+    def test_runtime_preflight_checks_real_spelling_at_every_path_level(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            resources = Path(temporary)
+            runtime_inputs(resources / "python/lib/python3.13", resources / "python-packages")
+            (resources / "python-bootstrap").mkdir()
+            for name in packaging.BOOTSTRAP_SCRIPTS:
+                (resources / "python-bootstrap" / name).write_bytes(b"script fixture")
+            (resources / "python-runtime.json").write_text("{}")
+            packaging.validate_runtime(resources, "3.13")
+            # These renames remain accessible via the old spelling on normal
+            # macOS disks. The explicit directory-entry check must reject them
+            # before the bundle can be installed on an iPhone.
+            for relative, wrong_name in (
+                ("python", "Python"),
+                ("python-bootstrap", "Python-Bootstrap"),
+                ("python/lib/python3.13/encodings", "Encodings"),
+                ("python-packages/yt_dlp/__init__.py", "__Init__.py"),
+            ):
+                with self.subTest(relative=relative):
+                    original = resources / relative
+                    renamed = original.with_name(wrong_name)
+                    original.rename(renamed)
+                    with self.assertRaisesRegex(FileNotFoundError, "different case"):
+                        packaging.validate_runtime(resources, "3.13")
+                    renamed.rename(original)
+            (resources / "python-bootstrap/apple_jsc_provider.py").unlink()
+            with self.assertRaisesRegex(FileNotFoundError, "apple_jsc_provider.py"):
+                packaging.validate_runtime(resources, "3.13")
 
     def test_wheel_extraction_cannot_escape_staging_directory(self):
         with tempfile.TemporaryDirectory() as temporary:

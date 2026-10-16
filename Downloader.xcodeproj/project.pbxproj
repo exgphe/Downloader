@@ -10,6 +10,9 @@
 		010B0F633077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 010B0F623077C1FE00422D6E /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		010B0F6D3077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D10000000000000000000014 /* Downloader Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D10000000000000000000004 /* Downloader Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D3100000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D31000000000000000000002 /* Downloader Share.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D3200000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D32000000000000000000002 /* Downloader Share.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D3300000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D33000000000000000000002 /* Downloader Share.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +37,27 @@
 			remoteGlobalIDString = D10000000000000000000002;
 			remoteInfo = "Downloader Extension (visionOS)";
 		};
+		D3100000000000000000000B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 010B0F293077C1FD00422D6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D31000000000000000000001;
+			remoteInfo = "Downloader Share (iOS)";
+		};
+		D3200000000000000000000B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 010B0F293077C1FD00422D6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D32000000000000000000001;
+			remoteInfo = "Downloader Share (macOS)";
+		};
+		D3300000000000000000000B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 010B0F293077C1FD00422D6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D33000000000000000000001;
+			remoteInfo = "Downloader Share (visionOS)";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +67,7 @@
 			dstSubfolder = PlugIns;
 			files = (
 				010B0F633077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */,
+				D3100000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
@@ -52,6 +77,7 @@
 			dstSubfolder = PlugIns;
 			files = (
 				010B0F6D3077C1FE00422D6E /* Downloader Extension.appex in Embed Foundation Extensions */,
+				D3200000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
@@ -61,6 +87,7 @@
 			dstSubfolder = PlugIns;
 			files = (
 				D10000000000000000000014 /* Downloader Extension.appex in Embed Foundation Extensions */,
+				D3300000000000000000000A /* Downloader Share.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 		};
@@ -73,6 +100,9 @@
 		010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D10000000000000000000003 /* Downloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Downloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D10000000000000000000004 /* Downloader Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D31000000000000000000002 /* Downloader Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Share.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D32000000000000000000002 /* Downloader Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Share.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D33000000000000000000002 /* Downloader Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Downloader Share.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -111,11 +141,49 @@
 			);
 			target = D10000000000000000000002 /* Downloader Extension (visionOS) */;
 		};
+		D10000000000000000000019 /* Exceptions for "Shared (App)" folder in "Downloader (visionOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppIcon.icon,
+			);
+			target = D10000000000000000000001 /* Downloader (visionOS) */;
+		};
+		D30000000000000000000003 /* Exceptions for "macOS (App)" folder in "Downloader (macOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 010B0F563077C1FE00422D6E /* Downloader (macOS) */;
+		};
+		D31000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (iOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D31000000000000000000001 /* Downloader Share (iOS) */;
+		};
+		D32000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (macOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D32000000000000000000001 /* Downloader Share (macOS) */;
+		};
+		D33000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (visionOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D33000000000000000000001 /* Downloader Share (visionOS) */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		010B0F2D3077C1FD00422D6E /* Shared (App) */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D10000000000000000000019 /* Exceptions for "Shared (App)" folder in "Downloader (visionOS)" target */,
+			);
 			path = "Shared (App)";
 			sourceTree = "<group>";
 		};
@@ -139,6 +207,9 @@
 		};
 		010B0F583077C1FE00422D6E /* macOS (App) */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D30000000000000000000003 /* Exceptions for "macOS (App)" folder in "Downloader (macOS)" target */,
+			);
 			path = "macOS (App)";
 			sourceTree = "<group>";
 		};
@@ -174,6 +245,21 @@
 			path = "visionOS (Extension)";
 			sourceTree = "<group>";
 		};
+		D30000000000000000000001 /* Shared (Core) */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Shared (Core)";
+			sourceTree = "<group>";
+		};
+		D30000000000000000000002 /* Share (Extension) */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D31000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (iOS)" target */,
+				D32000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (macOS)" target */,
+				D33000000000000000000009 /* Exceptions for "Share (Extension)" folder in "Downloader Share (visionOS)" target */,
+			);
+			path = "Share (Extension)";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,12 +293,29 @@
 			files = (
 			);
 		};
+		D31000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		D32000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		D33000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		010B0F283077C1FD00422D6E = {
 			isa = PBXGroup;
 			children = (
+				D30000000000000000000001 /* Shared (Core) */,
+				D30000000000000000000002 /* Share (Extension) */,
 				D10000000000000000000005 /* visionOS (App) */,
 				D10000000000000000000006 /* visionOS (Extension) */,
 				010B0F2D3077C1FD00422D6E /* Shared (App) */,
@@ -234,6 +337,9 @@
 				010B0F573077C1FE00422D6E /* Downloader.app */,
 				010B0F623077C1FE00422D6E /* Downloader Extension.appex */,
 				010B0F6C3077C1FE00422D6E /* Downloader Extension.appex */,
+				D31000000000000000000002 /* Downloader Share.appex */,
+				D32000000000000000000002 /* Downloader Share.appex */,
+				D33000000000000000000002 /* Downloader Share.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -255,10 +361,12 @@
 			);
 			dependencies = (
 				010B0F653077C1FE00422D6E /* PBXTargetDependency */,
+				D3100000000000000000000C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				010B0F473077C1FE00422D6E /* iOS (App) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader (iOS)";
 			productName = "Downloader (iOS)";
@@ -279,10 +387,12 @@
 			);
 			dependencies = (
 				010B0F6F3077C1FE00422D6E /* PBXTargetDependency */,
+				D3200000000000000000000C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				010B0F583077C1FE00422D6E /* macOS (App) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader (macOS)";
 			productName = "Downloader (macOS)";
@@ -302,6 +412,7 @@
 			fileSystemSynchronizedGroups = (
 				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				010B0F663077C1FE00422D6E /* iOS (Extension) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader Extension (iOS)";
 			productName = "Downloader Extension (iOS)";
@@ -321,6 +432,7 @@
 			fileSystemSynchronizedGroups = (
 				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				010B0F703077C1FE00422D6E /* macOS (Extension) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader Extension (macOS)";
 			productName = "Downloader Extension (macOS)";
@@ -341,10 +453,12 @@
 			);
 			dependencies = (
 				D10000000000000000000016 /* PBXTargetDependency */,
+				D3300000000000000000000C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				010B0F2D3077C1FD00422D6E /* Shared (App) */,
 				D10000000000000000000005 /* visionOS (App) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader (visionOS)";
 			productName = "Downloader (visionOS)";
@@ -364,10 +478,68 @@
 			fileSystemSynchronizedGroups = (
 				010B0F363077C1FE00422D6E /* Shared (Extension) */,
 				D10000000000000000000006 /* visionOS (Extension) */,
+				D30000000000000000000001 /* Shared (Core) */,
 			);
 			name = "Downloader Extension (visionOS)";
 			productName = "Downloader Extension (visionOS)";
 			productReference = D10000000000000000000004 /* Downloader Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		D31000000000000000000001 /* Downloader Share (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D31000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (iOS)" */;
+			buildPhases = (
+				D31000000000000000000006 /* Sources */,
+				D31000000000000000000007 /* Frameworks */,
+				D31000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				D30000000000000000000001 /* Shared (Core) */,
+				D30000000000000000000002 /* Share (Extension) */,
+			);
+			name = "Downloader Share (iOS)";
+			productName = "Downloader Share (iOS)";
+			productReference = D31000000000000000000002 /* Downloader Share.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		D32000000000000000000001 /* Downloader Share (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D32000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (macOS)" */;
+			buildPhases = (
+				D32000000000000000000006 /* Sources */,
+				D32000000000000000000007 /* Frameworks */,
+				D32000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				D30000000000000000000001 /* Shared (Core) */,
+				D30000000000000000000002 /* Share (Extension) */,
+			);
+			name = "Downloader Share (macOS)";
+			productName = "Downloader Share (macOS)";
+			productReference = D32000000000000000000002 /* Downloader Share.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		D33000000000000000000001 /* Downloader Share (visionOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D33000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (visionOS)" */;
+			buildPhases = (
+				D33000000000000000000006 /* Sources */,
+				D33000000000000000000007 /* Frameworks */,
+				D33000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				D30000000000000000000001 /* Shared (Core) */,
+				D30000000000000000000002 /* Share (Extension) */,
+			);
+			name = "Downloader Share (visionOS)";
+			productName = "Downloader Share (visionOS)";
+			productReference = D33000000000000000000002 /* Downloader Share.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -382,15 +554,105 @@
 				TargetAttributes = {
 					010B0F443077C1FE00422D6E = {
 						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					010B0F563077C1FE00422D6E = {
 						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					010B0F613077C1FE00422D6E = {
 						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					010B0F6B3077C1FE00422D6E = {
 						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					D10000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					D10000000000000000000002 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					D31000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					D32000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
+					D33000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -414,6 +676,9 @@
 				010B0F563077C1FE00422D6E /* Downloader (macOS) */,
 				010B0F613077C1FE00422D6E /* Downloader Extension (iOS) */,
 				010B0F6B3077C1FE00422D6E /* Downloader Extension (macOS) */,
+				D31000000000000000000001 /* Downloader Share (iOS) */,
+				D32000000000000000000001 /* Downloader Share (macOS) */,
+				D33000000000000000000001 /* Downloader Share (visionOS) */,
 			);
 		};
 /* End PBXProject section */
@@ -445,6 +710,21 @@
 			);
 		};
 		D10000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		D31000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		D32000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		D33000000000000000000008 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -515,6 +795,21 @@
 			files = (
 			);
 		};
+		D31000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		D32000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		D33000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -533,12 +828,29 @@
 			target = D10000000000000000000002 /* Downloader Extension (visionOS) */;
 			targetProxy = D10000000000000000000015 /* PBXContainerItemProxy */;
 		};
+		D3100000000000000000000C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D31000000000000000000001 /* Downloader Share (iOS) */;
+			targetProxy = D3100000000000000000000B /* PBXContainerItemProxy */;
+		};
+		D3200000000000000000000C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D32000000000000000000001 /* Downloader Share (macOS) */;
+			targetProxy = D3200000000000000000000B /* PBXContainerItemProxy */;
+		};
+		D3300000000000000000000C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D33000000000000000000001 /* Downloader Share (visionOS) */;
+			targetProxy = D3300000000000000000000B /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		010B0F923077C1FE00422D6E /* Debug configuration for PBXNativeTarget "Downloader Extension (iOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "iOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -551,15 +863,31 @@
 					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
@@ -568,13 +896,23 @@
 					Python,
 					"-framework",
 					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -585,6 +923,8 @@
 		010B0F933077C1FE00422D6E /* Release configuration for PBXNativeTarget "Downloader Extension (iOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "iOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -597,15 +937,31 @@
 					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
@@ -614,13 +970,23 @@
 					Python,
 					"-framework",
 					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -634,14 +1000,31 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "iOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -652,19 +1035,39 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -677,14 +1080,31 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "iOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "iOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -695,19 +1115,39 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -719,6 +1159,7 @@
 		010B0F9C3077C1FE00422D6E /* Debug configuration for PBXNativeTarget "Downloader Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -726,20 +1167,28 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
@@ -749,13 +1198,22 @@
 					Python,
 					"-framework",
 					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -765,6 +1223,7 @@
 		010B0F9D3077C1FE00422D6E /* Release configuration for PBXNativeTarget "Downloader Extension (macOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -772,20 +1231,28 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@executable_path/../../../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
@@ -795,13 +1262,22 @@
 					Python,
 					"-framework",
 					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -821,24 +1297,47 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
@@ -846,7 +1345,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -866,24 +1365,47 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
+					"$(inherited)",
 					"-framework",
 					SafariServices,
 					"-framework",
 					WebKit,
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
@@ -891,7 +1413,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -1017,27 +1539,66 @@
 		D10000000000000000000009 /* Debug configuration for PBXNativeTarget "Downloader (visionOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "visionOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "visionOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
+				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				XROS_DEPLOYMENT_TARGET = 26.0;
@@ -1047,27 +1608,66 @@
 		D1000000000000000000000A /* Release configuration for PBXNativeTarget "Downloader (visionOS)" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "visionOS (App)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "visionOS (App)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
+				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader;
 				PRODUCT_NAME = Downloader;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = xros;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				XROS_DEPLOYMENT_TARGET = 26.0;
@@ -1078,6 +1678,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "visionOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -1091,26 +1692,51 @@
 					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
 					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = xros;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				XROS_DEPLOYMENT_TARGET = 26.0;
@@ -1121,6 +1747,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "visionOS (Extension)/Downloader.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C2RH9KA3U2;
@@ -1134,26 +1761,472 @@
 					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
 				INFOPLIST_FILE = "visionOS (Extension)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Downloader Extension";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the Instagram and X media you download to Photos.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
 					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Extension;
 				PRODUCT_NAME = "Downloader Extension";
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = xros;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		D31000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mobile.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D31000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mobile.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/iOS/Python.xcframework/ios-arm64_x86_64-simulator",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/ios-simulator-$(CURRENT_ARCH)/lib",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D32000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D32000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/macOS/Python.xcframework/macos-arm64_x86_64",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/macos-$(CURRENT_ARCH)/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					SafariServices,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D33000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mobile.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 7;
+				XROS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		D33000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (visionOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Share (Extension)/Mobile.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C2RH9KA3U2;
+				"EXCLUDED_ARCHS[sdk=xrsimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/Python/visionOS/Python.xcframework/xros-arm64-simulator",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				"HEADER_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/include",
+				);
+				INFOPLIST_FILE = "Share (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Downloader;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save the media you download to Photos.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xros*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-$(CURRENT_ARCH)/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=xrsimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/Dependencies/FFmpeg/xros-simulator-$(CURRENT_ARCH)/lib",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Python,
+					"-framework",
+					JavaScriptCore,
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+					"-lz",
+					"-liconv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = wang.xiaolin.Downloader.Share;
+				PRODUCT_NAME = "Downloader Share";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xros xrsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DOWNLOADER_SHARE_EXTENSION";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				XROS_DEPLOYMENT_TARGET = 26.0;
@@ -1216,6 +2289,30 @@
 			buildConfigurations = (
 				D1000000000000000000000B /* Debug configuration for PBXNativeTarget "Downloader Extension (visionOS)" */,
 				D1000000000000000000000C /* Release configuration for PBXNativeTarget "Downloader Extension (visionOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D31000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D31000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (iOS)" */,
+				D31000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (iOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D32000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D32000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (macOS)" */,
+				D32000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (macOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		D33000000000000000000003 /* Build configuration list for PBXNativeTarget "Downloader Share (visionOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D33000000000000000000004 /* Debug configuration for PBXNativeTarget "Downloader Share (visionOS)" */,
+				D33000000000000000000005 /* Release configuration for PBXNativeTarget "Downloader Share (visionOS)" */,
 			);
 			defaultConfigurationName = Release;
 		};

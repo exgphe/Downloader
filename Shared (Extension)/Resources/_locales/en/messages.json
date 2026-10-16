@@ -120,5 +120,38 @@
         "content": "$1"
       }
     }
+  },
+  "instagramLogin": {
+    "message": "Instagram login"
+  },
+  "instagramSessionNote": {
+    "message": "For Instagram downloads on this device. Sign in in your current Safari profile, allow Downloader access to Instagram, then sync. Private browsing and other profiles are not included automatically."
+  },
+  "instagramSessionReady": {
+    "message": "Login synced to this device"
+  },
+  "instagramSessionNotSynced": {
+    "message": "Login has not been synced"
+  },
+  "syncInstagramSession": {
+    "message": "Sync Instagram login"
+  },
+  "forgetInstagramSession": {
+    "message": "Clear synced login"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "Safari 18 or later is required. Allow Downloader access to Instagram in Safari, then retry syncing."
+  },
+  "instagramSessionMissing": {
+    "message": "Sign in at instagram.com in your current Safari profile, allow Downloader access to the site, then sync again."
+  },
+  "invalidInstagramSession": {
+    "message": "The login could not be synced safely. Sign in to Instagram in Safari, then try syncing again."
+  },
+  "instagramSessionFailed": {
+    "message": "Could not sync Instagram login. Make sure Downloader is enabled in Safari, then try again."
+  },
+  "instagramSessionUnavailable": {
+    "message": "Could not read synced login"
   }
 }

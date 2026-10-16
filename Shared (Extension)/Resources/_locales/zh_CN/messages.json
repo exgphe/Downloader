@@ -120,5 +120,38 @@
         "content": "$1"
       }
     }
+  },
+  "instagramLogin": {
+    "message": "Instagram 登录"
+  },
+  "instagramSessionNote": {
+    "message": "供本设备下载 Instagram 内容使用。在当前 Safari 配置文件登录，并允许 Downloader 访问 Instagram 后同步。不会自动包含无痕浏览或其他配置文件。"
+  },
+  "instagramSessionReady": {
+    "message": "登录已同步到本设备"
+  },
+  "instagramSessionNotSynced": {
+    "message": "尚未同步登录"
+  },
+  "syncInstagramSession": {
+    "message": "同步 Instagram 登录"
+  },
+  "forgetInstagramSession": {
+    "message": "清除已同步的登录"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "需要 Safari 18 或更高版本。请在 Safari 中允许 Downloader 访问 Instagram，然后重新同步。"
+  },
+  "instagramSessionMissing": {
+    "message": "请在当前 Safari 配置文件中登录 instagram.com，允许 Downloader 访问此网站，然后重新同步。"
+  },
+  "invalidInstagramSession": {
+    "message": "无法安全同步此登录。请在 Safari 中登录 Instagram，然后重新同步。"
+  },
+  "instagramSessionFailed": {
+    "message": "无法同步 Instagram 登录。请确认已在 Safari 中启用 Downloader，然后重试。"
+  },
+  "instagramSessionUnavailable": {
+    "message": "无法读取已同步的登录"
   }
 }

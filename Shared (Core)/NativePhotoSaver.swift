@@ -25,7 +25,7 @@ enum NativePhotoSaver {
         }
     }
 
-    static func save(_ item: NativeMediaRequest) async throws {
+    static func authorize() async throws {
         var status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
         if status == .notDetermined {
             status = await withCheckedContinuation { continuation in
@@ -41,23 +41,32 @@ enum NativePhotoSaver {
             throw MediaSaveError(code: status == .restricted ? "photosRestricted" : "photosDenied",
                                  message: "Photos access is \(status == .restricted ? "restricted" : "denied"). Allow Downloader to add photos in \(settings), then try again.")
         }
+    }
+
+    static func save(_ item: NativeMediaRequest) async throws {
+        try await authorize()
         let download = try await MediaDownload.download(item)
         defer { try? FileManager.default.removeItem(at: download.directory) }
-        let typedURL = try validatedFile(download.file, kind: item.kind, mimeType: download.mimeType)
+        try await saveFile(download.file, kind: item.kind, filename: item.filename, mimeType: download.mimeType)
+    }
+
+    static func saveFile(_ file: URL, kind: MediaKind, filename: String?, mimeType: String? = nil) async throws {
+        try await authorize()
+        let typedURL = try validatedFile(file, kind: kind, mimeType: mimeType)
         let options = PHAssetResourceCreationOptions()
         options.shouldMoveFile = false
-        if let filename = item.filename, !filename.isEmpty {
+        if let filename, !filename.isEmpty {
             options.originalFilename = ((filename as NSString).deletingPathExtension as NSString).appendingPathExtension(typedURL.pathExtension)
         }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             PHPhotoLibrary.shared().performChanges {
                 let creation = PHAssetCreationRequest.forAsset()
-                creation.addResource(with: item.kind == .image ? .photo : .video, fileURL: typedURL, options: options)
+                creation.addResource(with: kind == .image ? .photo : .video, fileURL: typedURL, options: options)
             } completionHandler: { success, error in
                 if success {
                     continuation.resume()
                 } else {
-                    continuation.resume(throwing: MediaSaveError(code: "photosSaveFailed", message: "Photos could not save this \(item.kind.rawValue). \(error?.localizedDescription ?? "The media format may not be supported.")"))
+                    continuation.resume(throwing: MediaSaveError(code: "photosSaveFailed", message: "Photos could not save this \(kind.rawValue). \(error?.localizedDescription ?? "The media format may not be supported.")"))
                 }
             }
         }

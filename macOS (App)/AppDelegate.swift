@@ -11,7 +11,11 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Override point for customization after application launch.
+        Task { await DownloadCenter.shared.start() }
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls { DownloadIncomingURL.handle(url) }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

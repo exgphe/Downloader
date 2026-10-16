@@ -1,0 +1,29 @@
+{
+  "fill-specializations": [
+    {"value": {"automatic-gradient": "extended-srgb:0.00000,0.53333,1.00000,1.00000"}},
+    {"appearance": "dark", "value": {"automatic-gradient": "extended-srgb:0.05500,0.11000,0.22000,1.00000"}}
+  ],
+  "groups": [
+    {
+      "name": "Download arrow",
+      "lighting": "combined",
+      "blur-material": 0.5,
+      "shadow": {"kind": "neutral", "opacity": 0.3},
+      "translucency": {"enabled": true, "value": 0.3},
+      "layers": [
+        {"name": "Arrow", "image-name": "arrow.svg"}
+      ]
+    },
+    {
+      "name": "Receiving tray",
+      "lighting": "combined",
+      "blur-material": 0.5,
+      "shadow": {"kind": "neutral", "opacity": 0.3},
+      "translucency": {"enabled": true, "value": 0.45},
+      "layers": [
+        {"name": "Tray", "image-name": "tray.svg"}
+      ]
+    }
+  ],
+  "supported-platforms": {"squares": "shared"}
+}

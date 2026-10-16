@@ -120,5 +120,38 @@
         "content": "$1"
       }
     }
+  },
+  "instagramLogin": {
+    "message": "Instagram 登入"
+  },
+  "instagramSessionNote": {
+    "message": "供本裝置下載 Instagram 內容使用。在目前 Safari 描述檔登入，並允許 Downloader 存取 Instagram 後同步。不會自動包含私密瀏覽或其他描述檔。"
+  },
+  "instagramSessionReady": {
+    "message": "登入已同步到本裝置"
+  },
+  "instagramSessionNotSynced": {
+    "message": "尚未同步登入"
+  },
+  "syncInstagramSession": {
+    "message": "同步 Instagram 登入"
+  },
+  "forgetInstagramSession": {
+    "message": "清除已同步的登入"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "需要 Safari 18 或以上版本。請在 Safari 中允許 Downloader 存取 Instagram，然後重新同步。"
+  },
+  "instagramSessionMissing": {
+    "message": "請在目前 Safari 描述檔中登入 instagram.com，允許 Downloader 存取此網站，然後重新同步。"
+  },
+  "invalidInstagramSession": {
+    "message": "無法安全同步此登入。請在 Safari 中登入 Instagram，然後重新同步。"
+  },
+  "instagramSessionFailed": {
+    "message": "無法同步 Instagram 登入。請確認已在 Safari 中啟用 Downloader，然後重試。"
+  },
+  "instagramSessionUnavailable": {
+    "message": "無法讀取已同步的登入"
   }
 }

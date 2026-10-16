@@ -2,6 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>DownloaderKeychainAccessGroup</key>
+    <string>$(AppIdentifierPrefix)wang.xiaolin.Downloader.instagram-session</string>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array><string>wang.xiaolin.Downloader.continued.*</string></array>
+    <key>UIBackgroundModes</key>
+    <array><string>processing</string></array>
+    <key>UIFileSharingEnabled</key><true/>
+    <key>LSSupportsOpeningDocumentsInPlace</key><true/>
+    <key>CFBundleURLTypes</key>
+    <array><dict>
+        <key>CFBundleURLName</key><string>wang.xiaolin.Downloader.download</string>
+        <key>CFBundleURLSchemes</key><array><string>downloader</string></array>
+        <key>CFBundleTypeRole</key><string>Viewer</string>
+    </dict></array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

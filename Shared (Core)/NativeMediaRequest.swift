@@ -1,12 +1,12 @@
 import Foundation
 
-struct MediaSaveError: LocalizedError {
+struct MediaSaveError: LocalizedError, Sendable {
     let code: String
     let message: String
     var errorDescription: String? { message }
 }
 
-enum MediaKind: String { case image, video }
+enum MediaKind: String, Codable, Sendable { case image, video }
 
 /// Validation is repeated natively: page code is not a trust boundary.
 struct NativeMediaRequest {

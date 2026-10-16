@@ -1,3 +1,5 @@
+import "./instagram-session.js";
+
 const t = (key, substitutions) => browser.i18n.getMessage(key, substitutions) || key;
 for (const element of document.querySelectorAll("[data-i18n]")) element.textContent = t(element.dataset.i18n);
 document.documentElement.lang = browser.i18n.getUILanguage();
@@ -20,4 +22,42 @@ try {
 } catch {
     photosStatus.textContent = videoStatus.textContent = t("nativeUnavailable");
     photosDot.dataset.status = videoDot.dataset.status = "blocked";
+}
+
+const sessionStatus = document.getElementById("instagram-status");
+const syncButton = document.getElementById("sync-instagram");
+const forgetButton = document.getElementById("forget-instagram");
+const sessionError = document.getElementById("instagram-error");
+function showSession(result) {
+    if (!result?.ok) throw new Error(result?.code || "instagramSessionFailed");
+    const status = result.instagramSession || result;
+    if (status.error || typeof status.hasSession !== "boolean") throw new Error("instagramSessionFailed");
+    sessionStatus.textContent = t(status.hasSession ? "instagramSessionReady" : "instagramSessionNotSynced");
+}
+function showSessionError(error) {
+    const key = ["instagramCookiesUnavailable", "instagramSessionMissing", "invalidInstagramSession"].includes(error?.message)
+        ? error.message : "instagramSessionFailed";
+    sessionError.textContent = t(key);
+    sessionError.hidden = false;
+}
+async function sessionAction(action) {
+    syncButton.disabled = forgetButton.disabled = true;
+    sessionError.hidden = true;
+    try { await action(); }
+    catch (error) { showSessionError(error); }
+    finally { syncButton.disabled = forgetButton.disabled = false; }
+}
+syncButton.addEventListener("click", () => sessionAction(async () => {
+    // Reading credentials happens only inside this explicit click handler.
+    const cookies = await globalThis.DownloaderInstagramSession.readSession(browser.cookies);
+    const result = await browser.runtime.sendMessage({type: "importInstagramSession", cookies});
+    showSession(result);
+}));
+forgetButton.addEventListener("click", () => sessionAction(async () => {
+    showSession(await browser.runtime.sendMessage({type: "clearInstagramSession"}));
+}));
+try { showSession(await browser.runtime.sendMessage({type: "instagramSession"})); }
+catch (error) {
+    sessionStatus.textContent = t("instagramSessionUnavailable");
+    showSessionError(error);
 }

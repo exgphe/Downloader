@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg></div>
+    <div class="mark" aria-hidden="true"><img src="images/icon-96.png" width="43" height="43" alt=""></div>
     <div><h1>Downloader</h1><p class="subtitle" data-i18n="popupSubtitle"></p></div>
   </header>
   <p class="intro" data-i18n="popupInstruction"></p>
@@ -22,6 +22,16 @@
     <div><h2 id="video-title" data-i18n="videoEngine"></h2><p id="video-status" role="status" data-i18n="checkingStatus"></p></div>
   </section>
   <p class="description" data-i18n="videoExplanation"></p>
+  <section class="session-card" aria-labelledby="instagram-title">
+    <h2 id="instagram-title" data-i18n="instagramLogin"></h2>
+    <p class="session-note" data-i18n="instagramSessionNote"></p>
+    <p id="instagram-status" role="status" data-i18n="checkingStatus"></p>
+    <div class="session-actions">
+      <button id="sync-instagram" type="button" data-i18n="syncInstagramSession"></button>
+      <button id="forget-instagram" type="button" data-i18n="forgetInstagramSession"></button>
+    </div>
+    <p id="instagram-error" role="alert" hidden></p>
+  </section>
   <footer data-i18n="footerNote"></footer>
 </body>
 </html>

@@ -6,11 +6,11 @@ struct DownloadedMedia {
     let mimeType: String?
 }
 
-/// Downloads stream to disk, with a size limit and a wall-clock deadline.
+/// Downloads stream to disk, with a wall-clock deadline and no fixed size limit.
 /// A serial delegate queue protects mutable state and redirect decisions.
 final class MediaDownload: NSObject, URLSessionDownloadDelegate {
-    static let maximumBytes: Int64 = 512 * 1_024 * 1_024
     private let item: NativeMediaRequest
+    private let configuration: URLSessionConfiguration
     private let delegateQueue: OperationQueue
     private var session: URLSession?
     private var task: URLSessionDownloadTask?
@@ -19,24 +19,26 @@ final class MediaDownload: NSObject, URLSessionDownloadDelegate {
     private var failure: Error?
     private var deadline: DispatchWorkItem?
 
-    private init(item: NativeMediaRequest) {
+    private init(item: NativeMediaRequest, configuration: URLSessionConfiguration) {
         self.item = item
+        self.configuration = configuration
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
         queue.name = "Downloader.MediaDownload"
         delegateQueue = queue
     }
 
-    static func download(_ item: NativeMediaRequest) async throws -> DownloadedMedia {
+    static func download(_ item: NativeMediaRequest,
+                         configuration: URLSessionConfiguration = .ephemeral) async throws -> DownloadedMedia {
         try await withCheckedThrowingContinuation { continuation in
-            let operation = MediaDownload(item: item)
+            let operation = MediaDownload(item: item, configuration: configuration)
             operation.start { continuation.resume(with: $0) }
         }
     }
 
     private func start(completion: @escaping (Result<DownloadedMedia, Error>) -> Void) {
         self.completion = completion
-        let configuration = URLSessionConfiguration.ephemeral
+        let configuration = self.configuration
         configuration.httpCookieStorage = nil
         configuration.httpShouldSetCookies = false
         configuration.urlCredentialStorage = nil
@@ -74,14 +76,6 @@ final class MediaDownload: NSObject, URLSessionDownloadDelegate {
         completionHandler(safeRequest)
     }
 
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
-                    didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        if totalBytesWritten > Self.maximumBytes || totalBytesExpectedToWrite > Self.maximumBytes {
-            failure = MediaSaveError(code: "mediaTooLarge", message: "This media exceeds the 512 MB download limit.")
-            downloadTask.cancel()
-        }
-    }
-
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard failure == nil else { return }
         do {
@@ -95,9 +89,8 @@ final class MediaDownload: NSObject, URLSessionDownloadDelegate {
                 throw MediaSaveError(code: "downloadHTTPError", message: message)
             }
             let bytes = (try location.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
-            guard bytes > 0, bytes <= Self.maximumBytes else {
-                throw MediaSaveError(code: bytes == 0 ? "emptyMedia" : "mediaTooLarge",
-                                     message: bytes == 0 ? "The downloaded media is empty." : "This media exceeds the 512 MB download limit.")
+            guard bytes > 0 else {
+                throw MediaSaveError(code: "emptyMedia", message: "The downloaded media is empty.")
             }
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent("Downloader-\(UUID().uuidString)", isDirectory: true)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)

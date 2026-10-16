@@ -77,6 +77,10 @@ def main() -> None:
         executable = extension / "MacOS/RuntimeSmoke"
         executable.parent.mkdir(parents=True)
         (extension / "Resources").mkdir()
+        (app / "Contents/Info.plist").write_bytes(plistlib.dumps({
+            "CFBundleIdentifier": "org.example.Downloader.RuntimeHost",
+            "CFBundleExecutable": "RuntimeHost", "CFBundlePackageType": "APPL",
+        }))
         (extension / "Info.plist").write_bytes(plistlib.dumps({
             "CFBundleIdentifier": "org.example.Downloader.RuntimeSmoke",
             "CFBundleExecutable": "RuntimeSmoke", "CFBundleName": "RuntimeSmoke",
@@ -90,10 +94,13 @@ def main() -> None:
             f'module Python [system] {{ umbrella header {json.dumps(str(headers))} export * }}\n')
         print("Compiling the real Swift embedded-runtime helper…", flush=True)
         run("xcrun", "swiftc", "-module-cache-path", str(work / "ModuleCache"),
-            "-I", str(module), "-F", str(framework_parent), "-framework", "Python",
+            "-I", str(module), "-F", str(framework_parent), "-framework", "Python", "-framework", "JavaScriptCore",
             "-Xlinker", "-rpath", "-Xlinker", "@executable_path/../../../../Frameworks",
-            str(ROOT / "Shared (Extension)/EmbeddedPython.swift"),
-            str(ROOT / "Shared (Extension)/NativeMediaRequest.swift"),
+            str(ROOT / "Shared (Core)/EmbeddedPython.swift"),
+            str(ROOT / "Shared (Core)/InstagramSessionStore.swift"),
+            str(ROOT / "Shared (Core)/EmbeddedPythonResources.swift"),
+            str(ROOT / "Shared (Core)/NativeMediaRequest.swift"),
+            str(ROOT / "Shared (Core)/DownloadModels.swift"),
             str(ROOT / "Tests/EmbeddedPythonSmoke.swift"), "-o", str(executable))
 
         production = (ROOT / "Shared (Extension)/Resources/Python/downloader_resolver.py").read_text()
@@ -101,7 +108,7 @@ def main() -> None:
             print(f"Packaging and running the {mode} fixture with actual Python.framework…", flush=True)
             run(sys.executable, str(ROOT / "Scripts/package_runtime.py"), "--platform", "macosx",
                 "--arch", arch, "--bundle", str(app))
-            bootstrap = extension / "Resources/Python/downloader_resolver.py"
+            bootstrap = extension / "Resources/python-bootstrap/downloader_resolver.py"
             bootstrap.write_text(production + fixture)
             # Use a new process for failure: CPython is initialized once, and its
             # cached startup failure is deliberately permanent in that process.
