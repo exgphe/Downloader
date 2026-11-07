@@ -28,8 +28,12 @@ enum NativeMediaPolicyTests {
         expect(request.downloadRequest().value(forHTTPHeaderField: "Referer") == "https://x.com/example/status/123456", "Post referrer attached")
         expect(NativeMediaRequest.postURL("https://www.instagram.com/p/AbC_123/?igsh=123")?.query == nil, "Instagram post canonicalization")
         expect(NativeMediaRequest.postURL("https://x.com/i/web/status/123456") != nil, "X canonical web post")
+        let story = NativeMediaRequest.postURL("https://instagram.com/stories/imwinter/4013638722465314116/?utm_source=share")!
+        expect(story.absoluteString == "https://www.instagram.com/stories/imwinter/4013638722465314116/", "Story canonicalization removes tracking and retains exact media ID")
+        expect(NativeMediaRequest.instagramStoryID(story) == "4013638722465314116", "Story ID never loses integer precision")
         for address in ["https://attacker.example/example/status/123456", "http://x.com/example/status/1",
-                        "https://user:password@x.com/example/status/1", "https://www.instagram.com/stories/example/1",
+                        "https://user:password@x.com/example/status/1", "https://www.instagram.com/stories/example/",
+                        "https://www.instagram.com/stories/highlights/123/", "https://www.instagram.com/stories/example/not-a-number/",
                         "https://x.com/example/status/not-a-number", "https://x.com:8080/example/status/1"] {
             expect(NativeMediaRequest.postURL(address) == nil, "Unsupported post rejected")
         }

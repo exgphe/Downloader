@@ -2,9 +2,19 @@
 * { box-sizing: border-box; }
 /* Safari sizes its popover from the root element. A viewport-dependent body
    width can keep the first measurement at Safari's narrow default. */
-html { width: 350px; min-width: 350px; }
-body { width: 350px; max-height: 600px; overflow-y: auto; margin: 0; padding: 22px; overflow-wrap: break-word; }
+html { --popup-width: 350px; width: var(--popup-width); min-width: var(--popup-width); }
+body { width: 100%; max-height: 600px; overflow-y: auto; margin: 0; padding: 22px; overflow-wrap: break-word; }
+/* The native extension identifies visionOS even when Safari uses a desktop
+   user agent. Keep an explicit preferred width for Safari's popover sizing. */
+html[data-platform="visionOS"] { --popup-width: 480px; font-size: 15px; }
+html[data-platform="visionOS"] body { padding: 24px; }
+html[data-platform="visionOS"] h1 { font-size: 22px; }
+html[data-platform="visionOS"] h2 { font-size: 15px; }
+html[data-platform="visionOS"] :is(.subtitle, #photos-status, #video-status, .session-note, #instagram-status, #instagram-error, footer) { font-size: 13px; }
+html[data-platform="visionOS"] .description { font-size: 14px; }
+html[data-platform="visionOS"] .session-actions button { min-height: 44px; padding: 10px 14px; font-size: 13px; }
 header { display: flex; align-items: center; gap: 12px; }
+header > div:last-child { min-width: 0; }
 .mark { flex: 0 0 43px; width: 43px; height: 43px; }
 .mark img { display: block; width: 43px; height: 43px; }
 h1 { margin: 0; font-size: 19px; letter-spacing: -.35px; font-weight: 650; }
@@ -22,7 +32,7 @@ p { margin: 0; }
 .session-card { padding-top: 13px; border-top: 1px solid #e3e7ee; }
 .session-note, #instagram-status { color: #717987; font-size: 11px; margin-top: 6px; }
 .session-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-.session-actions button { border: 0; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 11px; cursor: pointer; }
+.session-actions button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; border: 0; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 11px; cursor: pointer; }
 #sync-instagram { background: #1667df; color: #fff; }
 #forget-instagram { background: #e6eaf1; color: inherit; }
 .session-actions button:disabled { opacity: .6; cursor: wait; }

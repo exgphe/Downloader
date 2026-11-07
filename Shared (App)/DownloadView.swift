@@ -13,10 +13,13 @@ struct DownloadView: View {
     @ObservedObject private var center = DownloadCenter.shared
     @State private var link = ""
     @AppStorage("downloadDestination") private var destination: DownloadDestination = .photos
+    @AppStorage(HEVCConversionPreferences.key, store: HEVCConversionPreferences.sharedDefaults)
+    private var conversionData = Data()
     @State private var submitting = false
     @State private var interfaceError: String?
     @State private var instagramSession: InstagramSessionStatus?
     @State private var showingInstagramGuide = false
+    @State private var showingConversionSettings = false
 #if os(macOS)
     @State private var extensionEnabled: Bool?
 #endif
@@ -59,6 +62,7 @@ struct DownloadView: View {
             Text(interfaceError ?? "")
         }
         .sheet(isPresented: $showingInstagramGuide) { InstagramLoginGuide() }
+        .sheet(isPresented: $showingConversionSettings) { HEVCConversionSettingsView() }
         .task {
             refreshInstagramSession()
 #if os(macOS)
@@ -81,6 +85,13 @@ struct DownloadView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+            Spacer()
+            Button { showingConversionSettings = true } label: {
+                Image(systemName: "gearshape").font(.title3)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Download settings")
+            .help("Download settings")
         }
     }
 
@@ -108,6 +119,10 @@ struct DownloadView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+            if (try? JSONDecoder().decode(HEVCConversionSettings.self, from: conversionData))?.enabled == true {
+                Label("YouTube AV1 videos will be converted to HEVC.", systemImage: "arrow.triangle.2.circlepath")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Button(action: startDownload) {
                 Label("Download", systemImage: "arrow.down")
                     .frame(maxWidth: .infinity)
@@ -194,7 +209,7 @@ struct DownloadView: View {
     private var safariSettings: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Safari extension").font(.subheadline.weight(.semibold))
-            Text("Download Instagram posts and X videos directly in Safari.")
+            Text("Download Instagram posts, Stories and X videos directly in Safari.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 #if os(macOS)
@@ -325,7 +340,7 @@ private struct DownloadJobView: View {
 
     private var active: Bool {
         switch job.phase {
-        case .queued, .resolving, .downloading, .saving: return true
+        case .queued, .resolving, .downloading, .converting, .saving: return true
         case .completed, .failed, .cancelled: return false
         }
     }
@@ -335,6 +350,7 @@ private struct DownloadJobView: View {
         case .queued: return "Queued"
         case .resolving: return "Finding the best media…"
         case .downloading: return "Downloading…"
+        case .converting: return "Converting AV1 to HEVC…"
         case .saving: return job.destination == .photos ? "Saving to Photos…" : "Preparing files…"
         case .completed: return job.destination == .photos ? "Saved to Photos" : "Downloaded to Files"
         case .failed: return "Download failed"

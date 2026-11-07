@@ -35,6 +35,31 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             }
             return
         }
+        if type == "resolveStory" {
+            guard let address = message["postURL"] as? String,
+                  let postURL = NativeMediaRequest.postURL(address),
+                  let identifier = NativeMediaRequest.instagramStoryID(postURL) else {
+                reply(["ok": false, "code": "invalidPost", "error": "Provide an Instagram Story link with its media ID."], to: context)
+                return
+            }
+            Task {
+                do {
+                    let manifest = try await EmbeddedMediaResolver.resolve(sourceURL: postURL, destination: .photos)
+                    guard manifest.media.count == 1, let item = manifest.media.first, item.id == identifier,
+                          item.streams.count == 1, let stream = item.streams.first,
+                          MediaURLPolicy().allows(stream.url) else {
+                        throw MediaSaveError(code: "invalidStoryResult", message: "The built-in media engine returned an invalid Story media item.")
+                    }
+                    self.reply(["ok": true, "media": [["url": stream.url.absoluteString,
+                               "kind": item.kind.rawValue, "filename": item.filename]]], to: context)
+                } catch let failure as MediaSaveError {
+                    self.reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+                } catch {
+                    self.reply(["ok": false, "code": "storyResolutionFailed", "error": "The Instagram Story could not be resolved. Sync your Instagram login and try again."], to: context)
+                }
+            }
+            return
+        }
         if type == "resolvePost" {
             guard let address = message["postURL"] as? String,
                   let postURL = NativeMediaRequest.postURL(address) else {

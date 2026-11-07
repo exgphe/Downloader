@@ -100,7 +100,7 @@ def main() -> None:
             str(ROOT / "Shared (Core)/InstagramSessionStore.swift"),
             str(ROOT / "Shared (Core)/EmbeddedPythonResources.swift"),
             str(ROOT / "Shared (Core)/NativeMediaRequest.swift"),
-            str(ROOT / "Shared (Core)/DownloadModels.swift"),
+            str(ROOT / "Shared (Core)/HEVCConversionSettings.swift"), str(ROOT / "Shared (Core)/DownloadModels.swift"),
             str(ROOT / "Tests/EmbeddedPythonSmoke.swift"), "-o", str(executable))
 
         production = (ROOT / "Shared (Extension)/Resources/Python/downloader_resolver.py").read_text()

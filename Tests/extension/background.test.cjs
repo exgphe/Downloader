@@ -38,7 +38,7 @@ function background(resolvedMedia = [{kind: 'video', url: 'https://video.twimg.c
                     if (['importInstagramSession', 'instagramSession', 'clearInstagramSession'].includes(message.type)) {
                         return {ok: true, instagramSession: {hasSession: message.type === 'importInstagramSession'}};
                     }
-                    if (message.type === 'resolvePost') return {ok: true, media: resolvedMedia};
+                    if (['resolvePost', 'resolveStory'].includes(message.type)) return {ok: true, media: resolvedMedia};
                     return {ok: true, saved: 1};
                 }
             }
@@ -74,6 +74,36 @@ test('authenticated Instagram carousel metadata saves photos and videos directly
     assert.equal(result.saved, 2);
     assert.deepEqual(extension.native.map(message => message.type), ['saveMedia', 'saveMedia']);
     assert.deepEqual(extension.native.map(message => message.item.kind), ['image', 'video']);
+});
+
+test('Story fallback uses the synced native gallery engine for exactly one image or video', async () => {
+    const postURL = 'https://www.instagram.com/stories/imwinter/4013638722465314116/';
+    for (const kind of ['image', 'video']) {
+        const media = [{kind, url: 'https://scontent.cdninstagram.com/story.' + (kind === 'image' ? 'jpg' : 'mp4')}];
+        const extension = background(media);
+        const result = await extension.send({type: 'downloadPost', platform: 'instagram', postURL,
+            complete: true, media: [], mediaSource: 'story', requiresVideoResolution: false},
+            {url: postURL, tab: {id: 4}});
+        assert.equal(result.ok, true);
+        assert.equal(result.saved, 1);
+        assert.deepEqual(extension.native.map(message => message.type), ['resolveStory', 'saveMedia']);
+        assert.equal(extension.native[1].item.kind, kind);
+        assert.equal(extension.native[1].referrer, postURL);
+        assert.deepEqual(extension.cookieReads, []);
+    }
+});
+
+test('expired Story and invalid multi-item results save nothing', async () => {
+    const postURL = 'https://www.instagram.com/stories/imwinter/4013638722465314116/';
+    for (const response of [{ok: false, code: 'storyUnavailable', error: 'This Story has expired.'},
+        {ok: true, media: [1, 2].map(index => ({kind: 'image', url: 'https://scontent.cdninstagram.com/' + index + '.jpg'}))},
+        {ok: true, media: [{kind: 'image', url: 'https://evil.test/story.jpg'}]}]) {
+        const extension = background(undefined, {nativeResponse: () => response});
+        const result = await extension.send({type: 'downloadPost', platform: 'instagram', postURL,
+            complete: true, media: [], mediaSource: 'story'}, {url: postURL, tab: {id: 4}});
+        assert.equal(result.ok, false);
+        assert.equal(extension.native.some(message => message.type === 'saveMedia'), false);
+    }
 });
 
 test('all videos from an X post receive separate native Photos save confirmations', async () => {

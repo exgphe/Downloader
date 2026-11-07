@@ -19,6 +19,8 @@ enum DownloadSourcePolicyTests {
             ("https://instagram.com/reels/AbC_123/?igsh=tracking", "https://www.instagram.com/reel/AbC_123/"),
             ("https://www.instagram.com/share/p/SharedToken/?igsh=tracking", "https://www.instagram.com/share/p/SharedToken/"),
             ("https://www.instagram.com/share/reel/SharedToken/?igsh=tracking", "https://www.instagram.com/share/reel/SharedToken/"),
+            ("https://www.instagram.com/stories/imwinter/4013638722465314116/?utm_source=ig_story_item_share&rpxt=MXZhMmc5bWZibmoweA%3D%3D", "https://www.instagram.com/stories/imwinter/4013638722465314116/"),
+            ("看看这个 Story https://instagram.com/stories/some.user/4013638722465314116?igsh=tracking", "https://www.instagram.com/stories/some.user/4013638722465314116/"),
             ("https://x.com/example/status/123456?s=20", "https://x.com/example/status/123456")
         ]
         for (input, expected) in shares {
@@ -29,6 +31,8 @@ enum DownloadSourcePolicyTests {
             "https://youtube.com.attacker.example/watch?v=\(video)",
             "https://user:secret@youtube.com/watch?v=\(video)",
             "http://youtu.be/\(video)", "https://www.instagram.com/accounts/login/",
+            "https://www.instagram.com/stories/imwinter/", "https://www.instagram.com/stories/imwinter/not-an-id/",
+            "https://www.instagram.com/stories/highlights/123/", "https://www.instagram.com/stories/imwinter/123/extra",
             "file:///tmp/video.mp4", "https://localhost/watch?v=\(video)", "Ordinary shared text"
         ] {
             do { _ = try DownloadSource.url(from: input); preconditionFailure("Unsupported share accepted: \(input)") }

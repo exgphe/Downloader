@@ -15,7 +15,7 @@ enum ShortcutDownloadDestination: String, AppEnum {
 @available(macOS 13.0, iOS 16.0, visionOS 1.0, *)
 struct DownloadMediaIntent: AppIntent {
     static var title: LocalizedStringResource = "Download media"
-    static var description = IntentDescription("Download a YouTube video, Instagram post or X post locally. Short downloads can finish without opening the app; use the app for longer jobs. Files are returned to the next Shortcuts action, such as Save File.")
+    static var description = IntentDescription("Download a YouTube video, Instagram post or Story, or X post locally. Short downloads can finish without opening the app; use the app for longer jobs. Files are returned to the next Shortcuts action, such as Save File.")
     static var openAppWhenRun = false
     @available(macOS 26.0, iOS 26.0, visionOS 26.0, *)
     static var supportedModes: IntentModes { .background }

@@ -71,6 +71,13 @@ enum ShareDownloadModelTests {
         }
 
         let center = DownloadCenter()
+        let storyCenter = DownloadCenter()
+        let storyModel = ShareDownloadModel(center: storyCenter)
+        await storyModel.load(context(url: "https://www.instagram.com/stories/imwinter/4013638722465314116/?utm_source=ig_story_item_share"))
+        expect(storyCenter.requests.count == 1 && storyCenter.requests[0].1 == .photos,
+               "A shared Story automatically downloads to Photos")
+        expect(storyModel.job?.sourceURL.absoluteString == "https://www.instagram.com/stories/imwinter/4013638722465314116/",
+               "Sharing retains the requested Story ID without tracking")
         let model = ShareDownloadModel(center: center)
         await model.load(context(url: instagram))
         expect(center.requests.count == 1 && center.requests[0].0 == instagram,

@@ -11,6 +11,7 @@
     const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
     const normalize = text => (text || "").trim().toLowerCase().replace(/[.!:：]+$/, "").replace(/\s+/g, " ");
     const SHARE_LABELS = new Set([
+        "share story", "send story", "分享快拍", "分享限时动态", "分享限時動態", "分享動態", "发送快拍", "partager la story",
         "share", "share post", "share tweet", "send", "send post", "direct", "分享", "分享帖子", "分享贴文", "分享貼文", "发送", "发送帖子", "傳送", "發送", "轉發", "转发",
         "partager", "partager la publication", "partager le post", "partager le tweet", "envoyer", "teilen", "beitrag teilen", "senden", "compartir", "compartir publicación", "enviar", "condividi", "invia", "シェア", "投稿をシェア", "送信", "공유", "게시물 공유", "보내기", "compartilhar", "enviar publicação"
     ]);
@@ -22,6 +23,8 @@
     const matchingControl = (root, names) => Array.from(root.querySelectorAll('button,[role="button"]')).find(element => enabled(element) && !element.hasAttribute(BUTTON_ATTRIBUTE) && labels(element).some(label => names.has(label)));
 
     function permalink(root) {
+        const storyURL = core.instagramStoryID(location.href) && core.canonicalPostURL(location.href, "instagram");
+        if (storyURL) return storyURL;
         const links = Array.from(root.querySelectorAll("a[href]"));
         const timed = links.find(link => link.querySelector("time") && core.canonicalPostURL(link.href, platform));
         if (timed) return core.canonicalPostURL(timed.href, platform);
@@ -33,6 +36,12 @@
     }
 
     function instagramRoot(share) {
+        if (core.instagramStoryID(location.href)) {
+            for (let node = share.parentElement; node && !node.matches("body"); node = node.parentElement) {
+                if (visibleSlide(node)) return node;
+            }
+            return null;
+        }
         const article = share.closest("article");
         if (article) return article;
         let node = share.parentElement;
@@ -45,8 +54,42 @@
     }
 
     function insertionAnchor(share, root) {
-        // Instagram wraps each action in a sibling span; placing the button after that span
-        // preserves the action row. X wraps buttons in equal-width action containers.
+        if (platform === "instagram") {
+            let verticalAnchor = null;
+            for (let anchor = share; anchor.parentElement && root.contains(anchor.parentElement); anchor = anchor.parentElement) {
+                const parent = anchor.parentElement;
+                // A post/reel may itself be a horizontal media/details layout;
+                // it is never an action row.
+                if (parent.querySelector("video,img")) break;
+                // Our own button must not change the selected container on
+                // the next MutationObserver scan.
+                const peers = Array.from(parent.children).filter(child => child !== anchor &&
+                    !child.hasAttribute(BUTTON_ATTRIBUTE) &&
+                    (child.matches('button,[role="button"]') ||
+                     Array.from(child.querySelectorAll('button,[role="button"]')).some(button => !button.hasAttribute(BUTTON_ATTRIBUTE))));
+                if (peers.length) {
+                    const style = getComputedStyle(parent);
+                    if (style.display.includes("flex")) {
+                        if (!style.flexDirection.startsWith("column")) return anchor;
+                        // Reels can have a vertical action rail. Keep that as a
+                        // fallback, but look past nested columns for a feed row.
+                        verticalAnchor ||= anchor;
+                    } else {
+                        const box = share.getBoundingClientRect();
+                        const sameRow = peers.some(peer => {
+                            const bounds = peer.getBoundingClientRect();
+                            return bounds.width > 0 && bounds.height > 0 &&
+                                (bounds.right <= box.left + 1 || bounds.left >= box.right - 1) &&
+                                Math.abs((bounds.top + bounds.bottom - box.top - box.bottom) / 2) <= Math.max(8, box.height / 2);
+                        });
+                        if (sameRow) return anchor;
+                    }
+                }
+                if (parent === root) break;
+            }
+            return verticalAnchor;
+        }
+        // X wraps buttons in equal-width action containers.
         let anchor = share;
         for (let depth = 0; depth < 4 && anchor.parentElement && anchor.parentElement !== root; depth++) {
             const parent = anchor.parentElement;
@@ -142,17 +185,19 @@
     }
 
     async function metadataForPost(postURL) {
-        const shortcode = new URL(postURL).pathname.split("/")[2];
+        const storyID = core.instagramStoryID(postURL);
+        const shortcode = storyID || new URL(postURL).pathname.split("/")[2];
+        const parse = payload => storyID ? core.instagramStoryMetadata(payload, storyID) : core.instagramMetadata(payload, shortcode);
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 8000);
         try {
-            const id = core.shortcodeToMediaID(shortcode);
+            const id = storyID || core.shortcodeToMediaID(shortcode);
             const response = await fetch(`/api/v1/media/${id}/info/`, {credentials: "include", signal: controller.signal,
                 headers: {"X-IG-App-ID": "936619743392459", "Accept": "application/json"}});
             if (response.ok) {
                 const body = await response.text();
                 if (body.length <= 6000000) {
-                    const metadata = core.instagramMetadata(JSON.parse(body), shortcode);
+                    const metadata = parse(JSON.parse(body));
                     if (metadata) return metadata;
                 }
             }
@@ -162,7 +207,7 @@
             const text = script.textContent;
             if (!text || text.length > 6000000 || !text.includes(shortcode)) continue;
             try {
-                const metadata = core.instagramMetadata(JSON.parse(text), shortcode);
+                const metadata = parse(JSON.parse(text));
                 if (metadata) return metadata;
             } catch { /* Unrelated page JSON. */ }
         }
@@ -236,6 +281,9 @@
     async function instagramMedia(root, postURL) {
         const metadata = await metadataForPost(postURL);
         if (metadata) return metadata;
+        // Stories advance automatically. Resolve the captured ID natively
+        // instead of downloading a newly visible Story or traversing the tray.
+        if (core.instagramStoryID(postURL)) return {media: [], complete: true, hasVideo: false, source: "story"};
         if (matchingControl(root, NEXT_LABELS) || matchingControl(root, PREVIOUS_LABELS)) {
             notify(t("readingCarousel"));
             return traverseCarousel(root);
@@ -283,7 +331,30 @@
         if (!postURL) return;
         const existing = root.querySelector(`[${BUTTON_ATTRIBUTE}]`);
         const anchor = insertionAnchor(share, root);
+        if (!anchor) return;
+        function place(button) {
+            // Reattach after the current send wrapper if Instagram has moved
+            // an existing button while rerendering the action row.
+            if (anchor.nextElementSibling !== button) anchor.after(button);
+            if (platform === "instagram") {
+                const style = getComputedStyle(anchor.parentElement);
+                let offset = 0;
+                if (!style.display.includes("flex") || !style.flexDirection.startsWith("column")) {
+                    // A count underneath Share makes its wrapper taller. Align
+                    // with the actual icon, not the wrapper's vertical center.
+                    const target = (share.querySelector("svg") || share).getBoundingClientRect();
+                    const bounds = button.getBoundingClientRect();
+                    const current = parseFloat(button.style.getPropertyValue("--downloader-offset-y")) || 0;
+                    if (target.height > 0 && bounds.height > 0) {
+                        offset = Math.round((current + target.top + target.height / 2 - bounds.top - bounds.height / 2) * 100) / 100;
+                    }
+                }
+                const value = offset + "px";
+                if (button.style.getPropertyValue("--downloader-offset-y") !== value) button.style.setProperty("--downloader-offset-y", value);
+            }
+        }
         if (existing) {
+            place(existing);
             // SPA reuse can replace an article's post without replacing its action row.
             if (existing.dataset.postUrl !== postURL && !existing.disabled) {
                 existing.dataset.postUrl = postURL;
@@ -305,7 +376,7 @@
             event.stopPropagation();
             download(button, root);
         });
-        anchor.after(button);
+        place(button);
     }
 
     function scan() {
@@ -346,8 +417,9 @@
         scheduled = true;
         setTimeout(() => { scheduled = false; scan(); }, 200);
     };
-    new MutationObserver(schedule).observe(document.documentElement, {childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "data-testid", "src"]});
+    new MutationObserver(schedule).observe(document.documentElement, {childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "data-testid", "src", "href"]});
     addEventListener("popstate", schedule);
     addEventListener("pageshow", schedule);
+    addEventListener("resize", schedule);
     scan();
 })();

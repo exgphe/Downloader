@@ -23,11 +23,14 @@ enum EmbeddedVideoResolver {
 enum EmbeddedMediaResolver {
     static var status: [String: Any] { EmbeddedPython.status }
 
-    static func resolve(sourceURL: URL, destination: DownloadDestination) async throws -> ResolvedDownload {
+    static func resolve(sourceURL: URL, destination: DownloadDestination, allowAV1: Bool = false) async throws -> ResolvedDownload {
         let canonical = try DownloadSource.url(from: sourceURL.absoluteString)
         var arguments = [canonical.absoluteString, destination.rawValue]
         if ["instagram.com", "www.instagram.com"].contains(canonical.host?.lowercased() ?? "") {
             arguments.append(try InstagramSessionStore.resolverJSON())
+        } else if allowAV1 && HEVCConversionSettings.isYouTube(canonical) {
+            arguments.append("[]")
+            arguments.append("true")
         }
         let data = try await EmbeddedPython.call(module: "app_resolver", arguments: arguments)
         _ = try EmbeddedPython.envelope(data)
@@ -38,6 +41,9 @@ enum EmbeddedMediaResolver {
         guard sourceIdentity(manifest.sourceURL) == sourceIdentity(canonical), !manifest.media.isEmpty, manifest.media.count <= 20,
               manifest.title.count <= 500, Set(manifest.media.map(\.id)).count == manifest.media.count else {
             throw EmbeddedPython.invalidResult
+        }
+        if let storyID = NativeMediaRequest.instagramStoryID(canonical) {
+            guard manifest.media.count == 1, manifest.media.first?.id == storyID else { throw EmbeddedPython.invalidResult }
         }
         for item in manifest.media {
             guard !item.id.isEmpty, item.id.count <= 100, !item.filename.isEmpty,

@@ -16,13 +16,16 @@ class Element {
         this.listeners = {};
         this.disabled = false;
         this.textContent = '';
+        this.style = {getPropertyValue(name) { return this[name] || ''; }, setProperty(name, value) { this[name] = value; }};
     }
     get parentElement() { return this.parent || null; }
+    get nextElementSibling() { return this.parent?.children[this.parent.children.indexOf(this) + 1] || null; }
     get href() { return this.attributes.href; }
     get isConnected() { return !!this.parent || this.tagName === 'document'; }
-    append(...children) { for (const child of children) { child.parent = this; this.children.push(child); } }
+    append(...children) { for (const child of children) { child.remove(); child.parent = this; this.children.push(child); } }
+    remove() { if (this.parent) { this.parent.children.splice(this.parent.children.indexOf(this), 1); this.parent = null; } }
     replaceChildren(...children) { this.children = []; this.append(...children); }
-    after(child) { child.parent = this.parent; this.parent.children.splice(this.parent.children.indexOf(this) + 1, 0, child); }
+    after(child) { child.remove(); child.parent = this.parent; this.parent.children.splice(this.parent.children.indexOf(this) + 1, 0, child); }
     getAttribute(name) { return this.attributes[name] ?? null; }
     setAttribute(name, value) { this.attributes[name] = value; }
     hasAttribute(name) { return name in this.attributes; }
@@ -57,6 +60,7 @@ function instagramPost(code, label = 'Share Post') {
     const wrapper = element('span', {}, share);
     const row = element('section', {}, element('span', {}, element('button', {'aria-label': 'Like'})), element('span', {}, element('button', {'aria-label': 'Comment'})), wrapper, element('span', {}, element('button', {'aria-label': 'Save'})));
     const link = element('a', {href: `https://www.instagram.com/p/${code}/`}, element('time'));
+    row.style = {display: 'flex', flexDirection: 'row'};
     return {root: element('article', {}, link, element('img'), row), row, wrapper, share, link};
 }
 function xPost(id, hasVideo, label = 'Share post') {
@@ -66,7 +70,7 @@ function xPost(id, hasVideo, label = 'Share post') {
     const link = element('a', {href: `https://x.com/alice/status/${id}`}, element('time'));
     return {root: element('article', {'data-testid': 'tweet'}, link, ...(hasVideo ? [element('div', {'data-testid': 'videoPlayer'}, element('video'))] : [element('img')]), row), row, wrapper};
 }
-function run(platform, roots) {
+function run(platform, roots, url) {
     const document = element('document', {}, ...roots);
     document.documentElement = document;
     document.body = document;
@@ -74,14 +78,14 @@ function run(platform, roots) {
     document.createElementNS = (namespace, tag) => { const node = new Element(tag); node.namespaceURI = namespace; return node; };
     const callbacks = [];
     const context = {
-        DownloaderCore: core, document, location: {href: platform === 'instagram' ? 'https://www.instagram.com/' : 'https://x.com/home'},
+        DownloaderCore: core, document, location: {href: url || (platform === 'instagram' ? 'https://www.instagram.com/' : 'https://x.com/home')},
         browser: {i18n: {getMessage: key => key}, runtime: {onMessage: {addListener() {}}, sendMessage() { throw new Error('Unexpected download'); }}},
         MutationObserver: class {constructor(callback) { context.mutate = callback; } observe() {}},
-        getComputedStyle: node => ({display: 'block', visibility: 'visible', opacity: '1', overflowX: 'visible', overflowY: 'visible', ...node.style}),
+        getComputedStyle: node => ({display: 'block', flexDirection: 'row', visibility: 'visible', opacity: '1', overflowX: 'visible', overflowY: 'visible', ...node.style}),
         addEventListener() {}, setTimeout: callback => { callbacks.push(callback); return callbacks.length; }, clearTimeout() {}, URL, console
     };
     // Capture real closure functions for focused fallback tests without exporting internals in production.
-    vm.runInNewContext(content.replace('    scan();\n})();', '    globalThis.testInternals = {visibleSlide, traverseCarousel};\n    scan();\n})();'), context);
+    vm.runInNewContext(content.replace('    scan();\n})();', '    globalThis.testInternals = {visibleSlide, traverseCarousel, instagramMedia};\n    scan();\n})();'), context);
     return {document, context, flush() { while (callbacks.length) callbacks.shift()(); }};
 }
 
@@ -112,6 +116,51 @@ test('dynamic rescans create one button per post and reset reused SPA post rows'
     assert.equal(first.root.querySelector('[data-downloader-button]').dataset.postUrl, 'https://www.instagram.com/p/NEW456/');
 });
 
+test('deep send wrappers with a count control do not trap the download in a column', () => {
+    const post = instagramPost('ABC123');
+    post.share.remove();
+    const column = element('div', {}, post.share, element('button', {'aria-label': 'Share count'}));
+    column.style = {display: 'flex', flexDirection: 'column'};
+    let nested = column;
+    for (let depth = 0; depth < 6; depth++) nested = element('div', {}, nested);
+    post.wrapper.append(nested);
+    const fixture = run('instagram', [post.root]);
+    const button = post.root.querySelector('[data-downloader-button]');
+    assert.ok(button);
+    assert.equal(button.parentElement, post.row);
+    assert.equal(post.wrapper.nextElementSibling, button);
+    fixture.context.mutate();
+    fixture.flush();
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 1);
+    assert.equal(post.wrapper.nextElementSibling, button);
+});
+
+test('rerendered Instagram actions relocate the existing button and keep its state', () => {
+    const post = instagramPost('ABC123');
+    const fixture = run('instagram', [post.root]);
+    const button = post.root.querySelector('[data-downloader-button]');
+    button.dataset.state = 'complete';
+    // React leaves our unknown node behind while moving its own action group.
+    const actions = element('div');
+    actions.style = {display: 'flex', flexDirection: 'row'};
+    actions.append(...post.row.children.filter(child => child !== button));
+    post.row.append(actions);
+    fixture.context.mutate();
+    fixture.flush();
+    assert.equal(button.parentElement, actions);
+    assert.equal(post.wrapper.nextElementSibling, button);
+    assert.equal(button.dataset.state, 'complete');
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 1);
+});
+
+test('vertical Reel action rails remain supported', () => {
+    const post = instagramPost('ABC123');
+    post.row.style.flexDirection = 'column';
+    post.root.style = {display: 'flex', flexDirection: 'row'};
+    run('instagram', [post.root]);
+    assert.equal(post.wrapper.nextElementSibling, post.root.querySelector('[data-downloader-button]'));
+});
+
 test('X video post gets download after share; image and text posts do not', () => {
     const video = xPost('123', true, 'Partager le post');
     const photo = xPost('456', false);
@@ -120,6 +169,51 @@ test('X video post gets download after share; image and text posts do not', () =
     assert.ok(button);
     assert.equal(video.row.children[video.row.children.indexOf(video.wrapper) + 1], button);
     assert.equal(photo.root.querySelector('[data-downloader-button]'), null);
+});
+
+test('Story button identifies current Story and resets after automatic navigation', () => {
+    const share = element('button', {'aria-label': 'Share'});
+    const row = element('section', {}, element('button', {'aria-label': 'Like'}), share);
+    row.style = {display: 'flex', flexDirection: 'row'};
+    const media = element('img');
+    media.src = 'https://scontent.cdninstagram.com/story.jpg';
+    const viewer = element('div', {}, media, row);
+    const fixture = run('instagram', [viewer], 'https://www.instagram.com/stories/imwinter/4013638722465314116/?utm_source=share');
+    const button = viewer.querySelector('[data-downloader-button]');
+    assert.ok(button);
+    assert.equal(button.dataset.postUrl, 'https://www.instagram.com/stories/imwinter/4013638722465314116/');
+    assert.equal(row.children[row.children.indexOf(share) + 1], button);
+    fixture.context.location.href = 'https://www.instagram.com/stories/imwinter/4013638722465314117/';
+    fixture.context.mutate();
+    fixture.flush();
+    assert.equal(button.dataset.postUrl, fixture.context.location.href);
+    assert.equal(viewer.querySelectorAll('[data-downloader-button]').length, 1);
+});
+
+test('Story collection uses its numeric ID for the API and never traverses Next controls', async () => {
+    const post = instagramPost('ABC123');
+    const fixture = run('instagram', [post.root]);
+    const postURL = 'https://www.instagram.com/stories/imwinter/4013638722465314116/';
+    fixture.context.AbortController = AbortController;
+    const calls = [];
+    fixture.context.fetch = async (url, options) => {
+        calls.push({url, options});
+        return {ok: true, text: async () => JSON.stringify({items: [{pk: '4013638722465314116', media_type: 1,
+            image_versions2: {candidates: [{url: 'https://scontent.cdninstagram.com/story.jpg', width: 1080, height: 1920}]}}]})};
+    };
+    const result = await fixture.context.testInternals.instagramMedia(post.root, postURL);
+    assert.equal(result.source, 'metadata');
+    assert.equal(calls[0].url, '/api/v1/media/4013638722465314116/info/');
+    assert.equal(calls[0].options.credentials, 'include');
+    const next = element('button', {'aria-label': 'Next'});
+    let clicked = false;
+    next.onClick = () => { clicked = true; };
+    post.root.append(next);
+    fixture.context.fetch = async () => ({ok: false});
+    const fallback = await fixture.context.testInternals.instagramMedia(post.root, postURL);
+    assert.equal(fallback.source, 'story');
+    assert.equal(fallback.media.length, 0);
+    assert.equal(clicked, false);
 });
 
 test('photo slide is not misclassified by a video hidden beyond the carousel clipping viewport', () => {

@@ -45,8 +45,15 @@ struct NativeMediaRequest {
         let valid: Bool
         switch host {
         case "instagram.com", "www.instagram.com":
-            valid = parts.count == 2 && ["p", "reel", "tv"].contains(parts[0])
-                && parts[1].range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil
+            let story = parts.count == 3 && parts[0] == "stories" && parts[1] != "highlights"
+                && parts[1].range(of: "^[A-Za-z0-9._]{1,30}$", options: .regularExpression) != nil
+                && parts[2].range(of: "^[0-9]{1,25}$", options: .regularExpression) != nil
+            valid = story || (parts.count == 2 && ["p", "reel", "tv"].contains(parts[0])
+                && parts[1].range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil)
+            if story {
+                components.host = "www.instagram.com"
+                components.path = "/stories/\(parts[1])/\(parts[2])/"
+            }
         case "x.com", "www.x.com", "twitter.com", "www.twitter.com":
             valid = (parts.count == 3 && parts[1] == "status"
                      && parts[0].range(of: "^[A-Za-z0-9_]+$", options: .regularExpression) != nil
@@ -59,6 +66,13 @@ struct NativeMediaRequest {
         components.query = nil
         components.fragment = nil
         return components.url
+    }
+
+    static func instagramStoryID(_ url: URL) -> String? {
+        guard let canonical = postURL(url.absoluteString) else { return nil }
+        let parts = canonical.path.split(separator: "/")
+        guard canonical.host == "www.instagram.com", parts.count == 3, parts[0] == "stories" else { return nil }
+        return String(parts[2])
     }
 
     func downloadRequest() -> URLRequest {

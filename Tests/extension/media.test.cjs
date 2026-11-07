@@ -12,6 +12,31 @@ test('post links are canonicalized and cannot point at other hosts', () => {
     for (const url of ['https://instagram.com.evil.test/p/ABC/', 'http://instagram.com/p/ABC/', 'https://user:pass@instagram.com/p/ABC/', 'https://www.instagram.com/accounts/login/']) assert.equal(core.canonicalPostURL(url), null);
 });
 
+const storyURL = 'https://www.instagram.com/stories/imwinter/4013638722465314116/';
+test('Story links retain the exact ID, remove share tracking and reject whole trays', () => {
+    assert.equal(core.canonicalPostURL(storyURL + '?utm_source=ig_story_item_share&rpxt=tracking'), storyURL);
+    assert.equal(core.instagramStoryID(storyURL), '4013638722465314116');
+    for (const url of ['https://instagram.com/stories/imwinter/', 'https://instagram.com/stories/imwinter/no/',
+        'https://instagram.com/stories/highlights/123/', 'https://instagram.com/stories/imwinter/123/extra']) {
+        assert.equal(core.canonicalPostURL(url), null);
+    }
+});
+
+test('Story metadata selects one image or video by string ID without rounded-number matches', () => {
+    const id = core.instagramStoryID(storyURL);
+    const node = {pk: id + '_123', media_type: 1, image_versions2: {candidates: [image('small.jpg', 320), image('story.jpg')]}};
+    const result = core.instagramStoryMetadata({reels: [{items: [{...node, pk: '111'}, node]}]}, id);
+    assert.equal(result.media.length, 1);
+    assert.equal(result.media[0].url, image('story.jpg').url);
+    assert.equal(result.complete, true);
+    assert.equal(core.instagramStoryMetadata({items: [{...node, pk: Number(id)}]}, id), null);
+    assert.equal(core.instagramStoryMetadata({items: [{...node, pk: '111'}]}, id), null);
+    const video = {...node, media_type: 2, video_versions: [{url: 'https://scontent.cdninstagram.com/story.mp4', width: 1080, height: 1920}]};
+    assert.equal(core.instagramStoryMetadata({items: [video]}, id).hasVideo, true);
+    delete video.video_versions;
+    assert.equal(core.instagramStoryMetadata({items: [video]}, id), null);
+});
+
 test('media allowlist rejects lookalike hosts, credentials and unsafe schemes', () => {
     for (const url of ['https://scontent.cdninstagram.com/a.jpg', 'https://video.twimg.com/a.mp4', 'https://pbs.twimg.com/a.jpg']) assert.ok(core.allowedMediaURL(url));
     for (const url of ['https://cdninstagram.com.evil.test/a.jpg', 'https://arbitrary.twimg.com/a.mp4', 'https://user@pbs.twimg.com/a.jpg', 'http://pbs.twimg.com/a.jpg', 'file:///tmp/a.jpg', 'https://pbs.twimg.com:444/a.jpg',

@@ -49,7 +49,7 @@ final class BackgroundDownloadSession: @unchecked Sendable {
 @MainActor enum EmbeddedMediaResolver {
     static var manifest: ResolvedDownload!
     static var failure: MediaSaveError?
-    static func resolve(sourceURL: URL, destination: DownloadDestination) async throws -> ResolvedDownload {
+    static func resolve(sourceURL: URL, destination: DownloadDestination, allowAV1: Bool = false) async throws -> ResolvedDownload {
         if let failure { throw failure }
         return manifest
     }
@@ -60,6 +60,18 @@ final class BackgroundDownloadSession: @unchecked Sendable {
     static func combine(_ inputs: [URL], into output: URL, container: String) async throws {
         try beforeCopy?()
         try inputs.reduce(into: Data()) { $0.append(try Data(contentsOf: $1)) }.write(to: output)
+    }
+}
+
+@MainActor enum HEVCTranscoder {
+    static var conversions: [HEVCConversionSettings] = []
+    static var failure: MediaSaveError?
+    static func convert(_ input: URL, into output: URL, container: String,
+                        settings: HEVCConversionSettings, progress: @escaping @Sendable (Double) -> Void) async throws {
+        conversions.append(settings)
+        if let failure { throw failure }
+        try FileManager.default.copyItem(at: input, to: output)
+        progress(1)
     }
 }
 
@@ -198,6 +210,41 @@ final class BackgroundDownloadSession: @unchecked Sendable {
         legacy.removeValue(forKey: "errorCode")
         let legacyJob = try JSONDecoder().decode(DownloadJob.self, from: JSONSerialization.data(withJSONObject: legacy))
         precondition(legacyJob.errorCode == nil, "Old task records must remain readable")
+        let conversionDomain = "Downloader-Conversion-Recovery-" + UUID().uuidString
+        let conversionDefaults = UserDefaults(suiteName: conversionDomain)!
+        defer { conversionDefaults.removePersistentDomain(forName: conversionDomain) }
+        let options = HEVCConversionSettings(enabled: true, quality: .high, resolution: .hd, customBitrate: true, bitrateMbps: 17)
+        HEVCConversionPreferences.save(options, to: conversionDefaults)
+        let youtube = URL(string: "https://www.youtube.com/watch?v=abcdefghijk")!
+        let av1 = ResolvedStream(url: URL(string: "https://video.googlevideo.com/video")!, headers: [:], role: .video,
+                                 container: "webm", videoCodec: "av01.0.16M.10")
+        let aac = ResolvedStream(url: URL(string: "https://video.googlevideo.com/audio")!, headers: [:], role: .audio,
+                                 container: "m4a", audioCodec: "mp4a.40.2")
+        EmbeddedMediaResolver.manifest = .init(sourceURL: youtube, title: "AV1 video", media: [
+            .init(id: "av1", kind: .video, filename: "video.mkv", container: "mkv", streams: [av1, aac])
+        ])
+        MediaRemux.beforeCopy = nil
+        HEVCTranscoder.failure = .init(code: "conversionFailed", message: "Synthetic encoder failure")
+        let conversionCenter = DownloadCenter(storageRoot: root, conversionDefaults: conversionDefaults)
+        let conversionID = try await conversionCenter.enqueue(youtube.absoluteString, destination: .photos)
+        HEVCConversionPreferences.save(HEVCConversionSettings(), to: conversionDefaults)
+        for _ in 0..<100 {
+            if conversionCenter.jobs.first(where: { $0.id == conversionID })?.phase == .failed { break }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        let conversionFailure = conversionCenter.jobs.first(where: { $0.id == conversionID })!
+        precondition(conversionFailure.phase == .failed && conversionFailure.errorCode == "conversionFailed")
+        precondition(conversionFailure.savedMediaIDs.isEmpty, "Encoding failure cannot report saved media")
+        precondition(conversionFailure.hevcConversion == options, "Changing settings cannot alter an enqueued job")
+        HEVCTranscoder.failure = nil
+        await conversionCenter.retry(conversionID)
+        for _ in 0..<100 {
+            if conversionCenter.jobs.first(where: { $0.id == conversionID })?.phase == .completed { break }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        precondition(conversionCenter.jobs.first(where: { $0.id == conversionID })?.phase == .completed)
+        precondition(HEVCTranscoder.conversions == [options, options], "Retry must retain the original codec settings")
+        precondition(NativePhotoSaver.saved.last == "video-hevc.mp4", "Photos receives the converted MP4 filename")
         print("DownloadCenter recovery, cancellation, Photos failure, login sync retry and concurrent saving passed")
     }
 }

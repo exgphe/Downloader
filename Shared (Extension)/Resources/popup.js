@@ -10,6 +10,9 @@ const videoDot = document.getElementById("video-dot");
 
 try {
     const result = await browser.runtime.sendMessage({type: "nativeStatus"});
+    if (["macOS", "iOS", "visionOS"].includes(result?.platform)) {
+        document.documentElement.dataset.platform = result.platform;
+    }
     const authorization = result?.photosAuthorization;
     const labels = {authorized: "photosReady", limited: "photosReady", notDetermined: "photosFirstSave", denied: "photosDenied", restricted: "photosRestricted"};
     photosStatus.textContent = result?.ok ? t(labels[authorization] || "photosFirstSave") : result?.error || t("nativeUnavailable");

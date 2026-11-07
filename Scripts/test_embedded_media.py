@@ -31,6 +31,7 @@ from yt_dlp.extractor.youtube.jsc._director import initialize_jsc_director as _d
 from yt_dlp import YoutubeDL as _YDL
 from yt_dlp.extractor.youtube import YoutubeIE as _IE
 from gallery_dl.extractor.instagram import InstagramPostExtractor as _IG
+from gallery_dl.extractor.instagram import InstagramAPI as _IGAPI
 import ssl as _ssl
 import certifi as _certifi
 import requests as _requests
@@ -93,6 +94,21 @@ def _posts(self):
                 {"url": "https://scontent.cdninstagram.com/poster.jpg", "width": 1080, "height": 1920}]},
              "video_versions": [{"url": "https://scontent.cdninstagram.com/video.mp4", "width": 1080, "height": 1920}]}]}]
 _IG.posts = _posts
+
+def _story_user(self, username):
+    assert username == "imwinter" and self.extractor._logged_in
+    assert any(cookie.name == "sessionid" for cookie in self.extractor.cookies)
+    return {"id": "123"}
+def _story_reels(self, ids):
+    assert ids == ("123",)
+    carousel = _posts(self.extractor)[0]
+    image, video = carousel["carousel_media"]
+    image = {**image, "pk": "4013638722465314116"}
+    video = {**video, "pk": 4013638722465314117}
+    return [{"id": "123", "user": {"pk": "123", "username": "imwinter"},
+             "latest_reel_media": 1700000000, "items": [image, video]}]
+_IGAPI.user = _story_user
+_IGAPI.reels_media = _story_reels
 
 # Validate the new argument and real Requests CookieJar inside bundled CPython,
 # independently of the host uv interpreter and without writing credentials.
@@ -167,7 +183,7 @@ def main():
             str(swift_source), str(ROOT / "Shared (Core)/EmbeddedPythonResources.swift"),
             str(session_source),
             str(ROOT / "Shared (Core)/NativeMediaRequest.swift"),
-            str(ROOT / "Shared (Core)/DownloadModels.swift"), str(ROOT / "Tests/EmbeddedMediaSmoke.swift"), "-o", str(executable))
+            str(ROOT / "Shared (Core)/HEVCConversionSettings.swift"), str(ROOT / "Shared (Core)/DownloadModels.swift"), str(ROOT / "Tests/EmbeddedMediaSmoke.swift"), "-o", str(executable))
         run(sys.executable, str(ROOT / "Scripts/package_runtime.py"), "--platform", "macosx",
             "--arch", platform.machine(), "--bundle", str(app))
         scripts = extension / "Resources/python-bootstrap"

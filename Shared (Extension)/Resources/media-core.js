@@ -22,6 +22,8 @@
         const actualPlatform = platformForURL(value);
         if (!url || !actualPlatform || (platform && actualPlatform !== platform)) return null;
         if (actualPlatform === "instagram") {
+            const story = url.pathname.match(/^\/stories\/([A-Za-z0-9._]{1,30})\/(\d{1,25})\/?$/);
+            if (story && story[1] !== "highlights") return `https://www.instagram.com/stories/${story[1]}/${story[2]}/`;
             const match = url.pathname.match(/^\/(p|reel|reels|tv)\/([A-Za-z0-9_-]{3,32})\/?$/);
             return match ? `https://www.instagram.com/${match[1] === "reels" ? "reel" : match[1]}/${match[2]}/` : null;
         }
@@ -88,6 +90,29 @@
         }
         return null;
     }
+    function instagramStoryID(value) {
+        const canonical = canonicalPostURL(value, "instagram");
+        return canonical ? new URL(canonical).pathname.match(/^\/stories\/[^/]+\/(\d+)\/$/)?.[1] || null : null;
+    }
+    function instagramStoryMetadata(payload, identifier) {
+        if (typeof identifier !== "string" || !/^\d{1,25}$/.test(identifier)) return null;
+        const stack = [payload];
+        let visited = 0;
+        while (stack.length && visited++ < 30000) {
+            const node = stack.pop();
+            if (!node || typeof node !== "object") continue;
+            const matches = [node.pk, node.id].some(value =>
+                (typeof value === "string" && value.split("_")[0] === identifier) ||
+                (typeof value === "number" && Number.isSafeInteger(value) && String(value) === identifier));
+            if (matches && [1, 2].includes(node.media_type)) {
+                const item = mediaFromNode(node, 0);
+                if (item && allowedMediaURL(item.url)) return {media: [item], complete: true,
+                    hasVideo: item.kind === "video", expectedMediaCount: 1, source: "metadata"};
+            }
+            for (const child of Object.values(node)) if (child && typeof child === "object") stack.push(child);
+        }
+        return null;
+    }
     function validatePostRequest(request, senderURL) {
         if (!request || request.type !== "downloadPost") throw new Error("Invalid download request.");
         const platform = platformForURL(senderURL);
@@ -96,6 +121,11 @@
         if (!postURL) throw new Error("Invalid post URL.");
         if (request.complete !== true) throw new Error("Could not read every item in this post. Open the post, then try again.");
         if (!Array.isArray(request.media) || request.media.length > MAX_ITEMS) throw new Error("Invalid media list.");
+        const storyID = instagramStoryID(postURL);
+        if (storyID && request.mediaSource === "story" && request.media.length === 0) {
+            return {platform, postURL, media: [], hasVideo: false, needsStoryResolution: true};
+        }
+        if (storyID && request.media.length !== 1) throw new Error("A Story link must identify exactly one media item.");
         const media = request.media.map((item, index) => {
             if (!item || !["image", "video"].includes(item.kind)) throw new Error("Invalid media type.");
             if (item.kind === "image" && !allowedMediaURL(item.url)) throw new Error("An image URL is not from an approved media host.");
@@ -109,7 +139,8 @@
         const mediaSource = platform === "instagram" && request.mediaSource === "metadata" ? "metadata" : "page";
         return {platform, postURL, media, mediaSource, hasVideo, expectedVideoCount};
     }
-    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, shortcodeToMediaID, instagramMetadata, validatePostRequest};
+    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, shortcodeToMediaID,
+        instagramMetadata, instagramStoryID, instagramStoryMetadata, validatePostRequest};
     root.DownloaderCore = core;
     if (typeof module === "object" && module.exports) module.exports = core;
 })(globalThis);

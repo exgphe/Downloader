@@ -1,17 +1,18 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = ["meson==1.9.1", "ninja==1.13.0", "pkgconf==3.0.7.post0"]
 # ///
-"""Build a minimal LGPL FFmpeg library for local MP4/Matroska remuxing.
+"""Build local LGPL FFmpeg libraries with BSD dav1d AV1 decoding.
 
-No decoders, encoders, network protocols, command-line programs or GPL components
-are enabled. Invoke with uv run --no-project --script Scripts/bootstrap_ffmpeg.py.
+HEVC encoding uses Apple's VideoToolbox. Network protocols, command-line
+programs and GPL components are disabled. Python/build tools are managed by uv.
 """
 from pathlib import Path
 import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import tarfile
 import urllib.request
@@ -41,7 +42,9 @@ def main():
     parser.add_argument("--variant", action="append", choices=VARIANTS)
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()
-    lock = json.loads((ROOT / "Dependencies/runtime-lock.json").read_text())["ffmpeg"]
+    locks = json.loads((ROOT / "Dependencies/runtime-lock.json").read_text())
+    lock = locks["ffmpeg"]
+    dav1d = locks["dav1d"]
     archive = ROOT / "Dependencies/archives" / lock["filename"]
     archive.parent.mkdir(parents=True, exist_ok=True)
     if not archive.exists():
@@ -57,24 +60,69 @@ def main():
     if not source.exists():
         with tarfile.open(archive) as file:
             file.extractall(scratch, filter="data")
+    # FFmpeg 8.0.1 treats visionOS as iOS here, but OpenGLES is unavailable.
+    # Use the public Metal compatibility key for its pixel buffers instead.
+    compatibility = source / "libavcodec/videotoolbox.c"
+    original = "#if TARGET_OS_IPHONE\n    CFDictionarySetValue(buffer_attributes, kCVPixelBufferOpenGLESCompatibilityKey, kCFBooleanTrue);"
+    patched = "#if TARGET_OS_VISION\n    CFDictionarySetValue(buffer_attributes, kCVPixelBufferMetalCompatibilityKey, kCFBooleanTrue);\n#elif TARGET_OS_IPHONE\n    CFDictionarySetValue(buffer_attributes, kCVPixelBufferOpenGLESCompatibilityKey, kCFBooleanTrue);"
+    contents = compatibility.read_text()
+    if original in contents:
+        compatibility.write_text(contents.replace(original, patched))
+    elif patched not in contents:
+        raise SystemExit("FFmpeg VideoToolbox source does not match the expected visionOS compatibility patch")
+    dav1d_archive = archive.parent / dav1d["filename"]
+    if not dav1d_archive.exists():
+        if args.offline:
+            raise SystemExit(f"Missing {dav1d_archive}")
+        urllib.request.urlretrieve(dav1d["url"], dav1d_archive)
+    with dav1d_archive.open("rb") as file:
+        if hashlib.file_digest(file, "sha256").hexdigest() != dav1d["sha256"]:
+            raise SystemExit("dav1d source checksum does not match runtime-lock.json")
+    dav1d_source = scratch / ("dav1d-" + dav1d["version"])
+    if not dav1d_source.exists():
+        with tarfile.open(dav1d_archive) as file:
+            file.extractall(scratch, filter="data")
     clang = subprocess.check_output(["xcrun", "--find", "clang"], text=True).strip()
     variants = args.variant or list(VARIANTS)
     for variant in variants:
         destination = ROOT / "Dependencies/FFmpeg" / variant
         marker = destination / "build.json"
-        if marker.exists() and json.loads(marker.read_text()).get("sourceSHA256") == lock["sha256"]:
+        expected = {"sourceSHA256": lock["sha256"], "dav1dSHA256": dav1d["sha256"], "buildRevision": 2}
+        if marker.exists() and all(json.loads(marker.read_text()).get(key) == value for key, value in expected.items()):
             print(f"Already built {variant}", flush=True)
             continue
         sdk, arch, target = VARIANTS[variant]
         sdk_path = subprocess.check_output(["xcrun", "--sdk", sdk, "--show-sdk-path"], text=True).strip()
-        build = scratch / variant
+        build = scratch / (variant + "-media-v" + str(expected["buildRevision"]))
         build.mkdir(exist_ok=True)
         flags = f"-target {target} -isysroot {sdk_path} -fapplication-extension -fPIC"
+        dav1d_build = scratch / (variant + "-dav1d")
+        cross = scratch / (variant + "-dav1d.ini")
+        cross.write_text(
+            f"[binaries]\nc = {[clang, '-target', target, '-isysroot', sdk_path]!r}\n"
+            f"ar = {subprocess.check_output(['xcrun', '--find', 'ar'], text=True).strip()!r}\n"
+            f"[host_machine]\nsystem = 'darwin'\ncpu_family = {arch!r}\ncpu = {arch!r}\nendian = 'little'\n"
+            "[properties]\nneeds_exe_wrapper = true\n"
+            "[built-in options]\nc_args = ['-fapplication-extension', '-fPIC']\n")
+        if dav1d_build.exists():
+            shutil.rmtree(dav1d_build)
+        run(["meson", "setup", str(dav1d_build), str(dav1d_source), "--cross-file", str(cross),
+             "--prefix", str(destination), "--libdir", "lib", "--buildtype", "release",
+             "--default-library", "static", "-Denable_asm=false", "-Denable_tools=false",
+             "-Denable_tests=false"], log=build / "dav1d-configure.log")
+        run(["meson", "compile", "-C", str(dav1d_build), "-j", "4"], log=build / "dav1d-build.log")
+        run(["meson", "install", "-C", str(dav1d_build)], log=build / "dav1d-install.log")
+        pkg_config = shutil.which("pkgconf") or shutil.which("pkg-config")
+        if not pkg_config:
+            raise SystemExit("Run this script through uv to provide the pinned pkgconf tool.")
+        os.environ["PKG_CONFIG_LIBDIR"] = str(destination / "lib/pkgconfig")
         configuration = [str(source / "configure"), f"--prefix={destination}", "--target-os=darwin",
                          f"--arch={arch}", f"--cc={clang}", "--enable-cross-compile", "--enable-static",
                          "--disable-shared", "--disable-everything", "--disable-autodetect", "--disable-network",
                          "--disable-programs", "--disable-doc", "--disable-debug", "--disable-asm",
-                         "--disable-avdevice", "--disable-avfilter", "--disable-swscale", "--disable-swresample",
+                         "--disable-avdevice", "--disable-avfilter", "--enable-swscale", "--disable-swresample",
+                         "--enable-libdav1d", f"--pkg-config={pkg_config}", "--pkg-config-flags=--static",
+                         "--enable-videotoolbox", "--enable-decoder=libdav1d", "--enable-encoder=hevc_videotoolbox",
                          "--enable-demuxer=mov,matroska", "--enable-muxer=mp4,matroska", "--enable-protocol=file",
                          "--enable-parser=aac,av1,h264,hevc,opus,vp9", "--enable-bsf=aac_adtstoasc",
                          f"--extra-cflags={flags}", f"--extra-ldflags={flags}"]
@@ -88,12 +136,16 @@ def main():
             '    header "libavcodec/avcodec.h"\n'
             '    header "libavutil/avutil.h"\n'
             '    header "libavutil/mathematics.h"\n'
+            '    header "libavutil/opt.h"\n'
+            '    header "libavutil/pixdesc.h"\n'
+            '    header "libswscale/swscale.h"\n'
             '    export *\n'
             '}\n')
         (destination / "COPYING.LGPLv2.1").write_bytes((source / "COPYING.LGPLv2.1").read_bytes())
-        marker.write_text(json.dumps({"sourceSHA256": lock["sha256"], "version": lock["version"],
+        (destination / "COPYING.dav1d").write_bytes((dav1d_source / "COPYING").read_bytes())
+        marker.write_text(json.dumps({**expected, "version": lock["version"],
                                      "target": target, "configuration": configuration}, indent=2))
-    print("Minimal local FFmpeg libraries are ready.", flush=True)
+    print("Local FFmpeg remuxing and AV1/HEVC conversion libraries are ready.", flush=True)
 
 if __name__ == "__main__":
     main()

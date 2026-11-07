@@ -26,12 +26,29 @@ enum EmbeddedMediaSmoke {
         try expect(photos.media.first?.container == "mp4", "Photos adaptive streams remux to MP4")
         try expect(photos.media.first?.streams.last?.audioCodec == "mp4a.40.2", "Photos chooses AAC")
         let files = try await EmbeddedMediaResolver.resolve(sourceURL: source, destination: .files)
+        let converted = try await EmbeddedMediaResolver.resolve(sourceURL: source, destination: .photos, allowAV1: true)
+        try expect(converted.media.first?.height == 4320 && converted.media.first?.streams.last?.audioCodec?.hasPrefix("mp4a") == true,
+                   "The native conversion option selects high-resolution AV1 with AAC for Photos")
         try expect(files.media.first?.height == 4320, "Files keeps the highest AV1 video")
         try expect(files.media.first?.streams.last?.audioCodec == "opus", "Files preserves the best Opus audio")
         let carousel = try await EmbeddedMediaResolver.resolve(sourceURL: URL(string: "https://instagram.com/p/ABC/")!, destination: .photos)
         try expect(carousel.media.count == 2, "The real gallery-dl parser returns the whole mixed carousel")
         try expect(carousel.media[0].kind == .image && carousel.media[1].kind == .video, "Images and videos are classified")
         try expect(carousel.title == "Cookie bridge fixture verified", "Swift passes the Instagram-only third session argument into the real gallery-dl jar")
+        let storyURL = URL(string: "https://www.instagram.com/stories/imwinter/4013638722465314116/?utm_source=ig_story_item_share&rpxt=tracking")!
+        let story = try await EmbeddedMediaResolver.resolve(sourceURL: storyURL, destination: .photos)
+        try expect(story.media.count == 1 && story.media[0].kind == .image && story.media[0].id == "4013638722465314116",
+                   "The bundled gallery-dl Story path selects exactly the shared image and preserves its large ID")
+        try expect(story.sourceURL.query == nil && story.title == "Instagram Story · imwinter", "Story tracking is stripped and the owner is displayed")
+        let videoStory = try await EmbeddedMediaResolver.resolve(sourceURL: URL(string: "https://instagram.com/stories/imwinter/4013638722465314117/")!, destination: .files)
+        try expect(videoStory.media.count == 1 && videoStory.media[0].kind == .video && videoStory.media[0].container == "mp4",
+                   "A video Story uses the real gallery parser rather than its poster image")
+        do {
+            _ = try await EmbeddedMediaResolver.resolve(sourceURL: URL(string: "https://instagram.com/stories/imwinter/111/")!, destination: .photos)
+            throw Failure(message: "A missing Story unexpectedly selected other media")
+        } catch let error as MediaSaveError {
+            try expect(error.code == "storyUnavailable", "Deleted or expired Stories have an actionable error")
+        }
         async let first = EmbeddedMediaResolver.resolve(sourceURL: source, destination: .photos)
         async let second = EmbeddedMediaResolver.resolve(sourceURL: source, destination: .files)
         let concurrent = try await (first, second)
@@ -44,6 +61,6 @@ enum EmbeddedMediaSmoke {
             try expect(!error.message.contains("smoke-secret"), "Errors hide authenticated URLs")
         }
         try expect(EmbeddedMediaResolver.status["available"] as? Bool == true, "A site error does not disable the engine")
-        print("Embedded app runtime passed: CPython, JavaScriptCore EJS challenges, gallery-dl Safari cookie bridge, codec policy and concurrent manifests.")
+        print("Embedded app runtime passed: CPython, JavaScriptCore EJS challenges, gallery-dl posts and Stories, Safari cookie bridge, codec policy and concurrent manifests.")
     }
 }

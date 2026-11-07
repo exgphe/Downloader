@@ -317,6 +317,9 @@ def package(args: argparse.Namespace) -> None:
         licenses = resources / "Licenses"
         licenses.mkdir(exist_ok=True)
         shutil.copy2(license_source, licenses / "FFmpeg-LGPL-2.1.txt")
+        dav1d_license = license_source.with_name("COPYING.dav1d")
+        if dav1d_license.is_file():
+            shutil.copy2(dav1d_license, licenses / "dav1d-BSD-2-Clause.txt")
     validate_runtime(resources, abi)
     # Only native frameworks are shared. Each process has its own Python home
     # and bootstrap resources, so Bundle.main works without cross-sandbox reads.
@@ -336,6 +339,9 @@ def package(args: argparse.Namespace) -> None:
         if license_source.is_file():
             (extension_resources / "Licenses").mkdir(exist_ok=True)
             shutil.copy2(license_source, extension_resources / "Licenses/FFmpeg-LGPL-2.1.txt")
+            dav1d_license = license_source.with_name("COPYING.dav1d")
+            if dav1d_license.is_file():
+                shutil.copy2(dav1d_license, extension_resources / "Licenses/dav1d-BSD-2-Clause.txt")
         if family != "macOS":
             for name in ("python", "python-packages"):
                 for marker in (extension_resources / name).rglob("*.fwork"):

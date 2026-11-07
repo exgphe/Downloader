@@ -7,15 +7,36 @@ import UIKit
 
 private struct ShareDownloadView: View {
     @ObservedObject var model: ShareDownloadModel
+    let close: () -> Void
     @State private var copiedLoginURL = false
     var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "arrow.down.circle.fill").font(.title).foregroundColor(.accentColor)
+                Text("下载媒体").font(.title2.bold())
+                Spacer()
+                Button(action: close) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .symbolRenderingMode(.hierarchical)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel("关闭分享页面")
+                .help("关闭分享页面")
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 8)
+            Divider()
+            downloadContent
+        }
+        .frame(minWidth: 310, idealWidth: 420, minHeight: 300)
+    }
+
+    private var downloadContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HStack {
-                    Image(systemName: "arrow.down.circle.fill").font(.title).foregroundColor(.accentColor)
-                    Text("下载媒体").font(.title2.bold())
-                    Spacer()
-                }
                 if model.loading {
                     ProgressView("正在读取链接…")
                 } else if !model.source.isEmpty {
@@ -44,7 +65,6 @@ private struct ShareDownloadView: View {
             }
             .padding(24)
         }
-        .frame(minWidth: 310, idealWidth: 420, minHeight: 300)
     }
 
     private var retryButton: some View {
@@ -93,7 +113,9 @@ private struct ShareDownloadView: View {
 final class ShareViewController: NSViewController {
     private let model = ShareDownloadModel()
     override func loadView() {
-        let hosting = NSHostingController(rootView: ShareDownloadView(model: model))
+        let hosting = NSHostingController(rootView: ShareDownloadView(model: model, close: { [weak self] in
+            self?.extensionContext?.completeRequest(returningItems: nil)
+        }))
         addChild(hosting)
         view = hosting.view
         preferredContentSize = NSSize(width: 440, height: 380)
@@ -105,7 +127,9 @@ final class ShareViewController: UIViewController {
     private let model = ShareDownloadModel()
     override func viewDidLoad() {
         super.viewDidLoad()
-        let hosting = UIHostingController(rootView: ShareDownloadView(model: model))
+        let hosting = UIHostingController(rootView: ShareDownloadView(model: model, close: { [weak self] in
+            self?.extensionContext?.completeRequest(returningItems: nil)
+        }))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)

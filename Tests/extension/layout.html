@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+* { box-sizing: border-box; }
+body { font: 14px -apple-system, sans-serif; margin: 20px; background: #fafafa; color: #111; }
+article { width: min(100%, 470px); margin: 0 auto 24px; background: white; padding: 12px; border: 1px solid #ddd; }
+header { margin-bottom: 8px; font-weight: 600; }
+.media { height: 90px; background: #e8edf1; display: flex; align-items: center; justify-content: center; }
+.row, .actions { display: flex; flex-direction: row; align-items: center; }
+.row { width: 100%; }
+.column { display: flex; flex-direction: column; align-items: center; }
+.save { margin-left: auto; }
+.spaced { justify-content: space-between; }
+.with-count { display: flex; align-items: center; gap: 4px; margin-right: 8px; font-weight: 600; }
+.native { box-sizing: border-box; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 8px; border: 0; background: none; color: inherit; }
+.native svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
+.count { height: 14px; padding: 0; font: 11px -apple-system; border: 0; background: none; }
+.rail { width: 44px; }
+.reel-layout { display: flex; align-items: center; justify-content: center; }
+.reel-layout img { width: 120px; height: 180px; background: #e8edf1; }
+/* Exercise a host site's generic button rules and nested flex defaults. */
+button { box-sizing: content-box; line-height: 1.5; }
+</style>
+<main id="cases"></main>
+<script>
+const glyphs = {
+    Like: 'M12 21C-3 11 2 1 12 7C22 1 27 11 12 21Z',
+    Comment: 'M21 21l-5-2a9 9 0 1 1 4-4Z',
+    Share: 'M3 3l18 1-8 17-3-10Z M10 11L21 4',
+    Save: 'M5 3h14v18l-7-6-7 6Z'
+};
+const action = name => '<button class="native" aria-label="' + name + '"><svg aria-label="' + name + '" viewBox="0 0 24 24"><path d="' + glyphs[name] + '"/></svg></button>';
+const wrapper = name => '<span>' + action(name) + '</span>';
+const leading = '<span class="with-count">' + action('Like') + '201.8K</span><span class="with-count">' + action('Comment') + '345</span>';
+const save = '<span class="save">' + action('Save') + '</span>';
+const deep = '<div>'.repeat(6) + '<div class="column">' + action('Share') + '<button class="count">12</button></div>' + '</div>'.repeat(6);
+const layouts = [
+    ['feed', 'Feed · counts and bookmark', '<section class="row" id="feed-actions">' + leading + wrapper('Share') + save + '</section>'],
+    ['deep', 'Nested wrappers · vertical share count', '<section class="row" id="deep-actions">' + leading + '<span>' + deep + '</span>' + save + '</section>'],
+    ['grouped', 'Grouped actions · spaced bookmark', '<section class="row spaced"><div class="actions" id="grouped-actions">' + leading + wrapper('Share') + '</div>' + save + '</section>'],
+    ['rail', 'Reel · vertical actions', '<div class="reel-layout"><img alt="Video placeholder"><section class="column rail" id="rail-actions">' + wrapper('Like') + wrapper('Comment') + wrapper('Share') + wrapper('Save') + '</section></div>']
+];
+for (const [name, title, actions] of layouts) {
+    const article = document.createElement('article');
+    article.id = name;
+    article.innerHTML = '<header>' + title + '</header><a href="https://www.instagram.com/p/' + name + '123/"><time>4h</time></a>' +
+        (name === 'rail' ? '' : '<div class="media">Post media</div>') + actions;
+    document.querySelector('#cases').append(article);
+}
+window.browser = {i18n: {getMessage: key => key}, runtime: {onMessage: {addListener() {}}, sendMessage() { throw Error('No download in layout test'); }}};
+window.layoutReport = () => layouts.map(([name]) => {
+    const root = document.getElementById(name);
+    const share = root.querySelector('[aria-label="Share"]');
+    const button = root.querySelector('[data-downloader-button]');
+    const a = share.getBoundingClientRect(), b = button?.getBoundingClientRect();
+    const rail = name === 'rail';
+    const previous = button?.previousElementSibling;
+    const anchor = previous?.getBoundingClientRect();
+    return {name, count: root.querySelectorAll('[data-downloader-button]').length,
+        parent: button?.parentElement.id, expected: name + '-actions',
+        afterShare: !!previous && (previous === share || previous.contains(share)),
+        aligned: !!b && Math.abs(rail ? b.x + b.width/2 - a.x - a.width/2 : b.y + b.height/2 - a.y - a.height/2) <= 1,
+        following: !!b && (rail ? b.top >= a.bottom : b.left >= a.right),
+        dimensions: !!b && b.width === 40 && b.height === 40,
+        overflow: root.scrollWidth > root.clientWidth,
+        rect: b ? {x:b.x, y:b.y, width:b.width, height:b.height} : null};
+});
+</script>

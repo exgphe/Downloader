@@ -5,7 +5,7 @@ enum DownloadDestination: String, Codable, CaseIterable, Sendable {
 }
 
 enum DownloadPhase: String, Codable, Sendable {
-    case queued, resolving, downloading, saving, completed, failed, cancelled
+    case queued, resolving, downloading, converting, saving, completed, failed, cancelled
     var isFinished: Bool { [.completed, .failed, .cancelled].contains(self) }
 }
 
@@ -24,6 +24,7 @@ struct DownloadJob: Identifiable, Codable, Sendable {
     var attemptID: UUID = UUID()
     var ownerProcessID: Int32? = nil
     var errorCode: String? = nil
+    var hevcConversion: HEVCConversionSettings? = nil
 }
 
 struct ResolvedDownload: Codable, Sendable {
@@ -112,6 +113,6 @@ enum DownloadSource {
         }
         if let identifier, identifier.range(of: "^[A-Za-z0-9_-]{11}$", options: .regularExpression) != nil,
            let youtube = URL(string: "https://www.youtube.com/watch?v=\(identifier)") { return youtube }
-        throw MediaSaveError(code: "invalidURL", message: "Enter a YouTube video, Instagram post or X post link. Playlists are not supported.")
+        throw MediaSaveError(code: "invalidURL", message: "Enter a YouTube video, Instagram post or Story, or X post link. Playlists are not supported.")
     }
 }

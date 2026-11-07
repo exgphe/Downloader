@@ -49,7 +49,8 @@ def main():
         print("Compiling the product Swift remuxer with bundled static FFmpeg libraries…", flush=True)
         run("xcrun", "swiftc", "-module-cache-path", str(work / "Modules"),
             "-I", str(library / "include"), "-L", str(library / "lib"),
-            "-lavformat", "-lavcodec", "-lavutil", "-lz", "-lbz2", "-liconv", "-lc++",
+            "-lavformat", "-lavcodec", "-lavutil", "-lswscale", "-ldav1d",
+            "-framework", "VideoToolbox", "-framework", "CoreMedia", "-framework", "CoreVideo", "-lz", "-lbz2", "-liconv", "-lc++",
             str(ROOT / "Shared (Core)/NativeMediaRequest.swift"), str(ROOT / "Shared (Core)/MediaRemux.swift"),
             str(ROOT / "Tests/MediaRemuxSmoke.swift"), "-o", str(executable))
         cases = (("h264", "libx264", "aac", "aac", "mp4", "m4a", "mp4"),

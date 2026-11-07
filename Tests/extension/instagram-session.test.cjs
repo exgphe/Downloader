@@ -142,14 +142,17 @@ async function popup(cookieAPI, options = {}) {
         });
         return elements.get(id);
     }
-    const document = {documentElement: {}, querySelectorAll: () => [], getElementById: element};
+    const document = {documentElement: {dataset: {}}, querySelectorAll: () => [], getElementById: element};
     Object.defineProperty(document, 'cookie', {get() { documentCookieReads++; throw new Error('document.cookie must never be read.'); }});
     const browser = {
         i18n: {getMessage: key => key, getUILanguage: () => 'en'},
         cookies: cookieAPI,
         runtime: {sendMessage: async message => {
             messages.push(normalized(message));
-            if (message.type === 'nativeStatus') return {ok: true, photosAuthorization: 'authorized', videoEngine: {available: true}};
+            if (message.type === 'nativeStatus') {
+                if (options.nativeError) throw new Error('Native extension unavailable');
+                return {ok: true, platform: options.platform, photosAuthorization: 'authorized', videoEngine: {available: true}};
+            }
             if (message.type === 'instagramSession' && options.statusResponse !== undefined) return options.statusResponse;
             return {ok: true, instagramSession: {hasSession: message.type === 'importInstagramSession'}};
         }}
@@ -161,8 +164,21 @@ async function popup(cookieAPI, options = {}) {
     });
     vm.runInContext(resource('instagram-session.js'), context);
     await vm.runInContext('(async () => {\n' + resource('popup.js').replace(/^import .*;\n?/gm, '') + '\n})()', context);
-    return {elements, messages, logs, documentCookieReads: () => documentCookieReads, storageAccesses: () => storageAccesses};
+    return {elements, messages, logs, document, documentCookieReads: () => documentCookieReads, storageAccesses: () => storageAccesses};
 }
+
+test('popup selects visionOS layout from native platform without reading cookies', async () => {
+    for (const platform of ['visionOS', 'iOS', 'macOS', undefined, 'unexpected']) {
+        const ui = await popup(undefined, {platform});
+        assert.equal(ui.document.documentElement.dataset.platform, ['visionOS', 'iOS', 'macOS'].includes(platform) ? platform : undefined);
+        assert.deepEqual(ui.messages, [{type: 'nativeStatus'}, {type: 'instagramSession'}]);
+        assert.equal(ui.documentCookieReads(), 0);
+    }
+    const failed = await popup(undefined, {nativeError: true});
+    assert.equal(failed.document.documentElement.dataset.platform, undefined);
+    assert.equal(failed.elements.get('photos-status').textContent, 'nativeUnavailable');
+    assert.equal(failed.elements.get('sync-instagram').disabled, false);
+});
 
 test('popup startup reads status only; cookie access happens once on the explicit sync click', async () => {
     const queries = [];

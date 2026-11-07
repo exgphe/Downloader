@@ -55,7 +55,7 @@ final class ShareDownloadModel: ObservableObject {
                 return
             }
         }
-        error = "请分享 YouTube 视频、Instagram 帖子或 X 帖子的链接。"
+        error = "请分享 YouTube 视频、Instagram 帖子或 Story、X 帖子的链接。"
     }
 
     private func load(_ provider: NSItemProvider, type: String) async throws -> String {
@@ -107,6 +107,7 @@ final class ShareDownloadModel: ObservableObject {
         case .queued: return "等待下载"
         case .resolving: return "正在本机解析链接…"
         case .downloading: return "正在下载媒体…"
+        case .converting: return "正在将 AV1 转换为 HEVC…"
         case .saving: return "正在保存…"
         case .completed: return "已保存到照片。"
         case .failed: return job.error ?? "下载失败。"

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import time
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -47,6 +48,24 @@ def image_post():
             "image_versions2": {"candidates": [{"url": "https://scontent.cdninstagram.com/photo.jpg", "width": 1080, "height": 1080}]}}
 
 
+STORY_URL = "https://www.instagram.com/stories/imwinter/4013638722465314116/"
+STORY_ID = "4013638722465314116"
+
+
+def story_reel(kind="image", *, pk=STORY_ID):
+    selected = {**image_post(), "pk": pk}
+    selected["image_versions2"]["candidates"] = [
+        {"url": "https://scontent.cdninstagram.com/low.jpg", "width": 320, "height": 480},
+        {"url": "https://scontent.cdninstagram.com/story.jpg", "width": 1080, "height": 1920}]
+    if kind == "video":
+        selected["media_type"] = 2
+        selected["video_versions"] = [
+            {"url": "https://scontent.cdninstagram.com/story.mp4", "width": 1080, "height": 1920},
+            {"url": "https://scontent.cdninstagram.com/low.mp4", "width": 320, "height": 480}]
+    return {"id": "123", "user": {"pk": "123", "username": "imwinter"},
+            "latest_reel_media": 1700000000, "items": [image_post(), selected, {**image_post(), "pk": "456"}]}
+
+
 class AppResolverTests(unittest.TestCase):
     def setUp(self):
         # Host tests do not execute JS. The separate native runtime smoke test
@@ -69,6 +88,23 @@ class AppResolverTests(unittest.TestCase):
         self.assertEqual(media["container"], "mkv")
         self.assertEqual(media["streams"][0]["videoCodec"], "av01.0.16M.10")
         self.assertEqual(media["streams"][1]["audioCodec"], "opus")
+
+    def test_photos_can_select_av1_only_when_conversion_is_enabled(self):
+        media = resolver._youtube_media(youtube(), "photos", allow_av1=True)[0]
+        self.assertEqual(media["height"], 4320)
+        self.assertEqual(media["container"], "mkv")
+        self.assertEqual(media["streams"][0]["videoCodec"], "av01.0.16M.10")
+        self.assertEqual(media["streams"][1]["audioCodec"], "mp4a.40.2")
+        self.assertEqual(resolver._youtube_media(youtube(), "photos")[0]["height"], 2160)
+
+    def test_conversion_never_allows_vp9_or_incompatible_audio_in_photos(self):
+        info = youtube()
+        info["formats"] = [fmt("vp9", height=4320, video="vp09"), info["formats"][3]]
+        with self.assertRaises(resolver.ResolutionError):
+            resolver._youtube_media(info, "photos", allow_av1=True)
+        info["formats"] = [fmt("av1", height=4320, video="av01"), fmt("opus", audio="opus", container="webm")]
+        with self.assertRaises(resolver.ResolutionError):
+            resolver._youtube_media(info, "photos", allow_av1=True)
 
     def test_original_audio_language_is_preserved_before_quality(self):
         info = youtube()
@@ -123,6 +159,12 @@ class AppResolverTests(unittest.TestCase):
             self.assertEqual(resolver._source_url(address), ("youtube", "https://www.youtube.com/watch?v=abcdefghijk"))
         self.assertEqual(resolver._source_url("https://www.instagram.com/p/ABC/?igsh=secret"),
                          ("instagram", "https://www.instagram.com/p/ABC/"))
+        self.assertEqual(resolver._source_url(STORY_URL + "?utm_source=ig_story_item_share&rpxt=tracking"),
+                         ("instagram", STORY_URL))
+        for address in ("https://instagram.com/stories/imwinter/", "https://instagram.com/stories/imwinter/no/",
+                        "https://instagram.com/stories/highlights/123/", "https://instagram.com/stories/imwinter/123/extra",
+                        "https://instagram.com.evil.test/stories/imwinter/123/", "http://instagram.com/stories/imwinter/123/"):
+            self.assertEqual(json.loads(resolver.resolve_json(address, "photos"))["code"], "invalidSource")
         for address in ("https://www.youtube.com/playlist?list=anything", "https://evil.example/abcdefghijk",
                         "http://youtu.be/abcdefghijk", "https://user@youtu.be/abcdefghijk",
                         "https://youtu.be/notvalid"):
@@ -177,6 +219,154 @@ class AppResolverTests(unittest.TestCase):
         self.assertEqual(len(result["download"]["media"]), 2)
         self.assertEqual(result["download"]["media"][0]["streams"][0]["url"], "https://scontent.cdninstagram.com/high.jpg")
         self.assertEqual(result["download"]["media"][1]["streams"][0]["url"], "https://scontent.cdninstagram.com/high.mp4")
+
+    def test_story_selects_only_requested_item_and_preserves_large_ids(self):
+        from gallery_dl.extractor.instagram import InstagramAPI
+        for kind, pk in (("image", STORY_ID), ("video", int(STORY_ID)), ("image", STORY_ID + "_123")):
+            with self.subTest(kind=kind, pk=pk), \
+                    patch.object(InstagramAPI, "user", return_value={"id": "123"}) as owner, \
+                    patch.object(InstagramAPI, "reels_media", return_value=[story_reel(kind, pk=pk)]) as reels:
+                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+            self.assertTrue(result["ok"], result)
+            self.assertEqual(result["download"]["title"], "Instagram Story · imwinter")
+            media = result["download"]["media"]
+            self.assertEqual(len(media), 1)
+            self.assertEqual(media[0]["id"], STORY_ID)
+            self.assertEqual(media[0]["kind"], kind)
+            self.assertEqual(media[0]["streams"][0]["url"],
+                             "https://scontent.cdninstagram.com/story." + ("mp4" if kind == "video" else "jpg"))
+            owner.assert_called_once_with("imwinter")
+            reels.assert_called_once_with(("123",))
+
+    def test_story_requires_synced_login_before_network_and_never_uses_cookie_files(self):
+        from gallery_dl.extractor.instagram import InstagramAPI
+        with patch.object(InstagramAPI, "user") as owner:
+            result = json.loads(resolver.resolve_json(STORY_URL, "photos"))
+        self.assertEqual(result["code"], "loginRequired")
+        owner.assert_not_called()
+
+        def user(api, username):
+            extractor = api.extractor
+            self.assertTrue(extractor._logged_in)
+            self.assertEqual(extractor.config("user-cache"), "memory")
+            self.assertEqual(extractor.config("videos"), "merged")
+            self.assertIsNone(extractor.config("cookies"))
+            self.assertEqual([cookie.value for cookie in extractor.cookies if cookie.name == "sessionid"], ["story-session-secret"])
+            return {"id": "123"}
+        with patch.object(InstagramAPI, "user", user), \
+                patch.object(InstagramAPI, "reels_media", return_value=[story_reel()]):
+            result = resolver.resolve_json(STORY_URL, "files", json.dumps([session("story-session-secret")]))
+        self.assertTrue(json.loads(result)["ok"])
+        self.assertNotIn("story-session-secret", result)
+
+    def test_expired_deleted_or_wrong_owner_story_never_downloads_another_item(self):
+        from gallery_dl.extractor.instagram import InstagramAPI
+        for reels in ([], [story_reel(pk="111")], [{**story_reel(), "id": "999"}]):
+            with self.subTest(reels=reels), patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
+                    patch.object(InstagramAPI, "reels_media", return_value=reels):
+                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+            self.assertEqual(result["code"], "storyUnavailable")
+            self.assertIn("expired", result["error"])
+            self.assertNotIn("download", result)
+
+    def test_missing_story_media_and_video_are_errors_instead_of_thumbnail_success(self):
+        from gallery_dl.extractor.instagram import InstagramAPI
+        for kind, field, code in (("image", "image_versions2", "incompletePost"),
+                                  ("video", "video_versions", "unsupportedMedia")):
+            reel = story_reel(kind)
+            del reel["items"][1][field]
+            with patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
+                    patch.object(InstagramAPI, "reels_media", return_value=[reel]):
+                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+            self.assertEqual(result["code"], code)
+            self.assertNotIn("download", result)
+
+    def test_story_auth_and_rate_limit_errors_are_actionable(self):
+        from gallery_dl import exception
+        from gallery_dl.extractor.instagram import InstagramAPI
+        for error, code in ((exception.AuthRequired("cookies"), "loginRequired"),
+                            (exception.HttpError("HTTP", SimpleNamespace(status_code=429)), "rateLimited"),
+                            (exception.HttpError("HTTP", SimpleNamespace(status_code=404)), "storyUnavailable")):
+            with patch.object(InstagramAPI, "user", side_effect=error):
+                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+            self.assertEqual(result["code"], code)
+
+    def test_real_story_api_uses_scoped_cookies_and_local_cache(self):
+        import requests
+        from gallery_dl import cache
+        from gallery_dl.extractor.instagram import InstagramAPI
+        from gallery_dl.extractor.common import CACHE_MEMORY
+        before = dict(CACHE_MEMORY)
+        calls = []
+        def response(url, payload):
+            result = requests.Response()
+            result.status_code = 200
+            result.url = url
+            result._content = json.dumps(payload).encode()
+            return result
+        def request(extractor, url, **kwargs):
+            calls.append(url)
+            prepared = extractor.session.prepare_request(requests.Request("GET", url))
+            if "www.instagram.com" in url:
+                self.assertIn("sessionid=real-story-fixture", prepared.headers["Cookie"])
+            if "topsearch" in url:
+                return response(url, {"users": [{"user": {"id": "123", "pk": "123", "username": "imwinter"}}]})
+            if url.endswith("/graphql/query"):
+                self.assertEqual(kwargs["headers"]["X-CSRFToken"], "synced-story-csrf")
+                self.assertEqual(kwargs["data"]["fb_dtsg"], "fixture-dtsg")
+                variables = json.loads(kwargs["data"]["variables"])
+                self.assertEqual(variables["reel_ids"], ["123"])
+                return response(url, {"data": {"xdt_api__v1__feed__reels_media__connection":
+                    {"edges": [{"node": story_reel("video")}], "page_info": {"has_next_page": False}}}})
+            result = response(url, {})
+            result._content = b'<script id="__eqmc">{"l":"fixture-lsd","f":"fixture-dtsg"}</script>'
+            return result
+        imported = [session("real-story-fixture"), session("synced-story-csrf", name="csrftoken", httpOnly=False)]
+        with patch.object(resolver, "SOCKET_SECONDS", 1), \
+                patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request), \
+                patch.object(cache, "database", side_effect=AssertionError("Story extraction must not read or write a SQLite cache")):
+            result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps(imported)))
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["download"]["media"][0]["kind"], "video")
+        self.assertIn("https://www.instagram.com/graphql/query", calls)
+        self.assertEqual(CACHE_MEMORY, before)
+
+    def test_story_graphql_login_error_is_not_reported_as_expired(self):
+        import requests
+        from gallery_dl.extractor.instagram import InstagramAPI
+        def request(extractor, url, **kwargs):
+            response = requests.Response()
+            response.status_code = 200
+            response.url = url
+            response._content = b'{"login_required":true,"message":"login_required"}'
+            return response
+        def reels(api, ids):
+            api.extractor.request("https://www.instagram.com/graphql/query", method="POST")
+            return []
+        with patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
+                patch.object(InstagramAPI, "reels_media", reels), \
+                patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request):
+            result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+        self.assertEqual(result["code"], "loginRequired")
+
+    def test_story_graphql_api_failure_is_not_reported_as_expired(self):
+        import requests
+        from gallery_dl.extractor.instagram import InstagramAPI
+        for body in (b'{"errors":[{"message":"API failure"}]}', b'{"data":null}', b'<html>unavailable</html>'):
+            def request(extractor, url, **kwargs):
+                response = requests.Response()
+                response.status_code = 200
+                response.url = url
+                response._content = body
+                return response
+            def reels(api, ids):
+                api.extractor.request("https://www.instagram.com/graphql/query", method="POST")
+                return []
+            with self.subTest(body=body), patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
+                    patch.object(InstagramAPI, "reels_media", reels), \
+                    patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request):
+                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
+            self.assertEqual(result["code"], "mediaResolutionFailed")
 
     def test_gallery_auth_unavailable_and_partial_errors_are_not_success(self):
         from gallery_dl import exception

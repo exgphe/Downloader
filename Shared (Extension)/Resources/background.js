@@ -59,9 +59,16 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
     if (request?.type !== "downloadPost") return undefined;
     try {
         if (!Number.isInteger(sender.tab?.id)) throw new Error("A browser tab is required.");
-        const validated = core.validatePostRequest(request, sender.url || sender.tab.url);
+        let validated = core.validatePostRequest(request, sender.url || sender.tab.url);
         activeTabs.set(validated.postURL, sender.tab.id);
         if (activeTabs.size > 100) activeTabs.delete(activeTabs.keys().next().value);
+        if (validated.needsStoryResolution) {
+            browser.tabs.sendMessage(sender.tab.id, {type: "downloadProgress", postURL: validated.postURL, phase: "resolving"}).catch(() => {});
+            const result = await sendNative({type: "resolveStory", postURL: validated.postURL});
+            if (!result?.ok) throw new Error(result?.error || localize("resolveFailed", "The Instagram Story could not be resolved."));
+            validated = core.validatePostRequest({...request, postURL: validated.postURL,
+                media: result.media, mediaSource: "metadata"}, sender.url || sender.tab.url);
+        }
         return await engine.download(validated);
     } catch (error) { return {ok: false, saved: 0, error: error.message}; }
 });

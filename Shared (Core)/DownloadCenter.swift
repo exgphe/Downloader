@@ -11,8 +11,12 @@ final class DownloadCenter: ObservableObject {
     private var tasks: [UUID: Task<Void, Never>] = [:]
     private var fractions: [UUID: [String: Double]] = [:]
     private let storageRoot: URL?
+    private let conversionDefaults: UserDefaults?
 
-    init(storageRoot: URL? = nil) { self.storageRoot = storageRoot }
+    init(storageRoot: URL? = nil, conversionDefaults: UserDefaults? = nil) {
+        self.storageRoot = storageRoot
+        self.conversionDefaults = conversionDefaults
+    }
 
     private var root: URL? {
         storageRoot ?? FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: BackgroundDownloadSession.appGroup)?
@@ -37,13 +41,15 @@ final class DownloadCenter: ObservableObject {
     @discardableResult
     func enqueue(_ text: String, destination: DownloadDestination) async throws -> UUID {
         let source = try DownloadSource.url(from: text)
+        let conversion = HEVCConversionPreferences.load(from: conversionDefaults ?? HEVCConversionPreferences.sharedDefaults)
         await start()
         guard root != nil else { throw failure("The shared download folder is unavailable. Check the app's App Group signing and reopen Downloader.") }
         if destination == .photos { try await NativePhotoSaver.authorize() }
         let job = DownloadJob(id: UUID(), sourceURL: source, title: source.host ?? "Download",
                               destination: destination, phase: .queued, progress: nil, error: nil,
                               outputFiles: [], createdAt: Date(), savedMediaIDs: [], resolved: nil,
-                              ownerProcessID: getpid())
+                              ownerProcessID: getpid(),
+                              hevcConversion: conversion.enabled && HEVCConversionSettings.isYouTube(source) ? conversion : nil)
         try store(job)
         launch(job.id, resolve: true)
         return job.id
@@ -146,7 +152,8 @@ final class DownloadCenter: ObservableObject {
         job.progress = nil
         try store(job)
         BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: "Finding the best media…")
-        let manifest = try await EmbeddedMediaResolver.resolve(sourceURL: job.sourceURL, destination: job.destination)
+        let manifest = try await EmbeddedMediaResolver.resolve(sourceURL: job.sourceURL, destination: job.destination,
+                                                              allowAV1: job.hevcConversion?.enabled == true)
         try Task.checkCancellation()
         job = try activeJob(id)
         guard job.attemptID == attempt else { throw CancellationError() }
@@ -218,22 +225,49 @@ final class DownloadCenter: ObservableObject {
             if job.savedMediaIDs.contains(media.id) { continue }
             let streams = media.streams.indices.map { streamFile(job, media: index, stream: $0) }
             guard streams.allSatisfy(nonempty) else { throw failure("Some media files are missing. Retry to download them again.") }
-            let output = directory.appendingPathComponent("\(index + 1)-" + safeFilename(media))
+            let conversion = job.hevcConversion
+            let shouldConvert = conversion?.shouldConvert(source: job.sourceURL, media: media) == true
+            let container = shouldConvert ? (job.destination == .photos ? "mp4" : "mkv") : media.container
+            let filename = shouldConvert ? (safeFilename(media) as NSString).deletingPathExtension + "-hevc." + container : safeFilename(media)
+            let output = directory.appendingPathComponent("\(index + 1)-" + filename)
+            let original = directory.appendingPathComponent("\(index + 1)-conversion-input.mkv")
+            defer { try? FileManager.default.removeItem(at: original) }
             if FileManager.default.fileExists(atPath: output.path) { try FileManager.default.removeItem(at: output) }
             do {
                 if media.streams.count == 2 {
                     let sorted = media.streams.enumerated().sorted { $0.element.role == .video && $1.element.role != .video }
                     guard sorted.map(\.element.role) == [.video, .audio] else { throw failure("The video and audio streams could not be matched.") }
-                    try await MediaRemux.combine(sorted.map { streams[$0.offset] }, into: output, container: media.container)
-                } else {
+                    try await MediaRemux.combine(sorted.map { streams[$0.offset] }, into: shouldConvert ? original : output,
+                                                 container: shouldConvert ? "mkv" : media.container)
+                } else if !shouldConvert {
                     try FileManager.default.copyItem(at: streams[0], to: output)
                 }
+            }
+            if shouldConvert, let conversion {
+                job.phase = .converting
+                job.progress = nil
+                try store(job)
+                BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: "Converting AV1 to HEVC…")
+                let attempt = job.attemptID
+                try await HEVCTranscoder.convert(media.streams.count == 2 ? original : streams[0], into: output,
+                                                 container: container, settings: conversion) { [self] fraction in
+                    Task { @MainActor in
+                        guard var current = read(id), current.attemptID == attempt, current.phase == .converting else { return }
+                        current.progress = fraction
+                        try? store(current)
+                        BackgroundExecution.shared.update(jobID: id, progress: fraction, subtitle: "Converting AV1 to HEVC…")
+                    }
+                }
+                job = try activeJob(id)
+                job.phase = .saving
+                job.progress = nil
+                try store(job)
             }
             try Task.checkCancellation()
             let beforeSave = try activeJob(id)
             guard beforeSave.attemptID == job.attemptID else { throw CancellationError() }
             if job.destination == .photos {
-                try await NativePhotoSaver.saveFile(output, kind: media.kind, filename: media.filename)
+                try await NativePhotoSaver.saveFile(output, kind: media.kind, filename: filename)
             } else {
                 let exported = try keepFile(output, job: job)
                 job.outputFiles.append(exported)

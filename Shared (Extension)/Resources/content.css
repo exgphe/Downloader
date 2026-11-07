@@ -19,6 +19,26 @@ button.downloader-post-button {
     touch-action: manipulation;
 }
 button.downloader-post-button.downloader-x { color: rgb(113, 118, 123) !important; width: 32px !important; min-width: 32px !important; height: 32px !important; }
+button.downloader-post-button.downloader-instagram {
+    box-sizing: border-box !important;
+    position: relative !important;
+    top: var(--downloader-offset-y, 0px) !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    float: none !important;
+    transform: none !important;
+    align-self: center !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    line-height: 1 !important;
+}
 button.downloader-post-button:hover { background: rgba(29, 155, 240, .12) !important; color: #1d9bf0 !important; }
 button.downloader-post-button:focus-visible { outline: 2px solid #1d9bf0 !important; outline-offset: 2px !important; }
 button.downloader-post-button:disabled { cursor: progress !important; opacity: .65 !important; }

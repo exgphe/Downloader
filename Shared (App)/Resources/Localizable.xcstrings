@@ -24,6 +24,29 @@
         }
       }
     },
+    "1080p": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1080p"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1080p"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1080p"
+          }
+        }
+      }
+    },
     "2. Enable Downloader in Safari Extensions and allow it to access instagram.com.": {
       "extractionState": "manual",
       "localizations": {
@@ -43,6 +66,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "2. Activez Downloader dans les extensions Safari et autorisez l’accès à instagram.com."
+          }
+        }
+      }
+    },
+    "2160p (4K)": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2160p（4K）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2160p（4K）"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2160p (4K)"
           }
         }
       }
@@ -89,6 +135,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "4. Revenez dans Downloader ou le panneau de partage et réessayez le téléchargement."
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "均衡"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Équilibrée"
           }
         }
       }
@@ -185,6 +254,29 @@
         }
       }
     },
+    "Changes apply to new downloads from the app, share menu, and Shortcuts. Downloads already started keep their settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改应用于 App、分享菜单和快捷指令的新下载。已开始的下载保留原设置。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "變更套用至 App、分享選單和捷徑的新下載。已開始的下載保留原設定。"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les modifications s’appliquent aux nouveaux téléchargements depuis l’app, le menu de partage et Raccourcis. Les téléchargements déjà lancés conservent leurs réglages."
+          }
+        }
+      }
+    },
     "Choose a destination folder": {
       "extractionState": "manual",
       "localizations": {
@@ -227,6 +319,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "Effacer la connexion synchronisée"
+          }
+        }
+      }
+    },
+    "Convert YouTube AV1 videos to HEVC": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将 YouTube AV1 视频转换为 HEVC"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將 YouTube AV1 影片轉換為 HEVC"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Convertir les vidéos YouTube AV1 en HEVC"
+          }
+        }
+      }
+    },
+    "Converting AV1 to HEVC…": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在将 AV1 转换为 HEVC…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在將 AV1 轉換為 HEVC…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversion AV1 vers HEVC…"
           }
         }
       }
@@ -324,7 +462,30 @@
       }
     },
     "Download ${link} to ${destination}": {},
-    "Download a YouTube video, Instagram post or X post locally. Short downloads can finish without opening the app; use the app for longer jobs. Files are returned to the next Shortcuts action, such as Save File.": {
+    "Download Instagram posts, Stories and X videos directly in Safari.": {
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargez les publications et Stories Instagram ainsi que les vidéos X dans Safari."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Safari 中直接下载 Instagram 帖子、Story 和 X 视频。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Safari 中直接下載 Instagram 貼文、Story 和 X 影片。"
+          }
+        }
+      }
+    },
+    "Download a YouTube video, Instagram post or Story, or X post locally. Short downloads can finish without opening the app; use the app for longer jobs. Files are returned to the next Shortcuts action, such as Save File.": {
       "comment": "Description of the Download media intent.",
       "isCommentAutoGenerated": true
     },
@@ -351,32 +512,32 @@
         }
       }
     },
-    "Download Instagram posts and X videos directly in Safari.": {
+    "Download media": {
+      "comment": "Intent description for the Download media shortcut.",
+      "isCommentAutoGenerated": true
+    },
+    "Download settings": {
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Téléchargez les publications Instagram et vidéos X dans Safari."
-          }
-        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 Safari 中直接下载 Instagram 帖子和 X 视频。"
+            "value": "下载设置"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 Safari 中直接下載 Instagram 貼文和 X 影片。"
+            "value": "下載設定"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages de téléchargement"
           }
         }
       }
-    },
-    "Download media": {
-      "comment": "Intent description for the Download media shortcut.",
-      "isCommentAutoGenerated": true
     },
     "Downloaded to Files": {
       "extractionState": "manual",
@@ -524,10 +685,6 @@
         }
       }
     },
-    "Files · best available quality": {
-      "comment": "Display representation for the \"files\" download destination.",
-      "isCommentAutoGenerated": true
-    },
     "Files saved": {
       "extractionState": "manual",
       "localizations": {
@@ -551,6 +708,10 @@
         }
       }
     },
+    "Files · best available quality": {
+      "comment": "Display representation for the \"files\" download destination.",
+      "isCommentAutoGenerated": true
+    },
     "Finding the best media…": {
       "extractionState": "manual",
       "localizations": {
@@ -570,6 +731,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在解析媒體…"
+          }
+        }
+      }
+    },
+    "HEVC conversion uses this device and re-encodes the video. Audio is copied without quality loss: Photos uses MP4 with AAC, and Files uses MKV. Conversion can take time and use battery power; keep Downloader open if background processing is interrupted.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HEVC 转换在本设备上重新编码视频。音频无损复制：照片使用 MP4 和 AAC，文件使用 MKV。转换需要时间并消耗电量；若后台处理被中断，请保持 Downloader 打开。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HEVC 轉換在本裝置重新編碼影片。音訊無損複製：照片使用 MP4 和 AAC，檔案使用 MKV。轉換需要時間並消耗電量；若背景處理中斷，請保持 Downloader 開啟。"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conversion HEVC réencode la vidéo sur cet appareil. L’audio est copié sans perte : Photos utilise MP4 avec AAC et Fichiers utilise MKV. La conversion prend du temps et consomme de l’énergie ; gardez Downloader ouvert si le traitement en arrière-plan est interrompu."
+          }
+        }
+      }
+    },
+    "Higher quality": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高画质"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高畫質"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qualité supérieure"
           }
         }
       }
@@ -670,6 +877,29 @@
       "comment": "The label for the URL parameter in the Download media shortcut.",
       "isCommentAutoGenerated": true
     },
+    "Login URL copied": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登录网址已复制"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登入網址已複製"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adresse de connexion copiée"
+          }
+        }
+      }
+    },
     "Login has not been synced": {
       "extractionState": "manual",
       "localizations": {
@@ -716,25 +946,25 @@
         }
       }
     },
-    "Login URL copied": {
+    "Maximum resolution": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "登录网址已复制"
+            "value": "最大分辨率"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "登入網址已複製"
+            "value": "最大解析度"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Adresse de connexion copiée"
+            "value": "Résolution maximale"
           }
         }
       }
@@ -781,6 +1011,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "Safari 延伸功能設定"
+          }
+        }
+      }
+    },
+    "Original resolution": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原分辨率"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原解析度"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résolution d’origine"
           }
         }
       }
@@ -854,6 +1107,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在準備檔案…"
+          }
+        }
+      }
+    },
+    "Quality": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画质"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "畫質"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qualité"
+          }
+        }
+      }
+    },
+    "Quality presets choose a video bitrate from the output resolution and original frame rate. A higher bitrate usually increases quality and file size. The frame rate is preserved; resolution is never increased.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画质档位根据输出分辨率和原帧率选择视频码率。更高码率通常带来更高画质和更大文件。保留原帧率，不放大视频分辨率。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "畫質設定依輸出解析度與原影格率選擇影片位元率。較高位元率通常帶來較高畫質和較大檔案。保留原影格率，不放大影片解析度。"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les préréglages choisissent le débit selon la résolution de sortie et la fréquence d’images d’origine. Un débit supérieur améliore généralement la qualité et augmente la taille du fichier. La fréquence d’images est conservée ; la résolution n’est jamais augmentée."
           }
         }
       }
@@ -1092,6 +1391,29 @@
         }
       }
     },
+    "Set video bitrate manually": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动设置视频码率"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動設定影片位元率"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Définir le débit vidéo manuellement"
+          }
+        }
+      }
+    },
     "Share files": {
       "extractionState": "manual",
       "localizations": {
@@ -1111,6 +1433,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "分享檔案"
+          }
+        }
+      }
+    },
+    "Smaller file": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "较小文件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "較小檔案"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier plus petit"
           }
         }
       }
@@ -1253,6 +1598,52 @@
         }
       }
     },
+    "Video bitrate: %lld Mbps": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频码率：%lld Mbps"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "影片位元率：%lld Mbps"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débit vidéo : %lld Mbit/s"
+          }
+        }
+      }
+    },
+    "When enabled, AV1 video is converted after downloading. Other video codecs keep their original quality. Photos downloads may use a higher-resolution AV1 source.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启后，AV1 视频会在下载完成后转换。其他视频编码保持原画质。保存到照片时，也可使用更高分辨率的 AV1 源。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開啟後，AV1 影片會在下載完成後轉換。其他影片編碼保留原畫質。儲存至照片時，也可使用更高解析度的 AV1 來源。"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lorsque cette option est activée, les vidéos AV1 sont converties après le téléchargement. Les autres codecs conservent leur qualité d’origine. Les téléchargements vers Photos peuvent utiliser une source AV1 de résolution supérieure."
+          }
+        }
+      }
+    },
     "You can also send a link from the system share menu.": {
       "extractionState": "manual",
       "localizations": {
@@ -1276,25 +1667,25 @@
         }
       }
     },
-    "Your downloads will appear here.": {
+    "YouTube AV1 videos will be converted to HEVC.": {
       "extractionState": "manual",
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vos téléchargements apparaîtront ici."
-          }
-        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "下载任务会显示在这里。"
+            "value": "YouTube AV1 视频将转换为 HEVC。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "下載任務會顯示在這裡。"
+            "value": "YouTube AV1 影片將轉換為 HEVC。"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les vidéos YouTube AV1 seront converties en HEVC."
           }
         }
       }
@@ -1318,6 +1709,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "YouTube、Instagram 或 X 連結"
+          }
+        }
+      }
+    },
+    "Your downloads will appear here.": {
+      "extractionState": "manual",
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos téléchargements apparaîtront ici."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下载任务会显示在这里。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下載任務會顯示在這裡。"
           }
         }
       }

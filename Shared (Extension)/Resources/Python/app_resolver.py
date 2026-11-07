@@ -20,7 +20,7 @@ _HEADER_NAMES = {"user-agent": "User-Agent", "referer": "Referer", "origin": "Or
                  "accept": "Accept", "accept-language": "Accept-Language"}
 _INSTAGRAM_HOSTS = {"instagram.com", "www.instagram.com"}
 _INSTAGRAM_COOKIE_NAMES = {"sessionid", "csrftoken", "ds_user_id", "mid", "ig_did", "rur"}
-_INSTAGRAM_LOGIN_MESSAGE = ("This Instagram post requires sign-in. Open instagram.com in Safari, sign in or complete its verification, "
+_INSTAGRAM_LOGIN_MESSAGE = ("This Instagram media requires sign-in. Open instagram.com in Safari, sign in or complete its verification, "
                             "then sync its session in Downloader and try again.")
 
 
@@ -164,6 +164,9 @@ def _source_url(address):
         raise ResolutionError("invalidSource", "Provide a YouTube video or Instagram post link.")
     host = (parts.hostname or "").lower()
     if host in ("instagram.com", "www.instagram.com"):
+        story = re.fullmatch(r"/stories/([A-Za-z0-9._]{1,30})/([0-9]{1,25})/?", parts.path)
+        if story and story[1] != "highlights":
+            return "instagram", f"https://www.instagram.com/stories/{story[1]}/{story[2]}/"
         match = re.fullmatch(r"/(p|reel|reels|tv|share(?:/(?:p|reel|reels|tv))?)/([A-Za-z0-9_-]+)/?", parts.path)
         if match:
             return "instagram", f"https://www.instagram.com/{match[1]}/{match[2]}/"
@@ -271,7 +274,12 @@ def _stream(item, role, headers):
     return value
 
 
-def _youtube_media(info, destination):
+def _av1_video(item):
+    codec = (_codec(item, "vcodec") or "").lower()
+    return codec in ("av1", "av01") or codec.startswith(("av01.", "av1."))
+
+
+def _youtube_media(info, destination, allow_av1=False):
     if not isinstance(info, dict) or info.get("_type", "video") != "video":
         raise ResolutionError("unsupportedVideo", "Provide one YouTube video link, rather than a playlist.")
     if info.get("is_live") or info.get("live_status") in ("is_live", "is_upcoming"):
@@ -280,7 +288,7 @@ def _youtube_media(info, destination):
     videos = [item for item in formats if _codec(item, "vcodec")]
     audios = [item for item in formats if not _codec(item, "vcodec") and _codec(item, "acodec")]
     if destination == "photos":
-        videos = [item for item in videos if _photos_video(item)
+        videos = [item for item in videos if (_photos_video(item) or (allow_av1 and _av1_video(item)))
                   and (not _codec(item, "acodec") or _photos_audio(item))]
         audios = [item for item in audios if _photos_audio(item)]
     if not videos:
@@ -300,7 +308,8 @@ def _youtube_media(info, destination):
         streams.append(_stream(max(audios, key=_audio_quality), "audio", headers))
     # Matroska carries AV1/VP9 + Opus without lossy conversion, while Photos
     # gets MP4 with its compatible codecs. Progressive originals stay intact.
-    container = ("mp4" if destination == "photos" else "mkv") if len(streams) > 1 else chosen["ext"]
+    converting = allow_av1 and _av1_video(chosen)
+    container = ("mp4" if destination == "photos" and not converting else "mkv") if len(streams) > 1 else chosen["ext"]
     identifier = re.sub(r"[^A-Za-z0-9_-]", "_", str(info.get("id") or "video"))[:100]
     media = {"id": identifier, "kind": "video", "filename": f"youtube_{identifier}.{container}",
              "container": container, "streams": streams}
@@ -312,7 +321,7 @@ def _youtube_media(info, destination):
     return [media]
 
 
-def _youtube(address, destination, check_deadline, deadline):
+def _youtube(address, destination, check_deadline, deadline, allow_av1=False):
     # Register before YoutubeIE builds its JS challenge request director.
     import apple_jsc_provider
     from yt_dlp.dependencies import yt_dlp_ejs
@@ -343,23 +352,27 @@ def _youtube(address, destination, check_deadline, deadline):
     with DeadlineYoutubeDL(options, auto_init=False) as ydl:
         ydl.add_info_extractor(YoutubeIE())
         info = ydl.extract_info(address, download=False, process=False)
-    return str(info.get("title") or "YouTube video")[:500], _youtube_media(info, destination)
+    return str(info.get("title") or "YouTube video")[:500], _youtube_media(info, destination, allow_av1)
 
 
 def _instagram(address, check_deadline, deadline, session_json="[]"):
     import certifi
     from gallery_dl import exception
-    from gallery_dl.extractor.instagram import InstagramPostExtractor
+    from gallery_dl.extractor.instagram import InstagramPostExtractor, InstagramStoriesExtractor
     from gallery_dl.extractor.message import Message
     cookies = _instagram_effective_cookies(_instagram_cookies(session_json))
+    is_story = urlsplit(address).path.startswith("/stories/")
+    unavailable = ("This Instagram Story has expired, was deleted, or is unavailable to the synced account." if is_story else
+                   "This Instagram post is unavailable or private.")
 
-    class LocalPostExtractor(InstagramPostExtractor):
+    class LocalPostExtractor(InstagramStoriesExtractor if is_story else InstagramPostExtractor):
         def config(self, key, default=None):
             # Avoid loading host config/cookies and avoid gallery-dl's ytdl:
             # pseudo-URLs, which invoke the external downloader.
             return {"videos": "merged", "audio": False, "previews": False,
                     "cookies": None, "username": None, "password": None,
-                    "cookies-update": False, "proxy": None, "proxy-env": False, "verify": certifi.where(),
+                    "cookies-update": False, "user-cache": "memory",
+                    "proxy": None, "proxy-env": False, "verify": certifi.where(),
                     "timeout": SOCKET_SECONDS, "retries": 0,
                     "sleep-429": 0, "sleep-retries": 0}.get(key, default)
 
@@ -371,6 +384,16 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
             # The native handoff is loaded below into this instance only. Do
             # not consult gallery-dl config, cookie files or browser databases.
             pass
+
+        def cache(self, func, *args, _key=0, _exp=0, _mem=True):
+            # Story GraphQL tokens and user metadata belong to this one synced
+            # session. Never use upstream's global memory or SQLite cache.
+            if not hasattr(self, "_local_cache"):
+                self._local_cache = {}
+            key = (func.__module__, func.__name__, None if _key is None else args[_key])
+            if key not in self._local_cache:
+                self._local_cache[key] = func(*args)
+            return self._local_cache[key]
 
         def login(self):
             # Upstream checks only '.instagram.com' and misses a www host cookie.
@@ -384,6 +407,20 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
             kwargs["timeout"] = max(0.1, min(SOCKET_SECONDS, deadline - time.monotonic()))
             response = super().request(url, **kwargs)
             check_deadline()
+            if is_story and urlsplit(url).path == "/graphql/query":
+                try:
+                    data = response.json()
+                except ValueError:
+                    data = None
+                if not isinstance(data, dict):
+                    raise ResolutionError("mediaResolutionFailed", "Instagram returned an unreadable Story response. Try again later.")
+                if isinstance(data, dict):
+                    reason = str(data.get("message") or data.get("error_type") or "").lower()
+                    if data.get("login_required") is True or reason in (
+                            "login_required", "challenge_required", "checkpoint_required", "consent_required"):
+                        raise exception.AuthRequired(message="Instagram requires session verification.")
+                    if data.get("errors") or not isinstance(data.get("data"), dict):
+                        raise ResolutionError("mediaResolutionFailed", "Instagram could not provide this Story. Check your Safari login and try again.")
             return response
 
         def request_json(self, url, **kwargs):
@@ -397,12 +434,36 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
                     raise exception.AuthRequired(message="Instagram requires session verification.")
             return data
 
+        def posts(self):
+            if not is_story:
+                return super().posts()
+            if not self._logged_in:
+                raise exception.AuthRequired("authenticated cookies")
+            # A shared Story link identifies one item, never the whole user's
+            # tray. Normalize integer IDs and missing seen timestamps returned
+            # by the API before gallery-dl parses the selected reel.
+            owner = self.api.user(self.user)
+            owner_id = str(owner["id"])
+            for reel in self.api.reels_media((owner_id,)):
+                if str(reel.get("id")) != owner_id:
+                    continue
+                for item in reel.get("items") or ():
+                    if str(item.get("pk", "")).split("_")[0] != self.media_id:
+                        continue
+                    selected = dict(reel)
+                    selected["items"] = [{**item, "pk": self.media_id}]
+                    selected["seen"] = _integer(reel.get("seen") or reel.get("latest_reel_media") or item.get("taken_at")) or 0
+                    return [selected]
+            raise exception.NotFoundError("story")
+
         def _parse_post(self, post):
-            items = post.get("carousel_media") or [post]
+            items = (post.get("items") if is_story else post.get("carousel_media")) or [post]
             expected = _integer(post.get("carousel_media_count")) or len(items)
             # The upstream extractor chooses the last API video version. Sort
             # to retain its behavior while selecting the largest resolution.
             for item in items:
+                if is_story and item.get("media_type") == 2 and not item.get("video_versions"):
+                    raise ResolutionError("unsupportedMedia", "Instagram did not provide a downloadable video for this Story.")
                 if candidates := item.get("video_versions"):
                     item["video_versions"] = sorted(candidates, key=lambda v: (
                         _number(v.get("height")), _number(v.get("width"))))
@@ -421,8 +482,8 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
 
     extractor = LocalPostExtractor.from_url(address)
     if not extractor:
-        raise ResolutionError("invalidSource", "Provide an Instagram post or reel link.")
-    media, title, expected = [], "Instagram post", None
+        raise ResolutionError("invalidSource", "Provide an Instagram post, reel or Story link.")
+    media, title, expected = [], f"Instagram Story · {extractor.user}" if is_story else "Instagram post", None
     try:
         extractor.log = _QuietGalleryLogger()
         # initialize creates the real Requests session and upstream API. It also
@@ -443,7 +504,8 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
             check_deadline()
             if message[0] == Message.Directory:
                 metadata = message[2]
-                title = str(metadata.get("description") or metadata.get("post_shortcode") or title)[:500]
+                if not is_story:
+                    title = str(metadata.get("description") or metadata.get("post_shortcode") or title)[:500]
                 expected = _integer(metadata.get("count"))
                 continue
             if message[0] != Message.Url:
@@ -472,14 +534,18 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
     except (exception.AuthorizationError, exception.AuthenticationError) as error:
         raise ResolutionError("loginRequired", _INSTAGRAM_LOGIN_MESSAGE) from error
     except exception.NotFoundError as error:
-        raise ResolutionError("postUnavailable", "This Instagram post is unavailable or private.") from error
+        raise ResolutionError("storyUnavailable" if is_story else "postUnavailable", unavailable) from error
     except exception.HttpError as error:
         if error.status in (401, 403):
             raise ResolutionError("loginRequired", _INSTAGRAM_LOGIN_MESSAGE) from error
         if error.status == 429:
             raise ResolutionError("rateLimited", "Instagram is limiting requests. Try again later.") from error
+        if is_story and error.status == 404:
+            raise ResolutionError("storyUnavailable", unavailable) from error
         raise
     finally:
+        if hasattr(extractor, "_local_cache"):
+            extractor._local_cache.clear()
         if extractor.session is not None:
             extractor.session.cookies.clear()
             extractor.session.close()
@@ -503,7 +569,7 @@ def _x(address):
     return "X video", media
 
 
-def resolve_json(address, destination, session_json="[]"):
+def resolve_json(address, destination, session_json="[]", allow_av1="false"):
     previous_trace = sys.gettrace()
     deadline = time.monotonic() + EXTRACTION_SECONDS
     site = None
@@ -519,10 +585,12 @@ def resolve_json(address, destination, session_json="[]"):
     try:
         if destination not in ("photos", "files"):
             raise ResolutionError("invalidDestination", "Choose Photos or Files for this download.")
+        if allow_av1 not in ("true", "false"):
+            raise ResolutionError("invalidConversion", "Choose whether to convert AV1 videos to HEVC.")
         site, canonical = _source_url(address)
         sys.settrace(trace)
         if site == "youtube":
-            title, media = _youtube(canonical, destination, check_deadline, deadline)
+            title, media = _youtube(canonical, destination, check_deadline, deadline, allow_av1 == "true")
         elif site == "x":
             title, media = _x(canonical)
         else:
