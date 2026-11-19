@@ -8,7 +8,8 @@ button.downloader-post-button {
     width: 36px !important;
     height: 36px !important;
     min-width: 36px !important;
-    margin: 0 0 0 4px !important;
+    margin: 0 !important;
+    margin-inline-start: 4px !important;
     padding: 5px !important;
     border: 0 !important;
     border-radius: 50% !important;
@@ -18,7 +19,7 @@ button.downloader-post-button {
     vertical-align: middle !important;
     touch-action: manipulation;
 }
-button.downloader-post-button.downloader-x { color: rgb(113, 118, 123) !important; width: 32px !important; min-width: 32px !important; height: 32px !important; }
+button.downloader-post-button.downloader-x { box-sizing: border-box !important; color: rgb(113, 118, 123) !important; width: 32px !important; min-width: 32px !important; height: 32px !important; }
 button.downloader-post-button.downloader-instagram {
     box-sizing: border-box !important;
     position: relative !important;

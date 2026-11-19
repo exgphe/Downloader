@@ -1,0 +1,190 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "Instagram と X の写真や動画を写真アプリに直接保存できます。"
+  },
+  "popupSubtitle": {
+    "message": "Instagram・X・写真"
+  },
+  "popupInstruction": {
+    "message": "Instagram の送信ボタン、または X の写真・動画付き投稿の共有ボタンの横にあるダウンロードボタンで、すべてのメディアを写真に保存できます。X の写真は元のサイズで保存されます。"
+  },
+  "photosLibrary": {
+    "message": "写真ライブラリ"
+  },
+  "checkingStatus": {
+    "message": "状態を確認中…"
+  },
+  "footerNote": {
+    "message": "写真や動画はこのデバイスの写真ライブラリに保存されます。"
+  },
+  "photosReady": {
+    "message": "保存できます"
+  },
+  "photosFirstSave": {
+    "message": "初めて保存する際に写真へのアクセス許可を求められます"
+  },
+  "photosDenied": {
+    "message": "設定で Downloader に写真へのアクセスを許可してください"
+  },
+  "photosRestricted": {
+    "message": "このデバイスでは写真へのアクセスが制限されています"
+  },
+  "downloadToPhotos": {
+    "message": "すべてのメディアを写真に保存"
+  },
+  "readingPost": {
+    "message": "投稿を読み込み中…"
+  },
+  "readingCarousel": {
+    "message": "カルーセルの各項目を読み込み中…"
+  },
+  "carouselUnavailable": {
+    "message": "一部の項目を読み込めませんでした。投稿を開き、読み込みが完了してからもう一度お試しください。"
+  },
+  "noMedia": {
+    "message": "この投稿にダウンロード可能なメディアがありません。"
+  },
+  "postURLUnavailable": {
+    "message": "投稿のリンクが見つかりません。投稿を開いてもう一度お試しください。"
+  },
+  "processingVideo": {
+    "message": "動画を処理中です。数分かかる場合があります。"
+  },
+  "savingProgress": {
+    "message": "写真に保存中：$arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "写真に $arg1$ 件保存しました。",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "$arg2$ 件中 $arg1$ 件を保存しました。",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "もう一度押すと、失敗した項目を再試行します。"
+  },
+  "downloadFailed": {
+    "message": "ダウンロードできませんでした。もう一度押して再試行してください。"
+  },
+  "resolveFailed": {
+    "message": "内蔵の動画エンジンでこの投稿を処理できませんでした。"
+  },
+  "nativeUnavailable": {
+    "message": "Downloader がネイティブ機能拡張に接続できませんでした。機能拡張を有効にして Safari を開き直してください。"
+  },
+  "videoEngine": {
+    "message": "内蔵の動画エンジン"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp はこのデバイスの機能拡張内で動作します。Instagram のメディアは可能な場合、投稿から直接読み込みます。"
+  },
+  "videoEngineReady": {
+    "message": "このデバイスで動画を処理できます"
+  },
+  "videoEngineUnavailable": {
+    "message": "内蔵の動画エンジンを使用できません。Downloader を再インストールするか、アップデートしてください。"
+  },
+  "invalidVideoResult": {
+    "message": "内蔵の動画エンジンから無効なメディアリストが返されました。"
+  },
+  "unsafeVideoURL": {
+    "message": "内蔵の動画エンジンから対応していないメディア URL が返されました。"
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$・準備完了",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "instagramLogin": {
+    "message": "Instagram のログイン情報"
+  },
+  "instagramSessionNote": {
+    "message": "このデバイスで Instagram からダウンロードするには、現在の Safari プロファイルでログインし、Downloader に Instagram へのアクセスを許可してから同期してください。プライベートブラウズやほかのプロファイルは自動では含まれません。"
+  },
+  "instagramSessionReady": {
+    "message": "このデバイスにログイン情報を同期しました"
+  },
+  "instagramSessionNotSynced": {
+    "message": "ログイン情報は未同期です"
+  },
+  "syncInstagramSession": {
+    "message": "Instagram のログイン情報を同期"
+  },
+  "forgetInstagramSession": {
+    "message": "同期したログイン情報を消去"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "Safari 18 以降が必要です。Safari で Downloader に Instagram へのアクセスを許可してから、もう一度同期してください。"
+  },
+  "instagramSessionMissing": {
+    "message": "現在の Safari プロファイルで instagram.com にログインし、Downloader にサイトへのアクセスを許可してから、もう一度同期してください。"
+  },
+  "invalidInstagramSession": {
+    "message": "ログイン情報を安全に同期できませんでした。Safari で Instagram にログインしてから、もう一度同期してください。"
+  },
+  "instagramSessionFailed": {
+    "message": "Instagram のログイン情報を同期できませんでした。Safari で Downloader が有効になっていることを確認して、もう一度お試しください。"
+  },
+  "instagramSessionUnavailable": {
+    "message": "同期したログイン情報を読み込めませんでした"
+  },
+  "xMediaUnavailable": {
+    "message": "X の一部の写真が読み込まれていません。投稿を開き、すべての写真が表示されてからもう一度お試しください。"
+  },
+  "postChanged": {
+    "message": "投稿が変更されました。ページを再読み込みして再試行してください。"
+  },
+  "incompleteVideo": {
+    "message": "期待される動画をすべて取得できませんでした。再試行してください。"
+  },
+  "saveUnconfirmed": {
+    "message": "写真への保存を確認できませんでした。"
+  },
+  "unauthorizedDownload": {
+    "message": "このサイトからダウンロードをリクエストできません。"
+  },
+  "invalidDownload": {
+    "message": "ダウンロードリクエストが無効です。"
+  },
+  "invalidStory": {
+    "message": "ストーリーズのリンクではメディアを1件だけ指定してください。"
+  },
+  "unapprovedURL": {
+    "message": "対応していないサーバーのメディア URL です。"
+  },
+  "tooManyItems": {
+    "message": "1件の投稿には最大20件のメディアを含められます。"
+  },
+  "noVideo": {
+    "message": "投稿にダウンロード可能な動画がありません。"
+  },
+  "invalidMedia": {
+    "message": "メディア URL、メディアの種類、または投稿 URL が無効です。"
+  }
+}

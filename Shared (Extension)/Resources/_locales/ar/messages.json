@@ -1,0 +1,190 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "احفظ صور Instagram وX وفيديوهاتهما مباشرةً في تطبيق الصور."
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · الصور"
+  },
+  "popupInstruction": {
+    "message": "لحفظ كل الوسائط في تطبيق الصور، اختر زر التنزيل بجوار «إرسال» في Instagram أو بجوار «مشاركة» في منشور X يحتوي على صور أو فيديو. تُنزَّل صور X بحجمها الأصلي."
+  },
+  "photosLibrary": {
+    "message": "مكتبة الصور"
+  },
+  "checkingStatus": {
+    "message": "جارٍ التحقق من الحالة…"
+  },
+  "footerNote": {
+    "message": "تُحفظ الصور والفيديوهات في مكتبة الصور على هذا الجهاز."
+  },
+  "photosReady": {
+    "message": "جاهز للحفظ"
+  },
+  "photosFirstSave": {
+    "message": "سيطلب تطبيق الصور الإذن عند الحفظ لأول مرة"
+  },
+  "photosDenied": {
+    "message": "اسمح لـ Downloader بالوصول إلى الصور في الإعدادات"
+  },
+  "photosRestricted": {
+    "message": "الوصول إلى الصور مقيّد على هذا الجهاز"
+  },
+  "downloadToPhotos": {
+    "message": "تنزيل كل الوسائط إلى الصور"
+  },
+  "readingPost": {
+    "message": "جارٍ قراءة المنشور…"
+  },
+  "readingCarousel": {
+    "message": "جارٍ قراءة جميع شرائح المنشور…"
+  },
+  "carouselUnavailable": {
+    "message": "تعذّرت قراءة بعض الشرائح. افتح المنشور وانتظر حتى يكتمل تحميله ثم أعِد المحاولة."
+  },
+  "noMedia": {
+    "message": "لم يُعثر على وسائط قابلة للتنزيل في هذا المنشور."
+  },
+  "postURLUnavailable": {
+    "message": "تعذّر العثور على رابط المنشور. افتح المنشور وأعِد المحاولة."
+  },
+  "processingVideo": {
+    "message": "جارٍ معالجة الفيديو… قد يستغرق ذلك بضع دقائق."
+  },
+  "savingProgress": {
+    "message": "جارٍ الحفظ في الصور: $arg1$ من $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "عدد العناصر المحفوظة في الصور: $arg1$.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "تم حفظ $arg1$ من $arg2$.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "اضغط مجددًا لإعادة محاولة تنزيل العناصر التي فشلت."
+  },
+  "downloadFailed": {
+    "message": "فشل التنزيل. اضغط مجددًا لإعادة المحاولة."
+  },
+  "resolveFailed": {
+    "message": "تعذّرت معالجة هذا المنشور باستخدام محرّك الفيديو المدمج."
+  },
+  "nativeUnavailable": {
+    "message": "تعذّر على Downloader الاتصال بالملحق الأصلي. فعّل الملحق وأعِد فتح سفاري."
+  },
+  "videoEngine": {
+    "message": "محرّك الفيديو المدمج"
+  },
+  "videoExplanation": {
+    "message": "يعمل yt-dlp داخل الملحق على هذا الجهاز. تُقرأ وسائط Instagram مباشرةً من المنشور عند توفرها."
+  },
+  "videoEngineReady": {
+    "message": "جاهز لمعالجة الفيديوهات على هذا الجهاز"
+  },
+  "videoEngineUnavailable": {
+    "message": "محرّك الفيديو المدمج غير متاح. أعِد تثبيت Downloader أو حدّثه."
+  },
+  "invalidVideoResult": {
+    "message": "أعاد محرّك الفيديو المدمج قائمة وسائط غير صالحة."
+  },
+  "unsafeVideoURL": {
+    "message": "أعاد محرّك الفيديو المدمج رابط وسائط غير مدعوم."
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · جاهز",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "instagramLogin": {
+    "message": "تسجيل الدخول إلى Instagram"
+  },
+  "instagramSessionNote": {
+    "message": "لتنزيل محتوى Instagram على هذا الجهاز، سجّل الدخول في ملف تعريف سفاري الحالي واسمح لـ Downloader بالوصول إلى Instagram ثم زامن تسجيل الدخول. لا يشمل ذلك تلقائيًا التصفح الخاص وملفات التعريف الأخرى."
+  },
+  "instagramSessionReady": {
+    "message": "تمت مزامنة تسجيل الدخول على هذا الجهاز"
+  },
+  "instagramSessionNotSynced": {
+    "message": "لم تتم مزامنة تسجيل الدخول"
+  },
+  "syncInstagramSession": {
+    "message": "مزامنة تسجيل الدخول إلى Instagram"
+  },
+  "forgetInstagramSession": {
+    "message": "مسح بيانات تسجيل الدخول المتزامنة"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "يلزم سفاري 18 أو أحدث. اسمح لـ Downloader بالوصول إلى Instagram في سفاري ثم أعِد المزامنة."
+  },
+  "instagramSessionMissing": {
+    "message": "سجّل الدخول إلى instagram.com في ملف تعريف سفاري الحالي واسمح لـ Downloader بالوصول إلى الموقع ثم أعِد المزامنة."
+  },
+  "invalidInstagramSession": {
+    "message": "تعذّرت مزامنة تسجيل الدخول بأمان. سجّل الدخول إلى Instagram في سفاري ثم أعِد المزامنة."
+  },
+  "instagramSessionFailed": {
+    "message": "تعذّرت مزامنة تسجيل الدخول إلى Instagram. تأكد من تفعيل Downloader في سفاري ثم أعِد المحاولة."
+  },
+  "instagramSessionUnavailable": {
+    "message": "تعذّرت قراءة بيانات تسجيل الدخول المتزامنة"
+  },
+  "xMediaUnavailable": {
+    "message": "لم يكتمل تحميل بعض صور X. افتح المنشور وانتظر حتى يكتمل تحميل كل الصور ثم أعِد المحاولة."
+  },
+  "postChanged": {
+    "message": "تغيّر المنشور. أعِد تحميل الصفحة ثم أعِد المحاولة."
+  },
+  "incompleteVideo": {
+    "message": "لم يُرجع محرّك الفيديو جميع الفيديوهات المتوقعة. أعِد المحاولة."
+  },
+  "saveUnconfirmed": {
+    "message": "لم يؤكّد تطبيق الصور حفظ هذا العنصر."
+  },
+  "unauthorizedDownload": {
+    "message": "لا يمكن لهذا الموقع طلب تنزيل."
+  },
+  "invalidDownload": {
+    "message": "طلب التنزيل غير صالح."
+  },
+  "invalidStory": {
+    "message": "يجب أن يشير رابط القصة إلى عنصر وسائط واحد."
+  },
+  "unapprovedURL": {
+    "message": "الرابط ليس من خادم وسائط مدعوم."
+  },
+  "tooManyItems": {
+    "message": "يمكن أن يضم المنشور 20 عنصرًا على الأكثر."
+  },
+  "noVideo": {
+    "message": "لا يحتوي المنشور على فيديو قابل للتنزيل."
+  },
+  "invalidMedia": {
+    "message": "رابط الوسائط أو نوعها أو رابط المنشور غير صالح."
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "Sichere Fotos und Videos von Instagram und X direkt in Fotos."
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · Fotos"
+  },
+  "popupInstruction": {
+    "message": "Wähle die Downloadtaste neben „Senden“ auf Instagram oder neben „Teilen“ bei einem X-Beitrag mit Fotos oder Videos. Alle Medien werden in Fotos gesichert, Fotos von X in Originalgröße."
+  },
+  "photosLibrary": {
+    "message": "Fotomediathek"
+  },
+  "checkingStatus": {
+    "message": "Status wird geprüft…"
+  },
+  "footerNote": {
+    "message": "Fotos und Videos werden in der Fotomediathek dieses Geräts gesichert."
+  },
+  "photosReady": {
+    "message": "Bereit zum Sichern"
+  },
+  "photosFirstSave": {
+    "message": "Beim ersten Sichern fragt Fotos nach der Zugriffserlaubnis"
+  },
+  "photosDenied": {
+    "message": "Erlaube Downloader in den Einstellungen den Zugriff auf Fotos"
+  },
+  "photosRestricted": {
+    "message": "Der Zugriff auf Fotos ist auf diesem Gerät eingeschränkt"
+  },
+  "downloadToPhotos": {
+    "message": "Alle Medien in Fotos sichern"
+  },
+  "readingPost": {
+    "message": "Beitrag wird gelesen…"
+  },
+  "readingCarousel": {
+    "message": "Alle Elemente des Karussells werden gelesen…"
+  },
+  "carouselUnavailable": {
+    "message": "Einige Karussellelemente konnten nicht gelesen werden. Öffne den Beitrag, warte, bis er geladen ist, und versuche es erneut."
+  },
+  "noMedia": {
+    "message": "In diesem Beitrag wurden keine Medien zum Laden gefunden."
+  },
+  "postURLUnavailable": {
+    "message": "Der Beitragslink wurde nicht gefunden. Öffne den Beitrag und versuche es erneut."
+  },
+  "processingVideo": {
+    "message": "Video wird verarbeitet… Dies kann einige Minuten dauern."
+  },
+  "savingProgress": {
+    "message": "In Fotos sichern: $arg1$ von $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "In Fotos gesichert: $arg1$.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "Gesichert: $arg1$ von $arg2$.",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "Wähle die Taste erneut, um fehlgeschlagene Downloads zu wiederholen."
+  },
+  "downloadFailed": {
+    "message": "Download fehlgeschlagen. Wähle die Taste für einen neuen Versuch erneut."
+  },
+  "resolveFailed": {
+    "message": "Die integrierte Videoverarbeitung konnte diesen Beitrag nicht verarbeiten."
+  },
+  "nativeUnavailable": {
+    "message": "Downloader konnte die native Erweiterung nicht erreichen. Aktiviere die Erweiterung und öffne Safari erneut."
+  },
+  "videoEngine": {
+    "message": "Integrierte Videoverarbeitung"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp läuft in der Erweiterung auf diesem Gerät. Instagram-Medien werden, wenn verfügbar, direkt aus dem Beitrag gelesen."
+  },
+  "videoEngineReady": {
+    "message": "Bereit zur Videoverarbeitung auf diesem Gerät"
+  },
+  "videoEngineUnavailable": {
+    "message": "Die integrierte Videoverarbeitung ist nicht verfügbar. Installiere Downloader erneut oder aktualisiere die App."
+  },
+  "invalidVideoResult": {
+    "message": "Die integrierte Videoverarbeitung hat eine ungültige Medienliste zurückgegeben."
+  },
+  "unsafeVideoURL": {
+    "message": "Die integrierte Videoverarbeitung hat eine nicht unterstützte Medien-URL zurückgegeben."
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · bereit",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "instagramLogin": {
+    "message": "Instagram-Anmeldung"
+  },
+  "instagramSessionNote": {
+    "message": "Melde dich für Instagram-Downloads auf diesem Gerät im aktuellen Safari-Profil an, erlaube Downloader den Zugriff auf Instagram und synchronisiere die Anmeldung. Privates Surfen und andere Profile werden nicht automatisch einbezogen."
+  },
+  "instagramSessionReady": {
+    "message": "Anmeldung auf diesem Gerät synchronisiert"
+  },
+  "instagramSessionNotSynced": {
+    "message": "Anmeldung noch nicht synchronisiert"
+  },
+  "syncInstagramSession": {
+    "message": "Instagram-Anmeldung synchronisieren"
+  },
+  "forgetInstagramSession": {
+    "message": "Synchronisierte Anmeldung löschen"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "Safari 18 oder neuer erforderlich. Erlaube Downloader in Safari den Zugriff auf Instagram und synchronisiere erneut."
+  },
+  "instagramSessionMissing": {
+    "message": "Melde dich im aktuellen Safari-Profil auf instagram.com an, erlaube Downloader den Websitezugriff und synchronisiere erneut."
+  },
+  "invalidInstagramSession": {
+    "message": "Die Anmeldung konnte nicht sicher synchronisiert werden. Melde dich in Safari bei Instagram an und synchronisiere erneut."
+  },
+  "instagramSessionFailed": {
+    "message": "Die Instagram-Anmeldung konnte nicht synchronisiert werden. Vergewissere dich, dass Downloader in Safari aktiviert ist, und versuche es erneut."
+  },
+  "instagramSessionUnavailable": {
+    "message": "Synchronisierte Anmeldung konnte nicht gelesen werden"
+  },
+  "xMediaUnavailable": {
+    "message": "Einige Fotos von X wurden noch nicht geladen. Öffne den Beitrag, warte, bis alle Fotos geladen sind, und versuche es erneut."
+  },
+  "postChanged": {
+    "message": "Der Beitrag wurde geändert. Lade die Seite neu und versuche es erneut."
+  },
+  "incompleteVideo": {
+    "message": "Die Videoverarbeitung hat nicht alle erwarteten Videos geliefert. Versuche es erneut."
+  },
+  "saveUnconfirmed": {
+    "message": "Fotos hat das Sichern dieses Objekts nicht bestätigt."
+  },
+  "unauthorizedDownload": {
+    "message": "Diese Website darf keinen Download anfordern."
+  },
+  "invalidDownload": {
+    "message": "Ungültige Downloadanfrage."
+  },
+  "invalidStory": {
+    "message": "Ein Story-Link muss genau ein Medium angeben."
+  },
+  "unapprovedURL": {
+    "message": "Die Medien-URL stammt nicht von einem unterstützten Server."
+  },
+  "tooManyItems": {
+    "message": "Ein Beitrag kann höchstens 20 Medien enthalten."
+  },
+  "noVideo": {
+    "message": "Dieser Beitrag enthält kein herunterladbares Video."
+  },
+  "invalidMedia": {
+    "message": "Medien-URL, Medientyp oder Beitrags-URL ist ungültig."
+  }
+}

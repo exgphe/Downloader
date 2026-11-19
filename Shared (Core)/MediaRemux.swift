@@ -131,6 +131,6 @@ enum MediaRemux {
         guard code < 0 else { return }
         var buffer = [CChar](repeating: 0, count: 256)
         av_strerror(code, &buffer, buffer.count)
-        throw failure("The video and audio could not be combined: \(String(cString: buffer))")
+        throw failure(String(localized: "The video and audio could not be combined: \(String(cString: buffer))", table: "Download"))
     }
 }

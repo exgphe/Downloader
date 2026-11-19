@@ -1,12 +1,14 @@
 # Downloader
 
-跨 macOS、iOS、visionOS 的本地媒体下载 App 与 Safari Web Extension。Safari 在 Instagram 帖子的发送键右侧、X 视频帖子的分享键右侧加入下载按钮，收集整帖媒体并保存到「照片」。主 App、系统分享面板和快捷指令也接受 YouTube、Instagram、X 链接。
+跨 macOS、iOS、visionOS 的本地媒体下载 App 与 Safari Web Extension。Safari 在 Instagram 帖子的发送键右侧、X 图片、视频及混合帖子的分享键右侧加入下载按钮，收集整帖媒体并保存到「照片」。主 App、系统分享面板和快捷指令也接受 YouTube、Instagram、X 链接。
 
 所有解析在设备上完成。App 与扩展内嵌 CPython、yt-dlp、gallery-dl 和 yt-dlp-ejs；YouTube 播放器挑战由 JavaScriptCore 执行，不需要 Node、Deno、外部下载服务或 Python 子进程。Python 只提取媒体清单，Swift 负责传输、合流和 PhotoKit 保存。
 
 App 图标使用简洁的下载箭头：iOS / macOS 共用向量 `AppIcon.icon`，支持 Icon Composer 与 Liquid Glass 外观；visionOS 使用三层 Asset Catalog 图标。母版与重新生成说明见 [图标设计](Artwork/AppIcon/README.md)。
 
 ## 使用
+
+Downloader 以英语为源语言，同时支持简体中文、繁体中文、法语、西班牙语、巴西葡萄牙语、德语、日语、韩语、阿拉伯语和印地语。主 App、分享面板、快捷指令和权限提示使用 Xcode 字符串目录。Safari 弹窗与网页下载按钮使用 WebExtension 的语言资源。开发时可在 Xcode 的 Edit Scheme → Run → Options → App Language 预览原生界面。Safari 扩展的界面语言由浏览器决定。
 
 - 主 App：粘贴链接，选择「照片」或「文件」，点击下载。任务列表支持进度、取消与重试。
 - Instagram Story：支持形如 `https://www.instagram.com/stories/用户名/Story-ID/` 的单条图片或视频链接，包括 Instagram 分享链接中的跟踪参数。App、分享菜单和快捷指令只下载链接指定的那一条；需先同步 Safari 的 Instagram 登录。Story 过期、删除或账号无权查看时会给出错误，无法恢复已过期内容。
@@ -17,6 +19,7 @@ App 图标使用简洁的下载箭头：iOS / macOS 共用向量 `AppIcon.icon`�
 - 系统分享菜单：分享 YouTube、Instagram 或 X 链接并选择 Downloader，自动开始解析、下载并保存到「照片」，无需再次点击下载。解析时保持面板打开；进入传输阶段后可以用工具栏右上角的关闭按钮关闭面板，系统后台传输会继续。需要「文件」模式时，在主 App 或快捷指令中选择。
 - 快捷指令：使用「Download media」动作传入链接与保存位置。照片真正保存后才返回成功；文件以 `IntentFile[]` 返回，可接「存储文件」动作。短任务可以不打开主 App，长任务受快捷指令运行时间限制。
 - Safari：开启扩展并允许访问 Instagram / X，使用帖子或 Story 分享按钮旁的下载按钮。Story 优先读取匹配该条 ID 的网页媒体，读取不到时使用已同步登录的内置 gallery-dl，不会遍历其他 Story；App 与系统分享的 Instagram 路径也使用 gallery-dl。
+- X 网页：纯图片、纯视频和图片视频混合帖都显示下载按钮。图片从当前帖子提取并使用 `pbs.twimg.com/media/…?format=…&name=orig` 下载原始尺寸，保留图片格式，不把头像、视频封面或引用帖媒体加入下载；混合帖同时使用内置 yt-dlp 解析视频，逐项保存到「照片」。图片未完整加载时提示重试，已保存项不会在失败重试时重复保存。此图片支持适用于 Safari 网页按钮；主 App / 系统分享 / 快捷指令接收 X 链接时仍使用视频解析。
 
 ## 同步 Instagram 登录
 
@@ -44,7 +47,7 @@ Safari 的 `browser.runtime.sendNativeMessage` 到达 `SafariWebExtensionHandler
 
 ## 构建
 
-需要 Xcode 与 uv。开发机 Python 和 Xcode 打包步骤均通过 uv 管理。首次准备固定版本依赖：
+需要 Xcode 与 uv。首次构建或拉取新版依赖锁文件后，在项目根目录运行以下命令，再通过 Xcode 构建。
 
 ```sh
 uv run --no-project --script Scripts/bootstrap_runtime.py
@@ -73,7 +76,7 @@ xcodebuild -project Downloader.xcodeproj -scheme 'Downloader (macOS)' \
 
 移动端可用 `generic/platform=iOS`、`generic/platform=iOS Simulator`、`generic/platform=visionOS` 和 `generic/platform=visionOS Simulator`。固定版本的 visionOS Python 仅提供 arm64 模拟器切片；iOS 模拟器支持 arm64 / x86_64。
 
-FFmpeg 8.0.1 启用本地容器读写、无损合流、dav1d 1.5.1 AV1 软件解码、swscale 像素格式与尺寸转换，以及 Apple VideoToolbox HEVC 编码；没有网络、命令行工具或 GPL 组件。HEVC 保留 8/10-bit 深度和输入色彩标记，目标码率属于设备编码器的请求值，不保证精确文件大小。设备无法编码所选尺寸时明确报错，可降低输出分辨率后发起新任务。转换消耗时间和电量，长任务受系统后台处理限制，必要时保持 App 打开。
+FFmpeg 9.0.2 启用本地容器读写、无损合流、dav1d 1.5.5 AV1 软件解码、swscale 像素格式与尺寸转换，以及 Apple VideoToolbox HEVC 编码；没有网络、命令行工具或 GPL 组件。HEVC 保留 8/10-bit 深度和输入色彩标记，目标码率属于设备编码器的请求值，不保证精确文件大小。设备无法编码所选尺寸时明确报错，可降低输出分辨率后发起新任务。转换消耗时间和电量，长任务受系统后台处理限制，必要时保持 App 打开。
 
 静态库以扩展兼容选项构建，各资源包保留 FFmpeg LGPL 与 dav1d BSD 许可证。锁文件提供源码与 SHA-256，`Scripts/bootstrap_ffmpeg.py` 和各切片 `build.json` 保留构建参数与版本。脚本通过 uv 管理固定版本的 Meson、Ninja、pkgconf，给 visionOS 的 VideoToolbox 像素缓冲使用公共 Metal 兼容性键，避免引用不可用的 OpenGLES API。可以修改源码、重建静态库，再重新链接应用。CPython 与 Python 包的许可证也随资源打包。
 
@@ -96,11 +99,14 @@ Safari 按钮布局可用真实 WebKit 离线验证（会打开临时本地窗�
 xcrun swiftc -parse-as-library -module-cache-path /tmp/downloader-layout-modules \
   Tests/ExtensionLayoutSmoke.swift -o /tmp/downloader-layout-smoke
 /tmp/downloader-layout-smoke "$PWD" /tmp/Downloader-button-layout.png
+/tmp/downloader-layout-smoke "$PWD" /tmp/Downloader-x-layout.png x
 ```
 
 覆盖 360 / 480 / 960px 下的帖子操作栏、深层发送按钮及计数、分组操作栏和 Reels 竖排按钮，检查位置、图标中心对齐、重复按钮和横向溢出。
+Instagram 的下载按钮位于完整「发送图标＋计数」右侧；检查包含可点击计数、独立数字和延迟加载计数，确保不会将图标与数字拆开。
+X 检查覆盖四图帖、混合帖及视频帖的分享按钮右侧位置，并点击真实 content script 验证原图请求，排除视频封面和引用帖。
 
-扩展弹窗使用原生返回的平台信息：visionOS 宽度 480px，配合更大的文字和按钮；macOS / iOS 宽度 350px。四种语言与长错误消息的 WebKit 检查：
+扩展弹窗使用原生返回的平台信息：visionOS 宽度 480px，配合更大的文字和按钮；macOS / iOS 宽度 350px。全部 11 种语言（含阿拉伯语从右到左布局）与长错误消息的 WebKit 检查：
 
 ```sh
 xcrun swiftc -parse-as-library -module-cache-path /tmp/downloader-popup-modules \

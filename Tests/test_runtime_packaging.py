@@ -5,6 +5,7 @@
 """Bounded checks for Apple runtime slice and framework loader packaging."""
 import importlib.util
 import argparse
+import json
 from pathlib import Path
 import plistlib
 import tempfile
@@ -25,6 +26,18 @@ def script(name):
 
 packaging = script("package_runtime")
 bootstrap = script("bootstrap_runtime")
+LOCK = json.loads((ROOT / "Dependencies/runtime-lock.json").read_text())
+
+
+def version_inputs(framework: Path, packages: Path, family: str) -> None:
+    version = LOCK["python"]["frameworks"][family].get("pythonVersion", LOCK["python"]["version"])
+    (framework / "Headers").mkdir(parents=True)
+    (framework / "Headers/patchlevel.h").write_text(f'#define PY_VERSION "{version}"\n')
+    for entry in LOCK["packages"]:
+        name, version = entry["name"], entry["version"]
+        metadata = packages / f"{name.replace('-', '_')}-{version}.dist-info/METADATA"
+        metadata.parent.mkdir(parents=True)
+        metadata.write_text(f"Metadata-Version: 2.1\nName: {name}\nVersion: {version}\n")
 
 
 def runtime_inputs(stdlib: Path, packages: Path) -> None:
@@ -43,6 +56,21 @@ def runtime_inputs(stdlib: Path, packages: Path) -> None:
 
 
 class RuntimePackagingTests(unittest.TestCase):
+    def test_packaging_rejects_stale_framework_and_wheel_versions(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            framework, packages = Path(temporary) / "Python.framework", Path(temporary) / "PythonPackages"
+            version_inputs(framework, packages, "macOS")
+            header = framework / "Headers/patchlevel.h"
+            original = header.read_text()
+            header.write_text('#define PY_VERSION "3.13.0"\n')
+            with self.assertRaisesRegex(ValueError, "Expected Python"):
+                packaging.verify_installed_versions(framework, packages, LOCK, "macOS")
+            header.write_text(original)
+            metadata = next(packages.glob("gallery_dl-*.dist-info/METADATA"))
+            metadata.write_text("Name: gallery-dl\nVersion: 1.0\n")
+            with self.assertRaisesRegex(ValueError, "Expected gallery-dl"):
+                packaging.verify_installed_versions(framework, packages, LOCK, "macOS")
+
     def test_xcode_signed_build_uses_parent_certificate_for_every_embedded_binary(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -60,6 +88,7 @@ class RuntimePackagingTests(unittest.TestCase):
                 "SupportedPlatform": "macos", "SupportedArchitectures": ["arm64"],
             }]}))
             runtime_inputs(stdlib.parent, dependencies / "PythonPackages")
+            version_inputs(framework, dependencies / "PythonPackages", "macOS")
             app = root / "Downloader.app"
             extension = app / "Contents/PlugIns/Downloader.appex/Contents"
             (extension / "Resources").mkdir(parents=True)
@@ -208,6 +237,7 @@ class RuntimePackagingTests(unittest.TestCase):
             stdlib.mkdir(parents=True)
             (stdlib / "_ssl.cpython-313-iphoneos.so").write_bytes(b"native fixture")
             runtime_inputs(stdlib.parent, dependencies / "PythonPackages")
+            version_inputs(framework, dependencies / "PythonPackages", "iOS")
             license_source = dependencies / "FFmpeg/ios-arm64/COPYING.LGPLv2.1"
             license_source.parent.mkdir(parents=True)
             license_source.write_text("LGPL fixture")

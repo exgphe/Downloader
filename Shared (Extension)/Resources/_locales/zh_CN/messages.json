@@ -3,13 +3,13 @@
     "message": "Downloader"
   },
   "extension_description": {
-    "message": "将 Instagram 图片、视频和 X 视频直接存储到照片。"
+    "message": "将 Instagram 和 X 的图片、视频直接存储到照片。"
   },
   "popupSubtitle": {
     "message": "Instagram · X · 照片"
   },
   "popupInstruction": {
-    "message": "点击 Instagram 发送按钮右侧、或 X 视频帖分享按钮右侧的下载按钮，将帖子里的所有媒体存储到照片。"
+    "message": "点击 Instagram 发送按钮或 X 图片、视频帖分享按钮右侧的下载按钮，将整帖媒体存储到照片。X 图片下载原图。"
   },
   "photosLibrary": {
     "message": "照片图库"
@@ -153,5 +153,38 @@
   },
   "instagramSessionUnavailable": {
     "message": "无法读取已同步的登录"
+  },
+  "xMediaUnavailable": {
+    "message": "部分 X 图片尚未加载。请打开帖子，等待全部图片加载后重试。"
+  },
+  "postChanged": {
+    "message": "帖子已更改。请刷新页面后重试。"
+  },
+  "incompleteVideo": {
+    "message": "视频引擎未返回预期的全部视频。请重试。"
+  },
+  "saveUnconfirmed": {
+    "message": "“照片”未确认已保存此项目。"
+  },
+  "unauthorizedDownload": {
+    "message": "此网站无权请求下载。"
+  },
+  "invalidDownload": {
+    "message": "下载请求无效。"
+  },
+  "invalidStory": {
+    "message": "快拍链接必须指向单个媒体项目。"
+  },
+  "unapprovedURL": {
+    "message": "媒体地址不属于支持的媒体服务器。"
+  },
+  "tooManyItems": {
+    "message": "每个帖子最多可包含 20 个媒体项目。"
+  },
+  "noVideo": {
+    "message": "此帖子没有可下载的视频。"
+  },
+  "invalidMedia": {
+    "message": "媒体地址、媒体类型或帖子地址无效。"
   }
 }

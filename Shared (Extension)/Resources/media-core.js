@@ -38,6 +38,18 @@
             host === "fbcdn.net" || host.endsWith(".fbcdn.net") ||
             host === "video.twimg.com" || host === "pbs.twimg.com";
     }
+    function xOriginalImageURL(value) {
+        if (!allowedMediaURL(value)) return null;
+        const url = parsedURL(value);
+        if (url.hostname !== "pbs.twimg.com") return null;
+        // X serves thumbnails through both /ID.jpg:small and
+        // /ID?format=jpg&name=small. Keep the format, request the original.
+        const match = url.pathname.match(/^\/media\/([A-Za-z0-9_-]+)(?:\.(jpg|jpeg|png|webp))?(?::[A-Za-z0-9_]+)?$/);
+        if (!match) return null;
+        const format = (url.searchParams.get("format") || match[2] || "").toLowerCase();
+        if (!["jpg", "jpeg", "png", "webp"].includes(format)) return null;
+        return `https://pbs.twimg.com/media/${match[1]}?format=${format}&name=orig`;
+    }
     function shortcodeToMediaID(shortcode) {
         if (!/^[A-Za-z0-9_-]{3,32}$/.test(shortcode)) return null;
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -113,33 +125,37 @@
         }
         return null;
     }
-    function validatePostRequest(request, senderURL) {
-        if (!request || request.type !== "downloadPost") throw new Error("Invalid download request.");
+    function validatePostRequest(request, senderURL, localize = (key, fallback) => fallback) {
+        if (!request || request.type !== "downloadPost") throw new Error(localize("invalidDownload", "Invalid download request."));
         const platform = platformForURL(senderURL);
-        if (!platform || request.platform !== platform) throw new Error("This website cannot request a download.");
+        if (!platform || request.platform !== platform) throw new Error(localize("unauthorizedDownload", "This website cannot request a download."));
         const postURL = canonicalPostURL(request.postURL, platform);
-        if (!postURL) throw new Error("Invalid post URL.");
-        if (request.complete !== true) throw new Error("Could not read every item in this post. Open the post, then try again.");
-        if (!Array.isArray(request.media) || request.media.length > MAX_ITEMS) throw new Error("Invalid media list.");
+        if (!postURL) throw new Error(localize("postURLUnavailable", "Invalid post URL."));
+        if (request.complete !== true) throw new Error(localize("carouselUnavailable", "Could not read every item in this post. Open the post, then try again."));
+        if (!Array.isArray(request.media) || request.media.length > MAX_ITEMS) throw new Error(localize("invalidMedia", "Invalid media list."));
         const storyID = instagramStoryID(postURL);
         if (storyID && request.mediaSource === "story" && request.media.length === 0) {
             return {platform, postURL, media: [], hasVideo: false, needsStoryResolution: true};
         }
-        if (storyID && request.media.length !== 1) throw new Error("A Story link must identify exactly one media item.");
+        if (storyID && request.media.length !== 1) throw new Error(localize("invalidStory", "A Story link must identify exactly one media item."));
         const media = request.media.map((item, index) => {
-            if (!item || !["image", "video"].includes(item.kind)) throw new Error("Invalid media type.");
-            if (item.kind === "image" && !allowedMediaURL(item.url)) throw new Error("An image URL is not from an approved media host.");
-            if (item.url && !allowedMediaURL(item.url)) throw new Error("A media URL is not from an approved media host.");
+            if (!item || !["image", "video"].includes(item.kind)) throw new Error(localize("invalidMedia", "Invalid media type."));
+            if (item.kind === "image" && !allowedMediaURL(item.url)) throw new Error(localize("unapprovedURL", "An image URL is not from an approved media host."));
+            if (item.url && !allowedMediaURL(item.url)) throw new Error(localize("unapprovedURL", "A media URL is not from an approved media host."));
+            if (platform === "x" && item.kind === "image") {
+                const url = xOriginalImageURL(item.url);
+                if (!url) throw new Error(localize("unapprovedURL", "This is not an X post image URL."));
+                return {kind: "image", url, filename: `x-${index + 1}.${new URL(url).searchParams.get("format")}`};
+            }
             return {kind: item.kind, ...(item.url ? {url: item.url} : {}), filename: `${platform}-${index + 1}.${item.kind === "video" ? "mp4" : "jpg"}`};
         });
         const hasVideo = request.requiresVideoResolution === true || media.some(item => item.kind === "video");
-        if (!media.length && !hasVideo) throw new Error("No downloadable media found.");
-        if (platform === "x" && !hasVideo) throw new Error("This X post has no video.");
+        if (!media.length && !hasVideo) throw new Error(localize("noMedia", "No downloadable media found."));
         const expectedVideoCount = platform === "instagram" ? media.filter(item => item.kind === "video").length : null;
         const mediaSource = platform === "instagram" && request.mediaSource === "metadata" ? "metadata" : "page";
         return {platform, postURL, media, mediaSource, hasVideo, expectedVideoCount};
     }
-    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, shortcodeToMediaID,
+    const core = {MAX_ITEMS, canonicalPostURL, platformForURL, allowedMediaURL, xOriginalImageURL, shortcodeToMediaID,
         instagramMetadata, instagramStoryID, instagramStoryMetadata, validatePostRequest};
     root.DownloaderCore = core;
     if (typeof module === "object" && module.exports) module.exports = core;

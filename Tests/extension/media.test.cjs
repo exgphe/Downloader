@@ -100,7 +100,33 @@ test('downloads require authorized website sender, complete list and approved me
     assert.throws(() => core.validatePostRequest(request, 'https://evil.test/'), /cannot request/);
     assert.throws(() => core.validatePostRequest({...request, complete: false}, postURL), /every item/);
     assert.throws(() => core.validatePostRequest({...request, media: [{kind: 'image', url: 'https://evil.test/image.jpg'}]}, postURL), /approved/);
-    assert.throws(() => core.validatePostRequest({...request, platform: 'x', postURL: 'https://x.com/alice/status/1'}, 'https://x.com/'), /no video/);
+    assert.throws(() => core.validatePostRequest({...request, platform: 'x', postURL: 'https://x.com/alice/status/1'}, 'https://x.com/'), /X post image/);
+});
+
+test('X originals preserve the image format and discard thumbnail sizes and crops', () => {
+    for (const [input, expected] of [
+        ['https://pbs.twimg.com/media/abc?format=png&name=small', 'https://pbs.twimg.com/media/abc?format=png&name=orig'],
+        ['https://pbs.twimg.com/media/abc.jpg:large', 'https://pbs.twimg.com/media/abc?format=jpg&name=orig'],
+        ['https://pbs.twimg.com/media/abc.jpeg?name=4096x4096&crop=1', 'https://pbs.twimg.com/media/abc?format=jpeg&name=orig'],
+        ['https://pbs.twimg.com/media/abc?format=webp&name=orig', 'https://pbs.twimg.com/media/abc?format=webp&name=orig']
+    ]) assert.equal(core.xOriginalImageURL(input), expected);
+    for (const input of [
+        'https://pbs.twimg.com/profile_images/abc.jpg', 'https://pbs.twimg.com/ext_tw_video_thumb/abc.jpg',
+        'https://pbs.twimg.com/amplify_video_thumb/abc.jpg', 'https://pbs.twimg.com/card_img/abc.jpg',
+        'https://pbs.twimg.com/media/abc', 'https://pbs.twimg.com/media/abc?format=svg',
+        'https://pbs.twimg.com.evil.test/media/abc.jpg', 'http://pbs.twimg.com/media/abc.jpg',
+        'https://video.twimg.com/media/abc.jpg', 'https://user@pbs.twimg.com/media/abc.jpg',
+        'https://pbs.twimg.com:444/media/abc.jpg', 'https://pbs.twimg.com/media/abc.jpg#fragment'
+    ]) assert.equal(core.xOriginalImageURL(input), null, input);
+});
+
+test('X image-only requests pass validation and normalize originals before native saving', () => {
+    const request = {type: 'downloadPost', platform: 'x', postURL: 'https://x.com/alice/status/1', complete: true,
+        media: [{kind: 'image', url: 'https://pbs.twimg.com/media/abc?format=png&name=small'}]};
+    const result = core.validatePostRequest(request, 'https://x.com/home');
+    assert.equal(result.hasVideo, false);
+    assert.deepEqual(result.media, [{kind: 'image', url: 'https://pbs.twimg.com/media/abc?format=png&name=orig', filename: 'x-1.png'}]);
+    assert.throws(() => core.validatePostRequest({...request, media: []}, 'https://x.com/home'), /No downloadable media/);
 });
 
 test('partial native failures retry only the failed media and reuse resolved videos', async () => {

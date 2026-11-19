@@ -1,48 +1,49 @@
 {
   "schemaVersion": 1,
   "python": {
-    "version": "3.13.16",
+    "version": "3.13.18",
     "abiVersion": "3.13",
-    "release": "3.13-b16",
+    "release": "3.13-b18",
     "frameworks": {
       "macOS": {
-        "filename": "Python-3.13-macOS-support.b16.tar.gz",
-        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-macOS-support.b16.tar.gz",
-        "sha256": "29334305ef0e1e7e58198c195c7e3707afe38be9ebf134840b156c369f84f737"
+        "pythonVersion": "3.13.17",
+        "filename": "Python-3.13-macOS-support.b18.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b18/Python-3.13-macOS-support.b18.tar.gz",
+        "sha256": "61971e9dc3258c76033ef800412989ec92e14cf0653f2a19e006d167d5a1436c"
       },
       "iOS": {
-        "filename": "Python-3.13-iOS-support.b16.tar.gz",
-        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-iOS-support.b16.tar.gz",
-        "sha256": "22b96f3d0c3663225f078556b036d2ee6ce3ff98c885706585240681335c71ea"
+        "filename": "Python-3.13-iOS-support.b18.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b18/Python-3.13-iOS-support.b18.tar.gz",
+        "sha256": "d06acf2a9c7964a8689566353a0e707402eff822037de5e29ba0e16040f7047d"
       },
       "visionOS": {
-        "filename": "Python-3.13-visionOS-support.b16.tar.gz",
-        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b16/Python-3.13-visionOS-support.b16.tar.gz",
-        "sha256": "303a629ba0a2d83c4e9ee5e003c5852fc02efa456af36d29fbc034f881a2cd96"
+        "filename": "Python-3.13-visionOS-support.b18.tar.gz",
+        "url": "https://github.com/beeware/Python-Apple-support/releases/download/3.13-b18/Python-3.13-visionOS-support.b18.tar.gz",
+        "sha256": "a622f5f70157b63fa84e7b8a3ee9d15feb0da17afb2e5804c7f5bc5d3ffa853f"
       }
     }
   },
   "packages": [
     {
       "name": "yt-dlp",
-      "version": "2026.8.19",
-      "filename": "yt_dlp-2026.8.19-py3-none-any.whl",
-      "url": "https://files.pythonhosted.org/packages/69/b2/8cd1613f56eed7ceb64fbd4df3f1c01246bfb098e6f398228bafda22b80b/yt_dlp-2026.8.19-py3-none-any.whl",
-      "sha256": "1d57897e94c6665a0a6f9bc54b34e584284e32c034ffab3a7df25d8f7b24eedf"
+      "version": "2026.10.26",
+      "filename": "yt_dlp-2026.10.26-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/7f/3d/16ea7d5638cf585991f2c5705e8083688dde633d32d0871f2404e0f4d827/yt_dlp-2026.10.26-py3-none-any.whl",
+      "sha256": "a05c5b5d8562f7e8a62f5334348b406af4930d56d3a65f8021d14af0e22339ae"
     },
     {
       "name": "certifi",
-      "version": "2026.7.22",
-      "filename": "certifi-2026.7.22-py3-none-any.whl",
-      "url": "https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl",
-      "sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+      "version": "2026.10.23",
+      "filename": "certifi-2026.10.23-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/32/d1/a3652fe2c19134d0d15922177821d863cbd7e842d53a21bbe7e8e3a1b5ac/certifi-2026.10.23-py3-none-any.whl",
+      "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1"
     },
     {
       "name": "gallery-dl",
-      "version": "1.32.15",
-      "filename": "gallery_dl-1.32.15-py3-none-any.whl",
-      "url": "https://files.pythonhosted.org/packages/2c/e9/5bac9bb4e3cf3883b0f8517059a5b9b5aba4f7d5263a7c926b970a1fc80e/gallery_dl-1.32.15-py3-none-any.whl",
-      "sha256": "e8fc03eebddcd4ba816ae7a9c42548a68e7ae8a01e7c5a83d6f591e253f092a6"
+      "version": "1.32.20",
+      "filename": "gallery_dl-1.32.20-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/8f/f7/a80d1aa77cabd8a96aacd1c63c530774e15795fa92e9383757b3161af3d2/gallery_dl-1.32.20-py3-none-any.whl",
+      "sha256": "e09729c8f24f788ac64a663268603377fbf51d4b97818d49e2150c5d78067709"
     },
     {
       "name": "yt-dlp-ejs",
@@ -81,15 +82,15 @@
     }
   ],
   "ffmpeg": {
-    "version": "8.0.1",
-    "filename": "ffmpeg-8.0.1.tar.xz",
-    "url": "https://ffmpeg.org/releases/ffmpeg-8.0.1.tar.xz",
-    "sha256": "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41"
+    "version": "9.0.2",
+    "filename": "ffmpeg-9.0.2.tar.xz",
+    "url": "https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz",
+    "sha256": "8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e"
   },
   "dav1d": {
-    "version": "1.5.1",
-    "filename": "dav1d-1.5.1.tar.gz",
-    "url": "https://github.com/videolan/dav1d/archive/refs/tags/1.5.1.tar.gz",
-    "sha256": "fa635e2bdb25147b1384007c83e15de44c589582bb3b9a53fc1579cb9d74b695"
+    "version": "1.5.5",
+    "filename": "dav1d-1.5.5.tar.gz",
+    "url": "https://github.com/videolan/dav1d/archive/refs/tags/1.5.5.tar.gz",
+    "sha256": "76ad07ab121d68407b64a6f50f540c90ca0b066d178bdc9adbea14acf4ce25a9"
   }
 }

@@ -45,6 +45,6 @@ struct EmbeddedPythonResources {
     }
 
     private static func missing(_ code: String, _ component: String) -> MediaSaveError {
-        MediaSaveError(code: code, message: "The built-in media engine is missing \(component). Build and reinstall the Downloader app, then try again.")
+        MediaSaveError(code: code, message: String(localized: "The built-in media engine is missing \(MediaSaveError.localizedMessage(component)). Build and reinstall the Downloader app, then try again.", table: "Download"))
     }
 }

@@ -124,7 +124,11 @@ def _scoped_instagram_session(original):
             # No HTTP Basic/.netrc Authorization is needed for the cookie bridge.
             request.headers.pop("Authorization", None)
             if not _instagram_request_host(request.url):
-                for name in ("Cookie", "X-CSRFToken", "X-IG-WWW-Claim"):
+                # A 307/308 redirect retains the GraphQL form and its tokens.
+                # Third-party script and media requests only need GET or HEAD.
+                if request.body is not None or request.method not in ("GET", "HEAD"):
+                    raise ResolutionError("mediaResolutionFailed", "Instagram redirected the request to an unsupported destination.")
+                for name in ("Cookie", "X-CSRFToken", "X-IG-WWW-Claim", "X-FB-LSD"):
                     request.headers.pop(name, None)
 
         def prepare_request(self, request):
@@ -365,6 +369,10 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
     unavailable = ("This Instagram Story has expired, was deleted, or is unavailable to the synced account." if is_story else
                    "This Instagram post is unavailable or private.")
 
+    class StoryResponseError(ResolutionError, exception.ControlException):
+        # gallery-dl preserves ControlException through its profile lookup.
+        pass
+
     class LocalPostExtractor(InstagramStoriesExtractor if is_story else InstagramPostExtractor):
         def config(self, key, default=None):
             # Avoid loading host config/cookies and avoid gallery-dl's ytdl:
@@ -388,12 +396,16 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
         def cache(self, func, *args, _key=0, _exp=0, _mem=True):
             # Story GraphQL tokens and user metadata belong to this one synced
             # session. Never use upstream's global memory or SQLite cache.
-            if not hasattr(self, "_local_cache"):
-                self._local_cache = {}
-            key = (func.__module__, func.__name__, None if _key is None else args[_key])
+            key = (func, ... if _key is None else args[_key])
             if key not in self._local_cache:
                 self._local_cache[key] = func(*args)
             return self._local_cache[key]
+
+        def cache_update(self, func, key=..., value=None, _exp=0, _mem=False):
+            if value is None:
+                self._local_cache.pop((func, key), None)
+            else:
+                self._local_cache[func, key] = value
 
         def login(self):
             # Upstream checks only '.instagram.com' and misses a www host cookie.
@@ -405,22 +417,30 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
         def request(self, url, **kwargs):
             check_deadline()
             kwargs["timeout"] = max(0.1, min(SOCKET_SECONDS, deadline - time.monotonic()))
-            response = super().request(url, **kwargs)
+            try:
+                response = super().request(url, **kwargs)
+            except exception.HttpError as error:
+                if not is_story or error.status == 404:
+                    raise
+                if error.status in (401, 403):
+                    raise StoryResponseError("loginRequired", _INSTAGRAM_LOGIN_MESSAGE) from error
+                if error.status == 429:
+                    raise StoryResponseError("rateLimited", "Instagram is limiting requests. Try again later.") from error
+                raise StoryResponseError("mediaResolutionFailed", "Instagram could not provide this Story. Check your Safari login and try again.") from error
             check_deadline()
-            if is_story and urlsplit(url).path == "/graphql/query":
+            if is_story and urlsplit(url).path in ("/graphql/query", "/api/graphql"):
                 try:
-                    data = response.json()
+                    data = json.loads(response.text.lstrip().removeprefix("for (;;);"))
                 except ValueError:
                     data = None
                 if not isinstance(data, dict):
-                    raise ResolutionError("mediaResolutionFailed", "Instagram returned an unreadable Story response. Try again later.")
-                if isinstance(data, dict):
-                    reason = str(data.get("message") or data.get("error_type") or "").lower()
-                    if data.get("login_required") is True or reason in (
-                            "login_required", "challenge_required", "checkpoint_required", "consent_required"):
-                        raise exception.AuthRequired(message="Instagram requires session verification.")
-                    if data.get("errors") or not isinstance(data.get("data"), dict):
-                        raise ResolutionError("mediaResolutionFailed", "Instagram could not provide this Story. Check your Safari login and try again.")
+                    raise StoryResponseError("mediaResolutionFailed", "Instagram returned an unreadable Story response. Try again later.")
+                reason = str(data.get("message") or data.get("error_type") or "").lower()
+                if data.get("login_required") is True or reason in (
+                        "login_required", "challenge_required", "checkpoint_required", "consent_required"):
+                    raise StoryResponseError("loginRequired", _INSTAGRAM_LOGIN_MESSAGE)
+                if data.get("errors") or not isinstance(data.get("data"), dict):
+                    raise StoryResponseError("mediaResolutionFailed", "Instagram could not provide this Story. Check your Safari login and try again.")
             return response
 
         def request_json(self, url, **kwargs):
@@ -483,6 +503,7 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
     extractor = LocalPostExtractor.from_url(address)
     if not extractor:
         raise ResolutionError("invalidSource", "Provide an Instagram post, reel or Story link.")
+    extractor._local_cache = {}
     media, title, expected = [], f"Instagram Story · {extractor.user}" if is_story else "Instagram post", None
     try:
         extractor.log = _QuietGalleryLogger()
@@ -544,8 +565,7 @@ def _instagram(address, check_deadline, deadline, session_json="[]"):
             raise ResolutionError("storyUnavailable", unavailable) from error
         raise
     finally:
-        if hasattr(extractor, "_local_cache"):
-            extractor._local_cache.clear()
+        extractor._local_cache.clear()
         if extractor.session is not None:
             extractor.session.cookies.clear()
             extractor.session.close()

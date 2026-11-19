@@ -60,7 +60,7 @@ def main():
     if not source.exists():
         with tarfile.open(archive) as file:
             file.extractall(scratch, filter="data")
-    # FFmpeg 8.0.1 treats visionOS as iOS here, but OpenGLES is unavailable.
+    # FFmpeg treats visionOS as iOS here, but OpenGLES is unavailable.
     # Use the public Metal compatibility key for its pixel buffers instead.
     compatibility = source / "libavcodec/videotoolbox.c"
     original = "#if TARGET_OS_IPHONE\n    CFDictionarySetValue(buffer_attributes, kCVPixelBufferOpenGLESCompatibilityKey, kCFBooleanTrue);"
@@ -93,7 +93,7 @@ def main():
             continue
         sdk, arch, target = VARIANTS[variant]
         sdk_path = subprocess.check_output(["xcrun", "--sdk", sdk, "--show-sdk-path"], text=True).strip()
-        build = scratch / (variant + "-media-v" + str(expected["buildRevision"]))
+        build = scratch / f"{variant}-ffmpeg-{lock['version']}-dav1d-{dav1d['version']}-v{expected['buildRevision']}"
         build.mkdir(exist_ok=True)
         flags = f"-target {target} -isysroot {sdk_path} -fapplication-extension -fPIC"
         dav1d_build = scratch / (variant + "-dav1d")

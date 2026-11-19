@@ -95,7 +95,7 @@ enum ShareDownloadModelTests {
         expect(center.retries == [id] && model.job?.phase == .queued,
                "Retry reuses the cancelled job instead of creating a duplicate")
         center.jobs[0].phase = .completed
-        expect(model.status == "已保存到照片。", "Completion displays a Photos status")
+        expect(model.status == String(localized: "Saved to Photos."), "Completion displays a Photos status")
 
         let textCenter = DownloadCenter()
         let textModel = ShareDownloadModel(center: textCenter)

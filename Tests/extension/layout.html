@@ -34,10 +34,15 @@ const wrapper = name => '<span>' + action(name) + '</span>';
 const leading = '<span class="with-count">' + action('Like') + '201.8K</span><span class="with-count">' + action('Comment') + '345</span>';
 const save = '<span class="save">' + action('Save') + '</span>';
 const deep = '<div>'.repeat(6) + '<div class="column">' + action('Share') + '<button class="count">12</button></div>' + '</div>'.repeat(6);
+const sendCount = '<button class="count share-count" aria-label="Share count">4,3 K</button>';
+const compactLeading = '<span class="with-count">' + action('Like') + '90,4 K</span><span class="with-count">' + action('Comment') + '1,6 K</span>';
 const layouts = [
     ['feed', 'Feed · counts and bookmark', '<section class="row" id="feed-actions">' + leading + wrapper('Share') + save + '</section>'],
     ['deep', 'Nested wrappers · vertical share count', '<section class="row" id="deep-actions">' + leading + '<span>' + deep + '</span>' + save + '</section>'],
     ['grouped', 'Grouped actions · spaced bookmark', '<section class="row spaced"><div class="actions" id="grouped-actions">' + leading + wrapper('Share') + '</div>' + save + '</section>'],
+    ['counted', 'Send · clickable count stays before Download', '<section class="row" id="counted-actions">' + compactLeading + '<span class="with-count">' + action('Share') + sendCount + '</span>' + save + '</section>'],
+    ['separate', 'Send · separate count stays before Download', '<section class="row" id="separate-actions">' + compactLeading + wrapper('Share') + '<span class="share-count">4,3 K</span>' + save + '</section>'],
+    ['delayed', 'Send · count loaded after Download was inserted', '<section class="row" id="delayed-actions">' + compactLeading + wrapper('Share') + save + '</section>'],
     ['rail', 'Reel · vertical actions', '<div class="reel-layout"><img alt="Video placeholder"><section class="column rail" id="rail-actions">' + wrapper('Like') + wrapper('Comment') + wrapper('Share') + wrapper('Save') + '</section></div>']
 ];
 for (const [name, title, actions] of layouts) {
@@ -48,6 +53,13 @@ for (const [name, title, actions] of layouts) {
     document.querySelector('#cases').append(article);
 }
 window.browser = {i18n: {getMessage: key => key}, runtime: {onMessage: {addListener() {}}, sendMessage() { throw Error('No download in layout test'); }}};
+const delayedCount = new MutationObserver(() => {
+    const button = document.querySelector('#delayed [data-downloader-button]');
+    if (!button) return;
+    delayedCount.disconnect();
+    button.insertAdjacentHTML('afterend', sendCount);
+});
+delayedCount.observe(document.querySelector('#delayed'), {childList: true, subtree: true});
 window.layoutReport = () => layouts.map(([name]) => {
     const root = document.getElementById(name);
     const share = root.querySelector('[aria-label="Share"]');
@@ -56,9 +68,12 @@ window.layoutReport = () => layouts.map(([name]) => {
     const rail = name === 'rail';
     const previous = button?.previousElementSibling;
     const anchor = previous?.getBoundingClientRect();
+    const count = root.querySelector('.share-count');
+    const countBox = count?.getBoundingClientRect();
     return {name, count: root.querySelectorAll('[data-downloader-button]').length,
         parent: button?.parentElement.id, expected: name + '-actions',
-        afterShare: !!previous && (previous === share || previous.contains(share)),
+        afterShare: !!previous && (previous === share || previous.contains(share) || previous === count),
+        afterCount: !countBox || (!!b && b.left >= countBox.right && countBox.left >= a.right),
         aligned: !!b && Math.abs(rail ? b.x + b.width/2 - a.x - a.width/2 : b.y + b.height/2 - a.y - a.height/2) <= 1,
         following: !!b && (rail ? b.top >= a.bottom : b.left >= a.right),
         dimensions: !!b && b.width === 40 && b.height === 40,

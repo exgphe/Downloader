@@ -2,7 +2,8 @@ import "./instagram-session.js";
 
 const t = (key, substitutions) => browser.i18n.getMessage(key, substitutions) || key;
 for (const element of document.querySelectorAll("[data-i18n]")) element.textContent = t(element.dataset.i18n);
-document.documentElement.lang = browser.i18n.getUILanguage();
+document.documentElement.lang = browser.i18n.getUILanguage().replaceAll("_", "-");
+document.documentElement.dir = browser.i18n.getMessage("@@bidi_dir") === "rtl" ? "rtl" : "ltr";
 const photosStatus = document.getElementById("photos-status");
 const photosDot = document.getElementById("photos-dot");
 const videoStatus = document.getElementById("video-status");

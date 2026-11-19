@@ -3,6 +3,8 @@
 - [x] 三端 Share Extension 接收链接；Instagram 使用内嵌 gallery-dl，可在分享面板中下载和保存照片。Shortcuts 动作无需主动打开 App，文件返回给后续「存储文件」动作。
 - [x] Instagram 单条 Story 图片 / 视频下载：App、分享菜单、快捷指令识别带 Story ID 的链接；Safari 优先提取匹配 ID 的媒体，使用同步登录的内置 gallery-dl 作为回退，过期或删除时明确报错。
 - [x] 修复 Instagram 下载按钮错位：识别真实横向操作栏，跳过发送按钮内部的纵向容器；对齐纸飞机图标中心，并在页面重绘、窗口变化后校正。60 项扩展测试与 12 项真实 WebKit 离线布局检查通过；当前在线 Instagram 页面仍需加载新扩展后验收。
+- [x] 修复 Instagram 转发计数被下载按钮拆开：将数字视作前一操作的一部分，下载按钮放在「纸飞机＋计数」之后；覆盖独立数字、可点击数字及延迟加载计数。74 项扩展测试、21 项 Instagram WebKit 布局检查通过，macOS 已由 Xcode 重新 Run 并核对打包脚本；在线页面与移动设备仍需刷新 / 安装后复验。
+- [x] X Safari 网页按钮支持图片帖及图片视频混合帖：图片请求 `name=orig` 原始尺寸，保留格式；混合帖合并网页图片与内置 yt-dlp 视频。排除头像、视频封面和引用媒体，加载不完整时报错，失败重试跳过已保存项。71 项扩展测试与 9 项 X WebKit 离线布局 / 原图请求检查通过；macOS、iOS、visionOS 无签名完整构建通过。
 - [x] 修复 iPhone 分享时报媒体引擎不可用：将解析脚本移到独立 `python-bootstrap`，避免 `Python` / `python` 大小写碰撞；打包与启动加入精确路径检查，缺组件给出具体错误。
 - [x] Instagram 登录同步：用户在 Safari 登录后，从 Downloader 弹窗主动同步 Cookie；本机共享 Keychain 供 App / Share 的内嵌 gallery-dl 使用。新增同步状态、清除与登录失败重试指引，限制凭据只发送到 Instagram 的两个 HTTPS 主机。读取 HttpOnly 需 Safari 18+。
 - [x] 修复 iPhone 登录同步后下载图片时报下载目录错误：对既有容器与未创建目标使用一致的真实路径解析，兼容系统路径别名；文件落地前复查容器边界，后台恢复与确认清理也使用相同规则。真实 URLSession / 原生下载委托的 56 项无网络回归检查通过。
@@ -16,6 +18,7 @@
 登录同步已验证：51 项扩展测试、26 项媒体解析测试、65 项原生会话校验与隔离存储检查、实际 CPython / gallery-dl 会话注入、登录失败持久化与重试；三端签名构建通过，九个 target 的签名访问组与 Info 配置一致。会话测试使用模拟 Cookie，未读取用户真实登录凭据。
 
 - [ ] 真机验收：Instagram App 分享内容、Photos 首次授权与完整轮播保存、分享面板关闭后的系统传输与宿主保存交接、iOS 后台任务 Live Activity 取消，以及不同设备的照片编解码器支持。
+- [ ] X 原图真机验收：安装新扩展后，在 Safari 分别下载单图、四图和图片视频混合帖，确认照片库项数及原图尺寸；当前已验证离线页面到原生保存消息，尚未验证在线 X 到真机照片库的完整流程。
 - [ ] 登录同步真机验收：iPhone Safari 登录→弹窗同步→Instagram App 分享重试；账号切换、失效验证、清除后重新同步，以及 visionOS Safari 的 Cookie API 支持。
 - [ ] Story 真机验收：已同步 Safari 登录的 iPhone 分享单条 Story 图片 / 视频，确认照片保存；Safari 按钮随 Story 切换更新、过期与无权限内容报错。已通过三端无签名构建、Story API / GraphQL 模拟响应和真实内嵌 CPython 解析测试，尚未验证用户提供链接的在线内容。
 

@@ -3,13 +3,13 @@
     "message": "Downloader"
   },
   "extension_description": {
-    "message": "將 Instagram 圖片、影片及 X 影片直接儲存到照片。"
+    "message": "將 Instagram 和 X 的圖片、影片直接儲存到照片。"
   },
   "popupSubtitle": {
     "message": "Instagram · X · 照片"
   },
   "popupInstruction": {
-    "message": "點選 Instagram 傳送按鈕右側，或 X 影片貼文分享按鈕右側的下載按鈕，將貼文的所有媒體儲存到照片。"
+    "message": "點選 Instagram 傳送按鈕或 X 圖片、影片貼文分享按鈕右側的下載按鈕，將整篇貼文的媒體儲存到照片。X 圖片下載原圖。"
   },
   "photosLibrary": {
     "message": "照片圖庫"
@@ -153,5 +153,38 @@
   },
   "instagramSessionUnavailable": {
     "message": "無法讀取已同步的登入"
+  },
+  "xMediaUnavailable": {
+    "message": "部分 X 圖片尚未載入。請開啟貼文，等待所有圖片載入後重試。"
+  },
+  "postChanged": {
+    "message": "貼文已變更。請重新整理頁面後再試一次。"
+  },
+  "incompleteVideo": {
+    "message": "影片引擎未傳回預期的所有影片。請再試一次。"
+  },
+  "saveUnconfirmed": {
+    "message": "「照片」未確認已儲存此項目。"
+  },
+  "unauthorizedDownload": {
+    "message": "此網站無權要求下載。"
+  },
+  "invalidDownload": {
+    "message": "下載要求無效。"
+  },
+  "invalidStory": {
+    "message": "限時動態連結必須指向單一媒體項目。"
+  },
+  "unapprovedURL": {
+    "message": "媒體位址不屬於支援的媒體伺服器。"
+  },
+  "tooManyItems": {
+    "message": "每則貼文最多可包含 20 個媒體項目。"
+  },
+  "noVideo": {
+    "message": "這則貼文沒有可下載的影片。"
+  },
+  "invalidMedia": {
+    "message": "媒體位址、媒體類型或貼文位址無效。"
   }
 }

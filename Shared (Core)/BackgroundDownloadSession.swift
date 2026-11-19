@@ -137,7 +137,7 @@ final class BackgroundDownloadSession: NSObject, URLSessionDownloadDelegate, @un
         let pending = records().filter { $0.jobID == jobID && $0.state == "running" }
         for var record in pending {
             record.cancellationRequested = true
-            record.error = "Download cancelled."
+            record.error = String(localized: "Download cancelled.", table: "Download")
             try? save(record)
             lock.lock()
             let owner = sessions[record.sessionIdentifier]
@@ -263,7 +263,7 @@ final class BackgroundDownloadSession: NSObject, URLSessionDownloadDelegate, @un
             record.state = "failed"
         } else if record.state == "running" {
             record.state = "failed"
-            record.error = "The media transfer ended without a downloaded file."
+            record.error = String(localized: "The media transfer ended without a downloaded file.", table: "Download")
         }
         try? save(record)
         lock.lock()
@@ -298,6 +298,6 @@ final class BackgroundDownloadSession: NSObject, URLSessionDownloadDelegate, @un
 
     private func transferError(_ message: String) -> NSError {
         NSError(domain: "Downloader.BackgroundTransfer", code: 1,
-                userInfo: [NSLocalizedDescriptionKey: message])
+                userInfo: [NSLocalizedDescriptionKey: MediaSaveError.localizedMessage(message)])
     }
 }

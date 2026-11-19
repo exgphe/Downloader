@@ -9,6 +9,7 @@ Called after Embed PlugIns by the app target. This script never accesses the net
 from __future__ import annotations
 
 import argparse
+from importlib.metadata import distributions
 import json
 import os
 from pathlib import Path
@@ -77,6 +78,22 @@ def require_exact_file(root: Path, relative: str) -> Path:
 def validate_runtime(resources: Path, abi: str) -> None:
     for relative in required_runtime_files(abi):
         require_exact_file(resources, relative)
+
+
+def verify_installed_versions(framework: Path, packages: Path, lock: dict, family: str) -> str:
+    python = lock["python"]
+    expected = python["frameworks"][family].get("pythonVersion", python["version"])
+    header = framework / "Headers/patchlevel.h"
+    version = re.search(r'^#define\s+PY_VERSION\s+"([^"]+)"', header.read_text(), re.MULTILINE)
+    if not version or version[1] != expected:
+        raise ValueError(f"Expected Python {expected} for {family}. Run Scripts/bootstrap_runtime.py through uv.")
+    installed = {dist.name.lower().replace("_", "-"): dist.version for dist in distributions(path=[str(packages)])}
+    for entry in lock["packages"]:
+        name = entry["name"]
+        if installed.get(name) != entry["version"]:
+            raise ValueError(f"Expected {name} {entry['version']}, found {installed.get(name, 'no installation')}. "
+                             "Run Scripts/bootstrap_runtime.py through uv.")
+    return version[1]
 
 
 def remove_legacy_bootstrap(resources: Path) -> None:
@@ -204,6 +221,9 @@ def package(args: argparse.Namespace) -> None:
         raise FileNotFoundError(f"Missing {xcframework}. Run uv run --no-project --script Scripts/bootstrap_runtime.py first.")
     slice_info = select_slice(xcframework, args.platform, args.architectures)
     slice_path = xcframework / slice_info["LibraryIdentifier"]
+    source_framework = slice_path / slice_info["LibraryPath"]
+    packages_source = args.dependencies / "PythonPackages"
+    python_version = verify_installed_versions(source_framework, packages_source, lock, family)
     if args.inspect:
         print(json.dumps({"platform": args.platform, "slice": slice_info["LibraryIdentifier"],
                           "architectures": args.architectures}))
@@ -228,7 +248,6 @@ def package(args: argparse.Namespace) -> None:
         identity = "-" if family == "macOS" else None
     frameworks = contents / "Frameworks"
     frameworks.mkdir(parents=True, exist_ok=True)
-    source_framework = slice_path / slice_info["LibraryPath"]
     embedded_framework = frameworks / "Python.framework"
     copy_tree(source_framework, embedded_framework, fresh=True, framework=True)
     # Versioned macOS frameworks allow symlinks at the root for Modules.
@@ -278,7 +297,7 @@ def package(args: argparse.Namespace) -> None:
                     finally:
                         temporary.unlink(missing_ok=True)
     packages = resources / "python-packages"
-    copy_tree(args.dependencies / "PythonPackages", packages, fresh=True)
+    copy_tree(packages_source, packages, fresh=True)
     bootstrap_source = ROOT / "Shared (Extension)/Resources/Python"
     for name in BOOTSTRAP_SCRIPTS:
         require_exact_file(bootstrap_source, name)
@@ -303,7 +322,7 @@ def package(args: argparse.Namespace) -> None:
     framework_binary = embedded_framework / ("Versions/" + abi + "/Python" if family == "macOS" else "Python")
     thin(framework_binary, args.architectures)
     sign(embedded_framework, identity)
-    versions = {"pythonVersion": lock["python"]["version"],
+    versions = {"pythonVersion": python_version,
                 "ytDlpVersion": next(entry["version"] for entry in lock["packages"] if entry["name"] == "yt-dlp"),
                 "galleryDlVersion": next((entry["version"] for entry in lock["packages"] if entry["name"] == "gallery-dl"), None),
                 "bootstrapDirectory": BOOTSTRAP_DIRECTORY,

@@ -137,7 +137,7 @@ final class BackgroundExecution {
         persist()
         registerRequest(identifier, jobID: jobID)
         let request = BGContinuedProcessingTaskRequest(identifier: identifier, title: title,
-                                                      subtitle: "Preparing download…")
+                                                      subtitle: String(localized: "Preparing download…", table: "Download"))
         // The foreground pipeline already owns the job. Queuing another copy can
         // outlive that job; unavailable CPU continuation leaves HTTP transfers intact.
         request.strategy = .fail
@@ -203,7 +203,7 @@ final class BackgroundExecution {
             }
         }
         if !accepted {
-            submissionErrors[jobID] = "Background processing could not be enabled for this download."
+            submissionErrors[jobID] = String(localized: "Background processing could not be enabled for this download.", table: "Download")
         }
     }
     #endif

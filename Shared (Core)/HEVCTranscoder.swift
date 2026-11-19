@@ -281,6 +281,6 @@ enum HEVCTranscoder {
         guard result < 0 else { return }
         var buffer = [CChar](repeating: 0, count: 256)
         av_strerror(result, &buffer, buffer.count)
-        throw failure("\(message) \(String(cString: buffer))")
+        throw failure("\(MediaSaveError.localizedMessage(message)) \(String(cString: buffer))")
     }
 }

@@ -13,7 +13,7 @@ private struct ShareDownloadView: View {
         VStack(spacing: 0) {
             HStack {
                 Image(systemName: "arrow.down.circle.fill").font(.title).foregroundColor(.accentColor)
-                Text("下载媒体").font(.title2.bold())
+                Text("Download media").font(.title2.bold())
                 Spacer()
                 Button(action: close) {
                     Image(systemName: "xmark.circle.fill")
@@ -23,8 +23,8 @@ private struct ShareDownloadView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
-                .accessibilityLabel("关闭分享页面")
-                .help("关闭分享页面")
+                .accessibilityLabel("Close share sheet")
+                .help("Close share sheet")
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 8)
@@ -38,12 +38,12 @@ private struct ShareDownloadView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 if model.loading {
-                    ProgressView("正在读取链接…")
+                    ProgressView("Reading link…")
                 } else if !model.source.isEmpty {
                     Text(model.source).font(.footnote).foregroundColor(.secondary).lineLimit(3).textSelection(.enabled)
-                    if model.starting { ProgressView("正在开始下载…") }
+                    if model.starting { ProgressView("Starting download…") }
                     if model.starting || model.job.map({ !$0.phase.isFinished }) == true {
-                        Text("解析期间请保持此面板打开。媒体传输可在后台继续；系统限制可能使后续处理需要重新打开 App。")
+                        Text("Keep this sheet open while Downloader reads the link. Downloads can continue in the background. You may need to reopen Downloader to finish processing.")
                             .font(.footnote).foregroundColor(.secondary)
                     }
                 }
@@ -52,7 +52,7 @@ private struct ShareDownloadView: View {
                     if !job.phase.isFinished {
                         if let progress = job.progress { ProgressView(value: progress) }
                         else { ProgressView() }
-                        Button("取消下载", role: .destructive, action: model.cancel)
+                        Button("Cancel download", role: .destructive, action: model.cancel)
                     } else if job.phase == .failed || job.phase == .cancelled {
                         if needsInstagramLogin(job) { instagramLoginGuide }
                         retryButton
@@ -71,7 +71,7 @@ private struct ShareDownloadView: View {
         Button {
             Task { await model.retry() }
         } label: {
-            Label(model.retrying || model.starting ? "正在重试…" : "重试下载", systemImage: "arrow.clockwise")
+            Label(model.retrying || model.starting ? LocalizedStringKey("Retrying…") : LocalizedStringKey("Retry download"), systemImage: "arrow.clockwise")
         }
         .buttonStyle(.borderedProminent)
         .disabled(model.retrying || model.starting)
@@ -84,11 +84,11 @@ private struct ShareDownloadView: View {
 
     private var instagramLoginGuide: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("请从 Safari 同步 Instagram 登录", systemImage: "person.crop.circle")
+            Label("Sync your Instagram login from Safari", systemImage: "person.crop.circle")
                 .font(.headline)
-            Text("需要 Safari 18 或更高版本。")
-            Text("1. 手动打开 Safari，在地址栏输入 instagram.com，并在要同步的 Safari 配置文件中登录。")
-            Button(copiedLoginURL ? "登录网址已复制" : "复制登录网址") {
+            Text("Safari 18 or later is required.")
+            Text("1. Open Safari and type instagram.com in the address bar. Sign in using the Safari profile you want to sync.")
+            Button(copiedLoginURL ? LocalizedStringKey("Login URL copied") : LocalizedStringKey("Copy login URL")) {
 #if os(macOS)
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString("https://www.instagram.com/", forType: .string)
@@ -98,10 +98,10 @@ private struct ShareDownloadView: View {
                 copiedLoginURL = true
             }
             .buttonStyle(.borderless)
-            Text("2. 在 Safari 中启用 Downloader，并允许它访问 instagram.com。")
-            Text("3. 打开 Safari 的 Downloader 弹窗，点击「同步 Instagram 登录」。")
-            Text("4. 返回 Downloader 或分享面板，重新下载。")
-            Text("同步的登录仅供本设备下载 Instagram 内容使用。无痕浏览和其他配置文件不会自动包含。切换账号或登录过期后，请重新同步。")
+            Text("2. Enable Downloader in Safari Extensions and allow it to access instagram.com.")
+            Text("3. Open the Downloader popup in Safari and tap Sync Instagram login.")
+            Text("4. Return to Downloader or the share panel and retry the download.")
+            Text("The synced login is used only for Instagram downloads on this device. Private browsing and other Safari profiles are not included automatically. Sync again after switching accounts or if the login expires.")
                 .foregroundColor(.secondary)
         }
         .font(.footnote)

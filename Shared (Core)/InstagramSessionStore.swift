@@ -113,9 +113,9 @@ struct InstagramSessionRepository {
             let cookies = try InstagramSessionValidation.validate(record.cookies, now: now, requireSession: false)
             return status(for: record, cookies: cookies)
         } catch let failure as MediaSaveError {
-            return InstagramSessionStatus(hasSession: false, errorMessage: failure.message)
+            return InstagramSessionStatus(hasSession: false, errorMessage: failure.localizedDescription)
         } catch {
-            return InstagramSessionStatus(hasSession: false, errorMessage: "The synced Instagram session could not be read. Sync again from the Downloader extension.")
+            return InstagramSessionStatus(hasSession: false, errorMessage: String(localized: "The synced Instagram session could not be read. Sync again from the Downloader extension.", table: "Download"))
         }
     }
 

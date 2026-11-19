@@ -1,7 +1,7 @@
 /* Native saving is injected to test retry behavior without Safari. */
 (function (root) {
     "use strict";
-    function createDownloadEngine({resolveVideos, saveMedia, onProgress = () => {}, loadCheckpoint = async () => null, saveCheckpoint = async () => {}, now = Date.now}) {
+    function createDownloadEngine({resolveVideos, saveMedia, localize = (key, fallback) => fallback, onProgress = () => {}, loadCheckpoint = async () => null, saveCheckpoint = async () => {}, now = Date.now}) {
         const posts = new Map();
         async function download(request) {
             let state = posts.get(request.postURL);
@@ -36,9 +36,9 @@
                     }
                     // Refresh signed photo URLs from the new extraction while keeping stable item indices.
                     const images = request.media.filter(item => item.kind === "image");
-                    if (state.imageCount !== null && state.imageCount !== images.length) throw new Error("The post changed. Reload the page before retrying.");
+                    if (state.imageCount !== null && state.imageCount !== images.length) throw new Error(localize("postChanged", "The post changed. Reload the page before retrying."));
                     state.imageCount = images.length;
-                    if (state.videoCount !== null && Number.isInteger(request.expectedVideoCount) && state.videoCount !== request.expectedVideoCount) throw new Error("The post changed. Reload the page before retrying.");
+                    if (state.videoCount !== null && Number.isInteger(request.expectedVideoCount) && state.videoCount !== request.expectedVideoCount) throw new Error(localize("postChanged", "The post changed. Reload the page before retrying."));
                     const knownVideoCount = state.videos?.length ?? state.videoCount ?? request.expectedVideoCount;
                     const unsavedVideos = request.hasVideo && (!Number.isInteger(knownVideoCount) ||
                         Array.from({length: knownVideoCount}, (_, index) => index).some(index => !state.saved.has(`video:${index}`)));
@@ -46,15 +46,15 @@
                     if (unsavedVideos && (refreshedMetadata || !state.videos || now() - state.resolvedAt > 10 * 60 * 1000)) {
                         progress({phase: "resolving", saved: state.saved.size, total: images.length});
                         const videos = await resolveVideos(request.postURL, request);
-                        if (request.hasVideo && !videos.length) throw new Error("The built-in video engine returned no videos.");
-                        if (Number.isInteger(request.expectedVideoCount) && videos.length !== request.expectedVideoCount) throw new Error("The built-in video engine did not return every video in this post. Try again.");
-                        if (state.videoCount !== null && videos.length !== state.videoCount) throw new Error("The built-in video engine returned a different video count. Try again.");
+                        if (request.hasVideo && !videos.length) throw new Error(localize("noVideo", "The built-in video engine returned no videos."));
+                        if (Number.isInteger(request.expectedVideoCount) && videos.length !== request.expectedVideoCount) throw new Error(localize("incompleteVideo", "The built-in video engine did not return every video in this post. Try again."));
+                        if (state.videoCount !== null && videos.length !== state.videoCount) throw new Error(localize("incompleteVideo", "The built-in video engine returned a different video count. Try again."));
                         state.videos = videos;
                         state.videoCount = videos.length;
                         state.resolvedAt = now();
                     }
                     const items = [...images, ...(state.videos || [])];
-                    if (items.length > 20) throw new Error("The post contains too many media items.");
+                    if (items.length > 20) throw new Error(localize("tooManyItems", "The post contains too many media items."));
                     const failed = [];
                     let refreshVideos = false;
                     const kindIndices = {image: 0, video: 0};
@@ -66,7 +66,7 @@
                         try {
                             const result = await saveMedia(item, request.postURL);
                             if (!result?.ok || result.saved !== 1) {
-                                const error = new Error(result?.error || "Photos did not confirm that this item was saved.");
+                                const error = new Error(result?.error || localize("saveUnconfirmed", "Photos did not confirm that this item was saved."));
                                 error.code = result?.code;
                                 throw error;
                             }
@@ -74,7 +74,7 @@
                             try { await saveCheckpoint(request.postURL, {created: state.created, saved: [...state.saved], imageCount: images.length, videoCount: state.videoCount || 0}); }
                             catch { /* The item is already in Photos even if its retry checkpoint cannot be stored. */ }
                         } catch (error) {
-                            failed.push({index, error: error.message || "Could not save this item."});
+                            failed.push({index, error: error.message || localize("saveUnconfirmed", "Could not save this item.")});
                             if (item.kind === "video" && ["downloadHTTPError", "unsafeURL", "unsafeRedirect", "invalidMedia", "emptyMedia"].includes(error.code)) refreshVideos = true;
                         }
                     }
@@ -84,7 +84,7 @@
                     progress({phase: failed.length ? "partial" : "complete", ...result});
                     return result;
                 } catch (error) {
-                    return {ok: false, saved: state.saved.size, total: (state.imageCount || 0) + (state.videos?.length ?? state.videoCount ?? request.expectedVideoCount ?? 0), error: error.message || "Download failed.", retryable: true};
+                    return {ok: false, saved: state.saved.size, total: (state.imageCount || 0) + (state.videos?.length ?? state.videoCount ?? request.expectedVideoCount ?? 0), error: error.message || localize("downloadFailed", "Download failed."), retryable: true};
                 }
             };
             state.pending = execute();

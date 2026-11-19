@@ -3,13 +3,13 @@
     "message": "Downloader"
   },
   "extension_description": {
-    "message": "Save Instagram photos and videos, and X videos, directly to Photos."
+    "message": "Save Instagram and X photos and videos directly to Photos."
   },
   "popupSubtitle": {
     "message": "Instagram · X · Photos"
   },
   "popupInstruction": {
-    "message": "Tap the download button beside Send on Instagram or Share on an X video post to save all its media to Photos."
+    "message": "Tap the download button beside Send on Instagram or Share on an X photo or video post to save all its media to Photos. X photos download at original size."
   },
   "photosLibrary": {
     "message": "Photos library"
@@ -65,7 +65,7 @@
     }
   },
   "savedCount": {
-    "message": "Saved $arg1$ item(s) to Photos.",
+    "message": "Saved to Photos: $arg1$.",
     "placeholders": {
       "arg1": {
         "content": "$1"
@@ -153,5 +153,38 @@
   },
   "instagramSessionUnavailable": {
     "message": "Could not read synced login"
+  },
+  "xMediaUnavailable": {
+    "message": "Some X photos have not loaded. Open the post, wait for all photos to load, then try again."
+  },
+  "postChanged": {
+    "message": "The post changed. Reload the page before retrying."
+  },
+  "incompleteVideo": {
+    "message": "The video engine did not return all the expected videos. Try again."
+  },
+  "saveUnconfirmed": {
+    "message": "Photos did not confirm that this item was saved."
+  },
+  "unauthorizedDownload": {
+    "message": "This website cannot request a download."
+  },
+  "invalidDownload": {
+    "message": "Invalid download request."
+  },
+  "invalidStory": {
+    "message": "A Story link must identify exactly one media item."
+  },
+  "unapprovedURL": {
+    "message": "The media URL is not from a supported media host."
+  },
+  "tooManyItems": {
+    "message": "A post can contain at most 20 media items."
+  },
+  "noVideo": {
+    "message": "No downloadable video was found in this post."
+  },
+  "invalidMedia": {
+    "message": "The media URL, media type, or post URL is invalid."
   }
 }

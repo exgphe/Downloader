@@ -13,10 +13,10 @@
     const SHARE_LABELS = new Set([
         "share story", "send story", "分享快拍", "分享限时动态", "分享限時動態", "分享動態", "发送快拍", "partager la story",
         "share", "share post", "share tweet", "send", "send post", "direct", "分享", "分享帖子", "分享贴文", "分享貼文", "发送", "发送帖子", "傳送", "發送", "轉發", "转发",
-        "partager", "partager la publication", "partager le post", "partager le tweet", "envoyer", "teilen", "beitrag teilen", "senden", "compartir", "compartir publicación", "enviar", "condividi", "invia", "シェア", "投稿をシェア", "送信", "공유", "게시물 공유", "보내기", "compartilhar", "enviar publicação"
+        "partager", "partager la publication", "partager le post", "partager le tweet", "envoyer", "teilen", "beitrag teilen", "senden", "compartir", "compartir publicación", "enviar", "condividi", "invia", "シェア", "投稿をシェア", "送信", "공유", "게시물 공유", "보내기", "compartilhar", "enviar publicação", "مشاركة", "مشاركة المنشور", "إرسال", "शेयर करें", "पोस्ट शेयर करें", "भेजें"
     ]);
-    const NEXT_LABELS = new Set(["next", "next slide", "next photo", "suivant", "suivante", "weiter", "siguiente", "avanti", "下一步", "下一张", "下一張", "下一項", "次へ", "다음", "próximo"]);
-    const PREVIOUS_LABELS = new Set(["previous", "previous slide", "previous photo", "go back", "back", "précédent", "précédente", "retour", "zurück", "anterior", "indietro", "上一步", "上一张", "上一張", "返回", "戻る", "이전"]);
+    const NEXT_LABELS = new Set(["next", "next slide", "next photo", "suivant", "suivante", "weiter", "siguiente", "avanti", "下一步", "下一张", "下一張", "下一項", "次へ", "다음", "próximo", "التالي", "التالية", "आगे", "अगला"]);
+    const PREVIOUS_LABELS = new Set(["previous", "previous slide", "previous photo", "go back", "back", "précédent", "précédente", "retour", "zurück", "anterior", "indietro", "上一步", "上一张", "上一張", "返回", "戻る", "이전", "السابق", "السابقة", "رجوع", "पिछला", "पीछे"]);
     const labels = element => [element.getAttribute("aria-label"), element.getAttribute("title"), ...Array.from(element.querySelectorAll("[aria-label],title")).map(child => child.getAttribute("aria-label") || child.textContent)].map(normalize);
     const control = element => element.closest('button,[role="button"]');
     const enabled = element => element && !element.disabled && element.getAttribute("aria-disabled") !== "true" && element.getClientRects().length > 0;
@@ -25,7 +25,9 @@
     function permalink(root) {
         const storyURL = core.instagramStoryID(location.href) && core.canonicalPostURL(location.href, "instagram");
         if (storyURL) return storyURL;
-        const links = Array.from(root.querySelectorAll("a[href]"));
+        const links = Array.from(root.querySelectorAll("a[href]")).filter(link => platform !== "x" ||
+            (link.closest("article") === root && !link.closest('[data-testid="quoteTweet"]') &&
+             !link.parentElement?.closest('[role="link"]')));
         const timed = links.find(link => link.querySelector("time") && core.canonicalPostURL(link.href, platform));
         if (timed) return core.canonicalPostURL(timed.href, platform);
         for (const link of links) {
@@ -53,6 +55,27 @@
         return null;
     }
 
+    function instagramCount(element) {
+        // Counts can be plain spans or separate clickable controls. They are
+        // part of the preceding action, not another action-row button.
+        if (element.hasAttribute(BUTTON_ATTRIBUTE) || element.matches("svg,img,video") ||
+            element.querySelector("svg,img,video")) return false;
+        const text = (element.textContent || "").trim();
+        return text.length <= 32 && /^\p{N}[\p{N}\p{L}\p{Zs}.,+٬٫]*$/u.test(text);
+    }
+
+    function afterInstagramCount(anchor) {
+        let last = anchor;
+        for (let sibling = anchor.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
+            // A prior injection may already split the icon and a newly loaded
+            // count. Ignore that button while locating the end of the action.
+            if (sibling.hasAttribute(BUTTON_ATTRIBUTE)) continue;
+            if (!instagramCount(sibling)) break;
+            last = sibling;
+        }
+        return last;
+    }
+
     function insertionAnchor(share, root) {
         if (platform === "instagram") {
             let verticalAnchor = null;
@@ -64,16 +87,16 @@
                 // Our own button must not change the selected container on
                 // the next MutationObserver scan.
                 const peers = Array.from(parent.children).filter(child => child !== anchor &&
-                    !child.hasAttribute(BUTTON_ATTRIBUTE) &&
+                    !child.hasAttribute(BUTTON_ATTRIBUTE) && !instagramCount(child) &&
                     (child.matches('button,[role="button"]') ||
                      Array.from(child.querySelectorAll('button,[role="button"]')).some(button => !button.hasAttribute(BUTTON_ATTRIBUTE))));
                 if (peers.length) {
                     const style = getComputedStyle(parent);
                     if (style.display.includes("flex")) {
-                        if (!style.flexDirection.startsWith("column")) return anchor;
+                        if (!style.flexDirection.startsWith("column")) return afterInstagramCount(anchor);
                         // Reels can have a vertical action rail. Keep that as a
                         // fallback, but look past nested columns for a feed row.
-                        verticalAnchor ||= anchor;
+                        verticalAnchor ||= afterInstagramCount(anchor);
                     } else {
                         const box = share.getBoundingClientRect();
                         const sameRow = peers.some(peer => {
@@ -82,7 +105,7 @@
                                 (bounds.right <= box.left + 1 || bounds.left >= box.right - 1) &&
                                 Math.abs((bounds.top + bounds.bottom - box.top - box.bottom) / 2) <= Math.max(8, box.height / 2);
                         });
-                        if (sameRow) return anchor;
+                        if (sameRow) return afterInstagramCount(anchor);
                     }
                 }
                 if (parent === root) break;
@@ -295,6 +318,51 @@
         return {media, complete: true, hasVideo: media.some(item => item.kind === "video"), source: "visible"};
     }
 
+    function xOwnsMedia(element, root, postURL) {
+        if (element.closest("article") !== root) return false;
+        for (let node = element; node && node !== root; node = node.parentElement) {
+            if (node.getAttribute("data-testid") === "quoteTweet") return false;
+            const links = node.matches("a[href]") ? [node] :
+                node.getAttribute("role") === "link" ? Array.from(node.querySelectorAll("a[href]")) : [];
+            if (links.some(link => {
+                const target = core.canonicalPostURL(link.href, "x");
+                return target && target.split("/").pop() !== postURL.split("/").pop();
+            })) return false;
+        }
+        return true;
+    }
+
+    function xMediaElements(root, postURL) {
+        const videoSelector = 'video,[data-testid="videoPlayer"],[data-testid="videoComponent"]';
+        const hasVideo = Array.from(root.querySelectorAll(videoSelector)).some(node => xOwnsMedia(node, root, postURL));
+        const containers = new Set(root.querySelectorAll('[data-testid="tweetPhoto"]'));
+        // Photo permalinks also cover layouts that omit the tweetPhoto marker.
+        for (const link of root.querySelectorAll("a[href]")) {
+            if (core.canonicalPostURL(link.href, "x") && /\/photo\/\d+\/?$/.test(new URL(link.href).pathname)) containers.add(link);
+        }
+        const photos = Array.from(containers).filter(node => xOwnsMedia(node, root, postURL) &&
+            !node.closest(videoSelector) && !node.querySelector(videoSelector));
+        return {photos, hasVideo};
+    }
+
+    function xMedia(root, postURL) {
+        const {photos, hasVideo} = xMediaElements(root, postURL);
+        const images = new Map();
+        for (const container of photos) {
+            const elements = Array.from(container.querySelectorAll("img"));
+            if (!elements.length) throw new Error(t("xMediaUnavailable"));
+            for (const image of elements) {
+                const url = [image.currentSrc, image.src, image.getAttribute("src")]
+                    .map(value => core.xOriginalImageURL(value)).find(Boolean);
+                // Never report a partially loaded photo grid as a complete post.
+                if (!url) throw new Error(t("xMediaUnavailable"));
+                images.set(url, {kind: "image", url});
+            }
+        }
+        if (!images.size && !hasVideo) throw new Error(t("noMedia"));
+        return {media: [...images.values()], complete: true, hasVideo, source: "page"};
+    }
+
     async function download(button, root) {
         if (button.disabled) return;
         const postURL = permalink(root);
@@ -305,7 +373,7 @@
         icon(button, "busy");
         active.set(postURL, button);
         try {
-            const extracted = platform === "instagram" ? await instagramMedia(root, postURL) : {media: [], complete: true, hasVideo: true};
+            const extracted = platform === "instagram" ? await instagramMedia(root, postURL) : xMedia(root, postURL);
             const result = await browser.runtime.sendMessage({type: "downloadPost", platform, postURL,
                 media: extracted.media, mediaSource: extracted.source, complete: extracted.complete, requiresVideoResolution: extracted.hasVideo});
             if (!result?.ok) {
@@ -329,7 +397,8 @@
     function inject(share, root) {
         const postURL = permalink(root);
         if (!postURL) return;
-        const existing = root.querySelector(`[${BUTTON_ATTRIBUTE}]`);
+        const existing = Array.from(root.querySelectorAll(`[${BUTTON_ATTRIBUTE}]`))
+            .find(button => platform !== "x" || button.closest("article") === root);
         const anchor = insertionAnchor(share, root);
         if (!anchor) return;
         function place(button) {
@@ -390,8 +459,16 @@
             }
         } else {
             for (const root of document.querySelectorAll('article[data-testid="tweet"],article[role="article"]')) {
-                if (!root.querySelector('video,[data-testid="videoPlayer"]')) continue;
-                const groups = Array.from(root.querySelectorAll('[role="group"]'));
+                const postURL = permalink(root);
+                if (!postURL) continue;
+                const {photos, hasVideo} = xMediaElements(root, postURL);
+                if (!photos.length && !hasVideo) {
+                    Array.from(root.querySelectorAll(`[${BUTTON_ATTRIBUTE}]`))
+                        .filter(button => button.closest("article") === root).forEach(button => button.remove());
+                    continue;
+                }
+                const groups = Array.from(root.querySelectorAll('[role="group"]'))
+                    .filter(group => xOwnsMedia(group, root, postURL));
                 const actions = groups.find(group => group.querySelector('[data-testid="reply"]')) || root;
                 const share = matchingControl(actions, SHARE_LABELS);
                 if (share) inject(share, root);

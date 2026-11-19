@@ -13,6 +13,7 @@ async function sendNative(message) {
 }
 
 const engine = globalThis.DownloaderEngine.createDownloadEngine({
+    localize,
     resolveVideos: globalThis.DownloaderVideoResolver.createVideoResolver({sendNative, localize}),
     async loadCheckpoint(postURL) {
         const key = `downloadCheckpoint:${postURL}`;
@@ -43,7 +44,7 @@ browser.storage.local.get(null).then(async entries => {
 browser.runtime.onMessage.addListener(async (request, sender) => {
     if (["importInstagramSession", "instagramSession", "clearInstagramSession"].includes(request?.type)) {
         if (!globalThis.DownloaderInstagramSession.isPopupSender(sender, path => browser.runtime.getURL(path))) {
-            return {ok: false, code: "unauthorized", error: "Unauthorized request."};
+            return {ok: false, code: "unauthorized", error: localize("unauthorizedDownload", "Unauthorized request.")};
         }
         try { return await sendNative(globalThis.DownloaderInstagramSession.nativeRequest(request)); }
         catch (error) {
@@ -52,14 +53,14 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
         }
     }
     if (request?.type === "nativeStatus") {
-        if (!globalThis.DownloaderInstagramSession.isPopupSender(sender, path => browser.runtime.getURL(path))) return {ok: false, error: "Unauthorized request."};
+        if (!globalThis.DownloaderInstagramSession.isPopupSender(sender, path => browser.runtime.getURL(path))) return {ok: false, error: localize("unauthorizedDownload", "Unauthorized request.")};
         try { return await sendNative({type: "status"}); }
         catch (error) { return {ok: false, error: error.message}; }
     }
     if (request?.type !== "downloadPost") return undefined;
     try {
-        if (!Number.isInteger(sender.tab?.id)) throw new Error("A browser tab is required.");
-        let validated = core.validatePostRequest(request, sender.url || sender.tab.url);
+        if (!Number.isInteger(sender.tab?.id)) throw new Error(localize("invalidDownload", "A browser tab is required."));
+        let validated = core.validatePostRequest(request, sender.url || sender.tab.url, localize);
         activeTabs.set(validated.postURL, sender.tab.id);
         if (activeTabs.size > 100) activeTabs.delete(activeTabs.keys().next().value);
         if (validated.needsStoryResolution) {
@@ -67,7 +68,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             const result = await sendNative({type: "resolveStory", postURL: validated.postURL});
             if (!result?.ok) throw new Error(result?.error || localize("resolveFailed", "The Instagram Story could not be resolved."));
             validated = core.validatePostRequest({...request, postURL: validated.postURL,
-                media: result.media, mediaSource: "metadata"}, sender.url || sender.tab.url);
+                media: result.media, mediaSource: "metadata"}, sender.url || sender.tab.url, localize);
         }
         return await engine.download(validated);
     } catch (error) { return {ok: false, saved: 0, error: error.message}; }

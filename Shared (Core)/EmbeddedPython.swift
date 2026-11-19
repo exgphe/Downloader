@@ -107,7 +107,7 @@ private enum EmbeddedPython {
             response["galleryDlVersion"] = metadata["galleryDlVersion"]
         }
         if let failure {
-            response["error"] = failure.message
+            response["error"] = failure.localizedDescription
             response["code"] = failure.code
         }
         return response

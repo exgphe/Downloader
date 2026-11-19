@@ -1,7 +1,7 @@
 "use strict";
 const chinese = navigator.language.toLowerCase().startsWith("zh");
 const copy = chinese ? {
-    title: "留住喜欢的瞬间。", subtitle: "将 Instagram 图片、视频和 X 视频，直接保存到照片。",
+    title: "留住喜欢的瞬间。", subtitle: "将 Instagram 和 X 的图片、视频，直接保存到照片。",
     destination: "→ 照片", setup: "设置一次，轻点即可保存。", enable: "启用 Safari 扩展",
     enableHint: "开启 Downloader，并允许访问 Instagram 和 X。", settings: "打开设置",
     photos: "允许保存到照片", photosHint: "Downloader 只需要添加图片和视频的权限。",

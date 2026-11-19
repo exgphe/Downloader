@@ -85,7 +85,7 @@ final class MediaDownload: NSObject, URLSessionDownloadDelegate {
             guard (200..<300).contains(response.statusCode) else {
                 let message = [401, 403].contains(response.statusCode)
                     ? "The media URL is expired or requires authentication. Refresh the post and try again."
-                    : "The media server returned HTTP \(response.statusCode)."
+                    : String(localized: "The media server returned HTTP \(response.statusCode).", table: "Download")
                 throw MediaSaveError(code: "downloadHTTPError", message: message)
             }
             let bytes = (try location.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0

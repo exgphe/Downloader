@@ -76,6 +76,48 @@ test('authenticated Instagram carousel metadata saves photos and videos directly
     assert.deepEqual(extension.native.map(message => message.item.kind), ['image', 'video']);
 });
 
+test('X photo-only posts save every original with no video resolution', async () => {
+    const extension = background();
+    const postURL = 'https://x.com/alice/status/12345';
+    const media = [1, 2, 3, 4].map(index => ({kind: 'image', url: `https://pbs.twimg.com/media/PHOTO_${index}?format=png&name=small`}));
+    const result = await extension.send({type: 'downloadPost', platform: 'x', postURL, complete: true, media},
+        {url: 'https://x.com/home', tab: {id: 9}});
+    assert.equal(result.ok, true);
+    assert.equal(result.saved, 4);
+    assert.equal(result.total, 4);
+    assert.deepEqual(extension.native.map(message => message.type), Array(4).fill('saveMedia'));
+    assert.deepEqual(extension.native.map(message => message.item.url), media.map(item => item.url.replace('name=small', 'name=orig')));
+    assert.deepEqual(extension.native.map(message => message.item.filename), ['x-1.png', 'x-2.png', 'x-3.png', 'x-4.png']);
+    assert.ok(extension.native.every(message => message.referrer === postURL));
+});
+
+test('X mixed posts save original photos and all native videos, retrying only failed items', async () => {
+    const postURL = 'https://x.com/alice/status/12345';
+    const videos = [1, 2].map(index => ({kind: 'video', url: `https://video.twimg.com/clip-${index}.mp4`}));
+    let fail = true;
+    const extension = background(undefined, {nativeResponse: message => {
+        if (message.type === 'resolvePost') return {ok: true, media: videos};
+        if (message.item.url === videos[1].url && fail) return {ok: false, error: 'Save failed'};
+        return {ok: true, saved: 1};
+    }});
+    const request = {type: 'downloadPost', platform: 'x', postURL, complete: true, requiresVideoResolution: true,
+        media: [1, 2].map(index => ({kind: 'image', url: `https://pbs.twimg.com/media/PHOTO_${index}.jpg:small`}))};
+    const sender = {url: 'https://x.com/home', tab: {id: 9}};
+    const first = await extension.send(request, sender);
+    assert.equal(first.ok, false);
+    assert.equal(first.saved, 3);
+    assert.equal(first.total, 4);
+    fail = false;
+    const second = await extension.send(request, sender);
+    assert.equal(second.ok, true);
+    assert.equal(second.saved, 4);
+    assert.deepEqual(extension.native.map(message => message.type), ['resolvePost', 'saveMedia', 'saveMedia', 'saveMedia', 'saveMedia', 'saveMedia']);
+    assert.deepEqual(extension.native.slice(1).map(message => message.item.url), [
+        'https://pbs.twimg.com/media/PHOTO_1?format=jpg&name=orig',
+        'https://pbs.twimg.com/media/PHOTO_2?format=jpg&name=orig', videos[0].url, videos[1].url, videos[1].url
+    ]);
+});
+
 test('Story fallback uses the synced native gallery engine for exactly one image or video', async () => {
     const postURL = 'https://www.instagram.com/stories/imwinter/4013638722465314116/';
     for (const kind of ['image', 'video']) {

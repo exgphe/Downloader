@@ -31,7 +31,7 @@ final class ShareDownloadModel: ObservableObject {
         hasLoadedInput = true
         defer { loading = false }
         guard let items = context?.inputItems as? [NSExtensionItem] else {
-            error = "没有收到可下载的链接。"
+            error = String(localized: "No download link was shared.")
             return
         }
         for item in items.prefix(4) {
@@ -55,7 +55,7 @@ final class ShareDownloadModel: ObservableObject {
                 return
             }
         }
-        error = "请分享 YouTube 视频、Instagram 帖子或 Story、X 帖子的链接。"
+        error = String(localized: "Share a link to a YouTube video, an Instagram post or Story, or an X post.")
     }
 
     private func load(_ provider: NSItemProvider, type: String) async throws -> String {
@@ -68,7 +68,7 @@ final class ShareDownloadModel: ObservableObject {
                     continuation.resume(returning: string)
                 } else {
                     continuation.resume(throwing: NSError(domain: "Downloader.Share", code: 1,
-                                                         userInfo: [NSLocalizedDescriptionKey: "无法读取分享的链接。 "]))
+                                                         userInfo: [NSLocalizedDescriptionKey: String(localized: "Could not read the shared link.")]))
                 }
             }
         }
@@ -104,14 +104,14 @@ final class ShareDownloadModel: ObservableObject {
     var status: String {
         guard let job else { return "" }
         switch job.phase {
-        case .queued: return "等待下载"
-        case .resolving: return "正在本机解析链接…"
-        case .downloading: return "正在下载媒体…"
-        case .converting: return "正在将 AV1 转换为 HEVC…"
-        case .saving: return "正在保存…"
-        case .completed: return "已保存到照片。"
-        case .failed: return job.error ?? "下载失败。"
-        case .cancelled: return "下载已取消。"
+        case .queued: return String(localized: "Queued")
+        case .resolving: return String(localized: "Finding the best media…")
+        case .downloading: return String(localized: "Downloading…")
+        case .converting: return String(localized: "Converting AV1 to HEVC…")
+        case .saving: return String(localized: "Saving to Photos…")
+        case .completed: return String(localized: "Saved to Photos.")
+        case .failed: return job.error.map(MediaSaveError.localizedMessage) ?? String(localized: "Download failed")
+        case .cancelled: return String(localized: "Cancelled")
         }
     }
 }

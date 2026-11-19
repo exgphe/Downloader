@@ -3,13 +3,13 @@
     "message": "Downloader"
   },
   "extension_description": {
-    "message": "Enregistrez les photos et vidéos Instagram et les vidéos X dans Photos."
+    "message": "Enregistrez les photos et vidéos Instagram et X dans Photos."
   },
   "popupSubtitle": {
     "message": "Instagram · X · Photos"
   },
   "popupInstruction": {
-    "message": "Touchez le bouton de téléchargement à droite de Envoyer sur Instagram ou de Partager sur une vidéo X pour enregistrer tous les médias dans Photos."
+    "message": "Touchez le bouton à droite de Envoyer sur Instagram ou de Partager sur une publication X pour enregistrer tous ses médias dans Photos. Les photos X sont téléchargées au format original."
   },
   "photosLibrary": {
     "message": "Photothèque"
@@ -65,7 +65,7 @@
     }
   },
   "savedCount": {
-    "message": "$arg1$ média(s) enregistré(s) dans Photos.",
+    "message": "Nombre de médias enregistrés dans Photos : $arg1$.",
     "placeholders": {
       "arg1": {
         "content": "$1"
@@ -73,7 +73,7 @@
     }
   },
   "partialSaved": {
-    "message": "$arg1$ média(s) enregistré(s) sur $arg2$.",
+    "message": "Médias enregistrés : $arg1$ sur $arg2$.",
     "placeholders": {
       "arg1": {
         "content": "$1"
@@ -153,5 +153,38 @@
   },
   "instagramSessionUnavailable": {
     "message": "Connexion synchronisée indisponible"
+  },
+  "xMediaUnavailable": {
+    "message": "Certaines photos X ne sont pas chargées. Ouvrez la publication, attendez le chargement de toutes les photos, puis réessayez."
+  },
+  "postChanged": {
+    "message": "La publication a changé. Rechargez la page avant de réessayer."
+  },
+  "incompleteVideo": {
+    "message": "Le moteur vidéo n’a pas renvoyé toutes les vidéos attendues. Réessayez."
+  },
+  "saveUnconfirmed": {
+    "message": "Photos n’a pas confirmé l’enregistrement de cet élément."
+  },
+  "unauthorizedDownload": {
+    "message": "Ce site ne peut pas demander de téléchargement."
+  },
+  "invalidDownload": {
+    "message": "Demande de téléchargement non valide."
+  },
+  "invalidStory": {
+    "message": "Un lien de story doit désigner un seul média."
+  },
+  "unapprovedURL": {
+    "message": "L’URL du média ne provient pas d’un serveur pris en charge."
+  },
+  "tooManyItems": {
+    "message": "Une publication peut contenir jusqu’à 20 médias."
+  },
+  "noVideo": {
+    "message": "Aucune vidéo téléchargeable dans cette publication."
+  },
+  "invalidMedia": {
+    "message": "L’URL du média, son type ou l’URL de la publication est non valide."
   }
 }

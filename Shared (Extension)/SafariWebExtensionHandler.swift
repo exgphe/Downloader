@@ -6,7 +6,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         let request = context.inputItems.first as? NSExtensionItem
         guard let message = request?.userInfo?[SFExtensionMessageKey] as? [String: Any],
               let type = message["type"] as? String else {
-            reply(["ok": false, "code": "invalidRequest", "error": "Invalid native message."], to: context)
+            reply(["ok": false, "code": "invalidRequest", "error": String(localized: "Invalid native message.", table: "Download")], to: context)
             return
         }
         if type == "status" {
@@ -29,9 +29,9 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 }
                 reply(["ok": true, "instagramSession": status.nativeMessage], to: context)
             } catch let failure as MediaSaveError {
-                reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+                reply(["ok": false, "code": failure.code, "error": failure.localizedDescription], to: context)
             } catch {
-                reply(["ok": false, "code": "instagramSessionUnavailable", "error": "The Instagram session could not be synced. Try again from the Downloader extension."], to: context)
+                reply(["ok": false, "code": "instagramSessionUnavailable", "error": String(localized: "The Instagram session could not be synced. Try again from the Downloader extension.", table: "Download")], to: context)
             }
             return
         }
@@ -39,7 +39,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             guard let address = message["postURL"] as? String,
                   let postURL = NativeMediaRequest.postURL(address),
                   let identifier = NativeMediaRequest.instagramStoryID(postURL) else {
-                reply(["ok": false, "code": "invalidPost", "error": "Provide an Instagram Story link with its media ID."], to: context)
+                reply(["ok": false, "code": "invalidPost", "error": String(localized: "Provide an Instagram Story link with its media ID.", table: "Download")], to: context)
                 return
             }
             Task {
@@ -53,9 +53,9 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     self.reply(["ok": true, "media": [["url": stream.url.absoluteString,
                                "kind": item.kind.rawValue, "filename": item.filename]]], to: context)
                 } catch let failure as MediaSaveError {
-                    self.reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+                    self.reply(["ok": false, "code": failure.code, "error": failure.localizedDescription], to: context)
                 } catch {
-                    self.reply(["ok": false, "code": "storyResolutionFailed", "error": "The Instagram Story could not be resolved. Sync your Instagram login and try again."], to: context)
+                    self.reply(["ok": false, "code": "storyResolutionFailed", "error": String(localized: "The Instagram Story could not be resolved. Sync your Instagram login and try again.", table: "Download")], to: context)
                 }
             }
             return
@@ -63,7 +63,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         if type == "resolvePost" {
             guard let address = message["postURL"] as? String,
                   let postURL = NativeMediaRequest.postURL(address) else {
-                reply(["ok": false, "code": "invalidPost", "error": "Provide a supported Instagram or X post URL."], to: context)
+                reply(["ok": false, "code": "invalidPost", "error": String(localized: "Provide a supported Instagram or X post URL.", table: "Download")], to: context)
                 return
             }
             Task {
@@ -79,7 +79,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     }
                     self.reply(["ok": true, "media": media], to: context)
                 } catch let failure as MediaSaveError {
-                    self.reply(["ok": false, "code": failure.code, "error": failure.message], to: context)
+                    self.reply(["ok": false, "code": failure.code, "error": failure.localizedDescription], to: context)
                 } catch {
                     self.reply(["ok": false, "code": "videoResolutionFailed", "error": error.localizedDescription], to: context)
                 }
@@ -87,7 +87,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             return
         }
         guard type == "saveMedia" else {
-            reply(["ok": false, "code": "unsupportedRequest", "error": "Unknown native message type."], to: context)
+            reply(["ok": false, "code": "unsupportedRequest", "error": String(localized: "Unknown native message type.", table: "Download")], to: context)
             return
         }
         Task {
@@ -96,7 +96,7 @@ final class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 try await NativePhotoSaver.save(NativeMediaRequest(message))
                 response = ["ok": true, "saved": 1]
             } catch let failure as MediaSaveError {
-                response = ["ok": false, "code": failure.code, "error": failure.message]
+                response = ["ok": false, "code": failure.code, "error": failure.localizedDescription]
             } catch {
                 response = ["ok": false, "code": "saveFailed", "error": error.localizedDescription]
             }

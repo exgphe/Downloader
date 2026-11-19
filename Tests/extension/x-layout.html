@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- No site requests or credentials: the original media URLs are only inspected. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:">
+<style>
+* { box-sizing: border-box; }
+body { font: 14px -apple-system, sans-serif; margin: 20px; background: #fff; color: #0f1419; }
+article { width: min(100%, 550px); margin: 0 auto 16px; padding: 12px; border: 1px solid #cfd9de; }
+header { font-weight: 600; margin-bottom: 8px; }
+.media { height: 95px; display: flex; gap: 4px; margin: 8px 0; overflow: hidden; border-radius: 12px; }
+.media > *, [data-testid="tweetPhoto"] { flex: 1; min-width: 0; background: #e8edf1; }
+.media img { width: 100%; height: 95px; object-fit: cover; }
+[role="group"] { display: flex; align-items: center; justify-content: space-between; }
+.action { display: flex; align-items: center; }
+.native { width: 32px; height: 32px; padding: 6px; border: 0; background: none; color: #71767b; display: flex; align-items: center; justify-content: center; }
+.native svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+/* Host styles must not change our button's intended dimensions. */
+button { box-sizing: content-box; }
+.excluded { display: none; }
+</style>
+<main id="cases"></main>
+<script>
+const action = (label, testid = '') => '<div class="action"><button class="native" aria-label="' + label + '" data-testid="' + testid + '"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-10 5-3 5 3M4 12v9h16v-9"/></svg></button></div>';
+const photo = (id, n) => '<a href="https://x.com/alice/status/' + id + '/photo/' + n + '"><div data-testid="tweetPhoto"><img alt="Photo ' + n + '" src="https://pbs.twimg.com/media/IMAGE_' + n + '?format=png&name=small"></div></a>';
+const video = '<div data-testid="videoPlayer"><video></video><div data-testid="tweetPhoto"><img src="https://pbs.twimg.com/ext_tw_video_thumb/poster.jpg" alt="Video"></div></div>';
+const layouts = [
+    ['photos', '101', 'X · four original photos', [1,2,3,4].map(n => photo('101', n)).join(''), 4, false],
+    ['mixed', '102', 'X · photos and video', photo('102', 1) + video + photo('102', 2), 2, true],
+    ['video', '103', 'X · video', video, 0, true]
+];
+for (const [name, id, title, media] of layouts) {
+    const article = document.createElement('article');
+    article.id = name; article.dataset.testid = 'tweet';
+    article.innerHTML = '<header>' + title + '</header><a href="https://x.com/alice/status/' + id + '"><time>4h</time></a><div class="media">' + media + '</div>' +
+        '<div role="group" id="' + name + '-actions">' + action('Reply', 'reply') + action('Repost') + action('Like') + action('Bookmark') + action('Share post') + '</div>';
+    document.querySelector('#cases').append(article);
+}
+const text = document.createElement('article');
+text.id = 'text'; text.dataset.testid = 'tweet'; text.className = 'excluded';
+text.innerHTML = '<a href="https://x.com/alice/status/104"><time>4h</time></a><img src="https://pbs.twimg.com/profile_images/avatar.jpg">Text with a quoted post' +
+    '<div role="link"><a href="https://x.com/bob/status/999"><time>2h</time></a>' + photo('999', 1) + video + '</div>' +
+    '<div role="group">' + action('Reply', 'reply') + action('Share post') + '</div>';
+document.querySelector('#cases').append(text);
+const messages = new Map();
+window.browser = {i18n: {getMessage: key => key}, runtime: {onMessage: {addListener() {}}, sendMessage(message) {
+    messages.set(message.postURL, message);
+    return Promise.resolve({ok: true, saved: message.media.length + (message.requiresVideoResolution ? 1 : 0)});
+}}};
+window.layoutReport = () => layouts.map(([name, id, title, media, count, hasVideo]) => {
+    const root = document.getElementById(name);
+    const share = root.querySelector('[aria-label="Share post"]');
+    const button = root.querySelector('[data-downloader-button]');
+    button?.click();
+    const message = messages.get('https://x.com/alice/status/' + id);
+    const a = share.getBoundingClientRect(), b = button?.getBoundingClientRect();
+    return {name, count: root.querySelectorAll('[data-downloader-button]').length,
+        parent: button?.parentElement.id, expected: name + '-actions',
+        afterShare: !!button?.previousElementSibling?.contains(share),
+        aligned: !!b && Math.abs(b.y + b.height / 2 - a.y - a.height / 2) <= 1,
+        following: !!b && b.left >= a.right, dimensions: !!b && b.width === 32 && b.height === 32,
+        overflow: root.scrollWidth > root.clientWidth,
+        mediaValid: !!message && message.complete && message.media.length === count && message.requiresVideoResolution === hasVideo &&
+            message.media.every((item, n) => item.url === 'https://pbs.twimg.com/media/IMAGE_' + (n + 1) + '?format=png&name=orig') &&
+            !document.querySelector('#text [data-downloader-button]')};
+});
+</script>

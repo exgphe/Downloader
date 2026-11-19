@@ -1,0 +1,190 @@
+{
+  "extension_name": {
+    "message": "Downloader"
+  },
+  "extension_description": {
+    "message": "Instagram और X की तस्वीरें और वीडियो सीधे फ़ोटो में सहेजें।"
+  },
+  "popupSubtitle": {
+    "message": "Instagram · X · फ़ोटो"
+  },
+  "popupInstruction": {
+    "message": "सभी मीडिया को फ़ोटो में सहेजने के लिए Instagram पर भेजें बटन के पास, या X की तस्वीर या वीडियो वाली पोस्ट पर शेयर बटन के पास डाउनलोड बटन चुनें। X की तस्वीरें मूल आकार में डाउनलोड होती हैं।"
+  },
+  "photosLibrary": {
+    "message": "फ़ोटो लाइब्रेरी"
+  },
+  "checkingStatus": {
+    "message": "स्थिति जाँची जा रही है…"
+  },
+  "footerNote": {
+    "message": "तस्वीरें और वीडियो इस डिवाइस की फ़ोटो लाइब्रेरी में सहेजे जाते हैं।"
+  },
+  "photosReady": {
+    "message": "सहेजने के लिए तैयार"
+  },
+  "photosFirstSave": {
+    "message": "पहली बार सहेजते समय फ़ोटो ऐक्सेस की अनुमति माँगेगा"
+  },
+  "photosDenied": {
+    "message": "सेटिंग्ज़ में Downloader को फ़ोटो का ऐक्सेस दें"
+  },
+  "photosRestricted": {
+    "message": "इस डिवाइस पर फ़ोटो का ऐक्सेस प्रतिबंधित है"
+  },
+  "downloadToPhotos": {
+    "message": "सभी मीडिया फ़ोटो में सहेजें"
+  },
+  "readingPost": {
+    "message": "पोस्ट पढ़ी जा रही है…"
+  },
+  "readingCarousel": {
+    "message": "कैरसेल की सभी स्लाइड पढ़ी जा रही हैं…"
+  },
+  "carouselUnavailable": {
+    "message": "कुछ स्लाइड पढ़ी नहीं जा सकीं। पोस्ट खोलें, लोड होने दें और फिर कोशिश करें।"
+  },
+  "noMedia": {
+    "message": "इस पोस्ट में डाउनलोड करने योग्य मीडिया नहीं मिला।"
+  },
+  "postURLUnavailable": {
+    "message": "पोस्ट का लिंक नहीं मिला। पोस्ट खोलें और फिर कोशिश करें।"
+  },
+  "processingVideo": {
+    "message": "वीडियो प्रोसेस हो रहा है… इसमें कुछ मिनट लग सकते हैं।"
+  },
+  "savingProgress": {
+    "message": "फ़ोटो में सहेजे जा रहे हैं: $arg1$ / $arg2$",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "savedCount": {
+    "message": "फ़ोटो में सहेजे गए आइटम: $arg1$।",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      }
+    }
+  },
+  "partialSaved": {
+    "message": "कुल $arg2$ में से $arg1$ सहेजे गए।",
+    "placeholders": {
+      "arg1": {
+        "content": "$1"
+      },
+      "arg2": {
+        "content": "$2"
+      }
+    }
+  },
+  "retryDownload": {
+    "message": "विफल आइटम फिर से डाउनलोड करने के लिए दोबारा दबाएँ।"
+  },
+  "downloadFailed": {
+    "message": "डाउनलोड विफल रहा। फिर कोशिश करने के लिए दोबारा दबाएँ।"
+  },
+  "resolveFailed": {
+    "message": "बिल्ट-इन वीडियो इंजन इस पोस्ट को प्रोसेस नहीं कर सका।"
+  },
+  "nativeUnavailable": {
+    "message": "Downloader नेटिव एक्सटेंशन से जुड़ नहीं सका। एक्सटेंशन चालू करें और Safari फिर से खोलें।"
+  },
+  "videoEngine": {
+    "message": "बिल्ट-इन वीडियो इंजन"
+  },
+  "videoExplanation": {
+    "message": "yt-dlp इसी डिवाइस पर एक्सटेंशन के अंदर चलता है। उपलब्ध होने पर Instagram मीडिया सीधे पोस्ट से पढ़ा जाता है।"
+  },
+  "videoEngineReady": {
+    "message": "इस डिवाइस पर वीडियो प्रोसेस करने के लिए तैयार"
+  },
+  "videoEngineUnavailable": {
+    "message": "बिल्ट-इन वीडियो इंजन उपलब्ध नहीं है। Downloader फिर से इंस्टॉल या अपडेट करें।"
+  },
+  "invalidVideoResult": {
+    "message": "बिल्ट-इन वीडियो इंजन से अमान्य मीडिया सूची मिली।"
+  },
+  "unsafeVideoURL": {
+    "message": "बिल्ट-इन वीडियो इंजन से असमर्थित मीडिया URL मिला।"
+  },
+  "videoEngineVersion": {
+    "message": "yt-dlp $version$ · तैयार",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "instagramLogin": {
+    "message": "Instagram लॉगिन"
+  },
+  "instagramSessionNote": {
+    "message": "इस डिवाइस पर Instagram से डाउनलोड करने के लिए मौजूदा Safari प्रोफ़ाइल में लॉग इन करें, Downloader को Instagram का ऐक्सेस दें और सिंक करें। प्राइवेट ब्राउज़िंग और अन्य प्रोफ़ाइल अपने आप शामिल नहीं होतीं।"
+  },
+  "instagramSessionReady": {
+    "message": "इस डिवाइस पर लॉगिन सिंक हो गया"
+  },
+  "instagramSessionNotSynced": {
+    "message": "लॉगिन अभी सिंक नहीं हुआ"
+  },
+  "syncInstagramSession": {
+    "message": "Instagram लॉगिन सिंक करें"
+  },
+  "forgetInstagramSession": {
+    "message": "सिंक किया गया लॉगिन हटाएँ"
+  },
+  "instagramCookiesUnavailable": {
+    "message": "Safari 18 या बाद का संस्करण चाहिए। Safari में Downloader को Instagram का ऐक्सेस दें, फिर सिंक करें।"
+  },
+  "instagramSessionMissing": {
+    "message": "मौजूदा Safari प्रोफ़ाइल में instagram.com पर लॉग इन करें, Downloader को साइट का ऐक्सेस दें और फिर सिंक करें।"
+  },
+  "invalidInstagramSession": {
+    "message": "लॉगिन सुरक्षित रूप से सिंक नहीं हो सका। Safari में Instagram पर लॉग इन करें और फिर सिंक करें।"
+  },
+  "instagramSessionFailed": {
+    "message": "Instagram लॉगिन सिंक नहीं हो सका। जाँचें कि Safari में Downloader चालू है, फिर कोशिश करें।"
+  },
+  "instagramSessionUnavailable": {
+    "message": "सिंक किया गया लॉगिन पढ़ा नहीं जा सका"
+  },
+  "xMediaUnavailable": {
+    "message": "X की कुछ तस्वीरें अभी लोड नहीं हुई हैं। पोस्ट खोलें, सभी तस्वीरें लोड होने दें और फिर कोशिश करें।"
+  },
+  "postChanged": {
+    "message": "पोस्ट बदल गई है। पेज रीलोड करके फिर कोशिश करें।"
+  },
+  "incompleteVideo": {
+    "message": "वीडियो इंजन से सभी अपेक्षित वीडियो नहीं मिले। फिर कोशिश करें।"
+  },
+  "saveUnconfirmed": {
+    "message": "फ़ोटो से आइटम सहेजे जाने की पुष्टि नहीं मिली।"
+  },
+  "unauthorizedDownload": {
+    "message": "यह वेबसाइट डाउनलोड का अनुरोध नहीं कर सकती।"
+  },
+  "invalidDownload": {
+    "message": "डाउनलोड अनुरोध अमान्य है।"
+  },
+  "invalidStory": {
+    "message": "स्टोरी लिंक में एक ही मीडिया आइटम होना चाहिए।"
+  },
+  "unapprovedURL": {
+    "message": "मीडिया URL समर्थित सर्वर का नहीं है।"
+  },
+  "tooManyItems": {
+    "message": "एक पोस्ट में अधिकतम 20 मीडिया आइटम हो सकते हैं।"
+  },
+  "noVideo": {
+    "message": "इस पोस्ट में डाउनलोड करने योग्य वीडियो नहीं मिला।"
+  },
+  "invalidMedia": {
+    "message": "मीडिया URL, मीडिया प्रकार या पोस्ट URL अमान्य है।"
+  }
+}

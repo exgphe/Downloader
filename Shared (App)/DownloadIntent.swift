@@ -34,7 +34,7 @@ struct DownloadMediaIntent: AppIntent {
             while true {
                 try Task.checkCancellation()
                 guard let job = center.jobs.first(where: { $0.id == id }) else {
-                    throw intentError("The download could not be found. Open Downloader to check its status.")
+                    throw intentError(String(localized: "The download could not be found. Open Downloader to check its status.", table: "Download"))
                 }
                 switch job.phase {
                 case .completed:
@@ -54,7 +54,7 @@ struct DownloadMediaIntent: AppIntent {
     }
 
     private func intentError(_ message: String) -> NSError {
-        NSError(domain: "Downloader.Shortcuts", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
+        NSError(domain: "Downloader.Shortcuts", code: 1, userInfo: [NSLocalizedDescriptionKey: MediaSaveError.localizedMessage(message)])
     }
 }
 

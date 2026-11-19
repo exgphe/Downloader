@@ -45,7 +45,7 @@ final class DownloadCenter: ObservableObject {
         await start()
         guard root != nil else { throw failure("The shared download folder is unavailable. Check the app's App Group signing and reopen Downloader.") }
         if destination == .photos { try await NativePhotoSaver.authorize() }
-        let job = DownloadJob(id: UUID(), sourceURL: source, title: source.host ?? "Download",
+        let job = DownloadJob(id: UUID(), sourceURL: source, title: source.host ?? String(localized: "Download", table: "Download"),
                               destination: destination, phase: .queued, progress: nil, error: nil,
                               outputFiles: [], createdAt: Date(), savedMediaIDs: [], resolved: nil,
                               ownerProcessID: getpid(),
@@ -125,7 +125,7 @@ final class DownloadCenter: ObservableObject {
 
     private func launch(_ id: UUID, resolve: Bool) {
         guard tasks[id] == nil, let attempt = read(id)?.attemptID else { return }
-        BackgroundExecution.shared.begin(jobID: id, title: read(id)?.title ?? "Download") { [weak self] in self?.cancel(id) }
+        BackgroundExecution.shared.begin(jobID: id, title: read(id)?.title ?? String(localized: "Download", table: "Download")) { [weak self] in self?.cancel(id) }
         tasks[id] = Task { [weak self] in
             guard let self else { return }
             defer {
@@ -151,7 +151,7 @@ final class DownloadCenter: ObservableObject {
         job.phase = .resolving
         job.progress = nil
         try store(job)
-        BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: "Finding the best media…")
+        BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: String(localized: "Finding the best media…", table: "Download"))
         let manifest = try await EmbeddedMediaResolver.resolve(sourceURL: job.sourceURL, destination: job.destination,
                                                               allowAV1: job.hevcConversion?.enabled == true)
         try Task.checkCancellation()
@@ -218,7 +218,7 @@ final class DownloadCenter: ObservableObject {
         job.ownerProcessID = getpid()
         job.progress = 0.9
         try store(job)
-        BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: job.destination == .photos ? "Saving to Photos…" : "Preparing files…")
+        BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: job.destination == .photos ? String(localized: "Saving to Photos…", table: "Download") : String(localized: "Preparing files…", table: "Download"))
         for (index, media) in manifest.media.enumerated() {
             job = try activeJob(id)
             guard job.attemptID == initial.attemptID else { throw CancellationError() }
@@ -247,7 +247,7 @@ final class DownloadCenter: ObservableObject {
                 job.phase = .converting
                 job.progress = nil
                 try store(job)
-                BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: "Converting AV1 to HEVC…")
+                BackgroundExecution.shared.update(jobID: id, progress: nil, subtitle: String(localized: "Converting AV1 to HEVC…", table: "Download"))
                 let attempt = job.attemptID
                 try await HEVCTranscoder.convert(media.streams.count == 2 ? original : streams[0], into: output,
                                                  container: container, settings: conversion) { [self] fraction in
@@ -255,7 +255,7 @@ final class DownloadCenter: ObservableObject {
                         guard var current = read(id), current.attemptID == attempt, current.phase == .converting else { return }
                         current.progress = fraction
                         try? store(current)
-                        BackgroundExecution.shared.update(jobID: id, progress: fraction, subtitle: "Converting AV1 to HEVC…")
+                        BackgroundExecution.shared.update(jobID: id, progress: fraction, subtitle: String(localized: "Converting AV1 to HEVC…", table: "Download"))
                     }
                 }
                 job = try activeJob(id)
@@ -282,7 +282,7 @@ final class DownloadCenter: ObservableObject {
                 throw CancellationError()
             }
             try store(job)
-            BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: job.destination == .photos ? "Saving to Photos…" : "Preparing files…")
+            BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: job.destination == .photos ? String(localized: "Saving to Photos…", table: "Download") : String(localized: "Preparing files…", table: "Download"))
             for stream in streams {
                 BackgroundDownloadSession.shared.acknowledge(stream)
                 try? FileManager.default.removeItem(at: stream)
@@ -320,7 +320,7 @@ final class DownloadCenter: ObservableObject {
         job.phase = .downloading
         job.progress = 0.9 * fractions[id, default: [:]].values.reduce(0, +) / Double(max(1, count))
         try? store(job)
-        BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: "Downloading…")
+        BackgroundExecution.shared.update(jobID: id, progress: job.progress, subtitle: String(localized: "Downloading…", table: "Download"))
     }
 
     private func activeJob(_ id: UUID) throws -> DownloadJob {
@@ -332,7 +332,7 @@ final class DownloadCenter: ObservableObject {
     private func markFailed(_ id: UUID, error: Error) {
         guard var job = read(id), !job.phase.isFinished else { return }
         job.phase = .failed
-        job.error = error.localizedDescription
+        job.error = (error as? MediaSaveError)?.message ?? error.localizedDescription
         job.errorCode = (error as? MediaSaveError)?.code
         try? store(job)
         BackgroundDownloadSession.shared.cancel(jobID: id)

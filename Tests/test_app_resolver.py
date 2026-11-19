@@ -7,6 +7,7 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
+from urllib.parse import parse_qs
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "Dependencies/PythonPackages"))
@@ -291,82 +292,83 @@ class AppResolverTests(unittest.TestCase):
                 result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
             self.assertEqual(result["code"], code)
 
-    def test_real_story_api_uses_scoped_cookies_and_local_cache(self):
+    def resolve_story_with_fixture(self, fail_at=None, failure_body=b""):
         import requests
         from gallery_dl import cache
-        from gallery_dl.extractor.instagram import InstagramAPI
         from gallery_dl.extractor.common import CACHE_MEMORY
-        before = dict(CACHE_MEMORY)
-        calls = []
-        def response(url, payload):
-            result = requests.Response()
-            result.status_code = 200
-            result.url = url
-            result._content = json.dumps(payload).encode()
-            return result
-        def request(extractor, url, **kwargs):
-            calls.append(url)
-            prepared = extractor.session.prepare_request(requests.Request("GET", url))
-            if "www.instagram.com" in url:
-                self.assertIn("sessionid=real-story-fixture", prepared.headers["Cookie"])
-            if "topsearch" in url:
-                return response(url, {"users": [{"user": {"id": "123", "pk": "123", "username": "imwinter"}}]})
-            if url.endswith("/graphql/query"):
-                self.assertEqual(kwargs["headers"]["X-CSRFToken"], "synced-story-csrf")
-                self.assertEqual(kwargs["data"]["fb_dtsg"], "fixture-dtsg")
-                variables = json.loads(kwargs["data"]["variables"])
-                self.assertEqual(variables["reel_ids"], ["123"])
-                return response(url, {"data": {"xdt_api__v1__feed__reels_media__connection":
-                    {"edges": [{"node": story_reel("video")}], "page_info": {"has_next_page": False}}}})
-            result = response(url, {})
-            result._content = b'<script id="__eqmc">{"l":"fixture-lsd","f":"fixture-dtsg"}</script>'
-            return result
-        imported = [session("real-story-fixture"), session("synced-story-csrf", name="csrftoken", httpOnly=False)]
-        with patch.object(resolver, "SOCKET_SECONDS", 1), \
-                patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request), \
-                patch.object(cache, "database", side_effect=AssertionError("Story extraction must not read or write a SQLite cache")):
-            result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps(imported)))
-        self.assertTrue(result["ok"], result)
-        self.assertEqual(result["download"]["media"][0]["kind"], "video")
-        self.assertIn("https://www.instagram.com/graphql/query", calls)
-        self.assertEqual(CACHE_MEMORY, before)
 
-    def test_story_graphql_login_error_is_not_reported_as_expired(self):
-        import requests
-        from gallery_dl.extractor.instagram import InstagramAPI
-        def request(extractor, url, **kwargs):
+        profile = "https://www.instagram.com/imwinter/"
+        script = "https://static.cdninstagram.com/rsrc.php/fixture.js"
+        graphql = "https://www.instagram.com"
+        operations = {"/api/graphql": ("PolarisProfilePageContentQuery", "111"),
+                      "/graphql/query": ("PolarisStoriesV3ReelPageGalleryQuery", "222")}
+        calls = []
+
+        def send(adapter, request, **kwargs):
+            url = request.url
+            calls.append(url)
+            if url == script:
+                for header in ("Cookie", "X-CSRFToken", "X-FB-LSD", "Authorization"):
+                    self.assertNotIn(header, request.headers)
+                body = "\n".join(f'__d("{name}_instagramRelayOperation",[],(function(a,b){{b.exports="{docid}"}}));'
+                                 for name, docid in operations.values()).encode()
+            else:
+                self.assertIn("sessionid=real-story-fixture", request.headers["Cookie"])
+                if url == profile:
+                    body = (f'<link href="{script}"><script id="__eqmc">{{"l":"fixture-lsd","f":"fixture-dtsg"}}</script>'
+                            '<script>{"profile_id":"123","params":{"username":"imwinter"}}</script>').encode()
+                else:
+                    path = url.removeprefix(graphql)
+                    name, docid = operations[path]
+                    self.assertEqual(request.method, "POST")
+                    self.assertEqual(request.headers["X-CSRFToken"], "synced-story-csrf")
+                    form = parse_qs(request.body)
+                    self.assertEqual(form["fb_dtsg"], ["fixture-dtsg"])
+                    self.assertEqual(form["fb_api_req_friendly_name"], [name])
+                    self.assertEqual(form["doc_id"], [docid])
+                    variables = json.loads(form["variables"][0])
+                    if path == "/api/graphql":
+                        self.assertEqual(variables["id"], "123")
+                        data = {"user": {"id": "123", "username": "imwinter"}}
+                    else:
+                        self.assertEqual(variables["reel_ids"], ["123"])
+                        data = {"xdt_api__v1__feed__reels_media__connection": {
+                            "edges": [{"node": story_reel("video")}], "page_info": {"has_next_page": False}}}
+                    body = failure_body if path == fail_at else b"for (;;);" + json.dumps({"data": data}).encode()
             response = requests.Response()
             response.status_code = 200
             response.url = url
-            response._content = b'{"login_required":true,"message":"login_required"}'
+            response.request = request
+            response._content = body
             return response
-        def reels(api, ids):
-            api.extractor.request("https://www.instagram.com/graphql/query", method="POST")
-            return []
-        with patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
-                patch.object(InstagramAPI, "reels_media", reels), \
-                patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request):
-            result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
-        self.assertEqual(result["code"], "loginRequired")
 
-    def test_story_graphql_api_failure_is_not_reported_as_expired(self):
-        import requests
-        from gallery_dl.extractor.instagram import InstagramAPI
-        for body in (b'{"errors":[{"message":"API failure"}]}', b'{"data":null}', b'<html>unavailable</html>'):
-            def request(extractor, url, **kwargs):
-                response = requests.Response()
-                response.status_code = 200
-                response.url = url
-                response._content = body
-                return response
-            def reels(api, ids):
-                api.extractor.request("https://www.instagram.com/graphql/query", method="POST")
-                return []
-            with self.subTest(body=body), patch.object(InstagramAPI, "user", return_value={"id": "123"}), \
-                    patch.object(InstagramAPI, "reels_media", reels), \
-                    patch("gallery_dl.extractor.instagram.InstagramExtractor.request", request):
-                result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps([session()])))
-            self.assertEqual(result["code"], "mediaResolutionFailed")
+        before = dict(CACHE_MEMORY)
+        imported = [session("real-story-fixture"), session("synced-story-csrf", name="csrftoken", httpOnly=False)]
+        with patch("gallery_dl.extractor.instagram.InstagramExtractor.request_interval", 0), \
+                patch.object(requests.adapters.HTTPAdapter, "send", send), \
+                patch.object(cache, "database", side_effect=AssertionError("Unexpected gallery-dl SQLite cache access")) as db:
+            result = json.loads(resolver.resolve_json(STORY_URL, "photos", json.dumps(imported)))
+        db.assert_not_called()
+        self.assertEqual(CACHE_MEMORY, before)
+        expected = [profile, script, graphql + "/api/graphql"]
+        if fail_at != "/api/graphql":
+            expected.append(graphql + "/graphql/query")
+        self.assertEqual(calls, expected)
+        return result
+
+    def test_real_story_api_uses_scoped_cookies_and_local_cache(self):
+        result = self.resolve_story_with_fixture()
+        self.assertTrue(result["ok"], result)
+        self.assertEqual([(item["id"], item["kind"]) for item in result["download"]["media"]], [(STORY_ID, "video")])
+
+    def test_story_graphql_errors_are_not_reported_as_expired(self):
+        for path in ("/api/graphql", "/graphql/query"):
+            for body, code in ((b'for (;;);{"login_required":true}', "loginRequired"),
+                               (b'{"errors":[{"message":"API failure"}]}', "mediaResolutionFailed"),
+                               (b'{"data":null}', "mediaResolutionFailed"),
+                               (b'<html>unavailable</html>', "mediaResolutionFailed")):
+                with self.subTest(path=path, body=body):
+                    self.assertEqual(self.resolve_story_with_fixture(path, body)["code"], code)
 
     def test_gallery_auth_unavailable_and_partial_errors_are_not_success(self):
         from gallery_dl import exception
@@ -513,7 +515,7 @@ class AppResolverTests(unittest.TestCase):
         import requests
         scoped = resolver._scoped_instagram_session(requests.Session())
         scoped.cookies.set_cookie(resolver._instagram_cookies(json.dumps([session()]))[0])
-        scoped.headers.update({"X-CSRFToken": "test-csrf-secret", "Authorization": "test-auth-secret"})
+        scoped.headers.update({"X-CSRFToken": "test-csrf-secret", "X-FB-LSD": "fixture-lsd", "Authorization": "test-auth-secret"})
         for address in ("https://scontent.cdninstagram.com/photo.jpg", "https://evil.instagram.com/",
                         "http://www.instagram.com/api/", "https://www.instagram.com:8443/api/",
                         "https://youtube.com/"):
@@ -521,6 +523,7 @@ class AppResolverTests(unittest.TestCase):
             self.assertNotIn("Cookie", prepared.headers)
             self.assertNotIn("Authorization", prepared.headers)
             self.assertNotIn("X-CSRFToken", prepared.headers)
+            self.assertNotIn("X-FB-LSD", prepared.headers)
         prepared = scoped.prepare_request(requests.Request("GET", "https://www.instagram.com/api/"))
         self.assertIn("sessionid=test-session-cookie", prepared.headers["Cookie"])
         self.assertNotIn("Authorization", prepared.headers)
@@ -537,8 +540,8 @@ class AppResolverTests(unittest.TestCase):
                 response = requests.Response()
                 response.url, response.request = request.url, request
                 response._content = b"fixture"
-                response.status_code = 302 if len(calls) == 1 else 200
-                if response.status_code == 302:
+                response.status_code = redirect_status if len(calls) == 1 else 200
+                if response.status_code != 200:
                     response.headers["Location"] = "https://evil.instagram.com/redirect-target"
                 return response
             def close(self): pass
@@ -546,12 +549,20 @@ class AppResolverTests(unittest.TestCase):
         scoped = resolver._scoped_instagram_session(requests.Session())
         scoped.cookies.set_cookie(resolver._instagram_cookies(json.dumps([session()]))[0])
         scoped.headers["X-CSRFToken"] = "test-csrf-secret"
+        scoped.headers["X-FB-LSD"] = "fixture-lsd"
         scoped.mount("https://", FakeAdapter())
+        redirect_status = 302
         scoped.get("https://www.instagram.com/api/", allow_redirects=True)
         self.assertEqual(len(calls), 2)
         self.assertIn("sessionid=test-session-cookie", calls[0]["Cookie"])
         self.assertNotIn("Cookie", calls[1])
         self.assertNotIn("X-CSRFToken", calls[1])
+        self.assertNotIn("X-FB-LSD", calls[1])
+        for redirect_status in (307, 308):
+            calls.clear()
+            with self.assertRaises(resolver.ResolutionError):
+                scoped.post("https://www.instagram.com/api/graphql", data={"fb_dtsg": "fixture-dtsg"})
+            self.assertEqual(len(calls), 1)
         scoped.close()
 
     def test_two_gallery_requests_do_not_share_cookies(self):

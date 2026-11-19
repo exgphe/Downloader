@@ -67,8 +67,12 @@ function xPost(id, hasVideo, label = 'Share post') {
     const share = element('button', {'aria-label': label});
     const wrapper = element('div', {}, share);
     const row = element('div', {role: 'group'}, element('div', {}, element('button', {'data-testid': 'reply', 'aria-label': 'Reply'})), element('div', {}, element('button', {'aria-label': 'Repost'})), element('div', {}, element('button', {'aria-label': 'Like'})), wrapper);
-    const link = element('a', {href: `https://x.com/alice/status/${id}`}, element('time'));
-    return {root: element('article', {'data-testid': 'tweet'}, link, ...(hasVideo ? [element('div', {'data-testid': 'videoPlayer'}, element('video'))] : [element('img')]), row), row, wrapper};
+    const link = element('a', {href: `https://x.com/alice/status/${id}`, role: 'link'}, element('time'));
+    return {root: element('article', {'data-testid': 'tweet'}, link, ...(hasVideo ? [element('div', {'data-testid': 'videoPlayer'}, element('video'))] : [element('img')]), row), row, wrapper, link};
+}
+function xPhoto(id, index, address = `https://pbs.twimg.com/media/PHOTO_${index}?format=jpg&name=small`) {
+    return element('a', {href: `https://x.com/alice/status/${id}/photo/${index}`},
+        element('div', {'data-testid': 'tweetPhoto'}, element('img', {src: address})));
 }
 function run(platform, roots, url) {
     const document = element('document', {}, ...roots);
@@ -85,7 +89,7 @@ function run(platform, roots, url) {
         addEventListener() {}, setTimeout: callback => { callbacks.push(callback); return callbacks.length; }, clearTimeout() {}, URL, console
     };
     // Capture real closure functions for focused fallback tests without exporting internals in production.
-    vm.runInNewContext(content.replace('    scan();\n})();', '    globalThis.testInternals = {visibleSlide, traverseCarousel, instagramMedia};\n    scan();\n})();'), context);
+    vm.runInNewContext(content.replace('    scan();\n})();', '    globalThis.testInternals = {visibleSlide, traverseCarousel, instagramMedia, xMedia, download};\n    scan();\n})();'), context);
     return {document, context, flush() { while (callbacks.length) callbacks.shift()(); }};
 }
 
@@ -135,6 +139,52 @@ test('deep send wrappers with a count control do not trap the download in a colu
     assert.equal(post.wrapper.nextElementSibling, button);
 });
 
+test('Instagram keeps a horizontal send icon and clickable count together before Download', () => {
+    const post = instagramPost('ABC123');
+    const count = element('button', {'aria-label': 'Share count'});
+    count.textContent = '4,3 K';
+    post.wrapper.style = {display: 'flex', flexDirection: 'row'};
+    post.wrapper.append(count);
+    const fixture = run('instagram', [post.root]);
+    const button = post.root.querySelector('[data-downloader-button]');
+    assert.equal(button.parentElement, post.row);
+    assert.equal(post.wrapper.nextElementSibling, button);
+    assert.equal(post.share.nextElementSibling, count);
+    for (let n = 0; n < 3; n++) { fixture.context.mutate(); fixture.flush(); }
+    assert.equal(post.share.nextElementSibling, count);
+    assert.equal(post.wrapper.nextElementSibling, button);
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 1);
+});
+
+test('Instagram places Download after a separate count sibling and before Bookmark', () => {
+    for (const text of ['4,3 K', '4.3K', '4\u202f300', '1.2万', '0', '٢٫٣ ألف']) {
+        const post = instagramPost('ABC123');
+        const count = element('span');
+        count.textContent = text;
+        post.wrapper.after(count);
+        const fixture = run('instagram', [post.root]);
+        const button = post.root.querySelector('[data-downloader-button]');
+        assert.equal(count.nextElementSibling, button, text);
+        assert.equal(button.nextElementSibling.querySelector('button').getAttribute('aria-label'), 'Save');
+        fixture.context.mutate(); fixture.flush();
+        assert.equal(count.nextElementSibling, button);
+    }
+});
+
+test('Instagram moves an existing Download past a lazily inserted count without replacing its state', () => {
+    const post = instagramPost('ABC123');
+    const fixture = run('instagram', [post.root]);
+    const button = post.root.querySelector('[data-downloader-button]');
+    button.dataset.state = 'complete';
+    const count = element('button'); count.textContent = '4,3 K';
+    button.after(count);
+    fixture.context.mutate(); fixture.flush();
+    assert.equal(post.wrapper.nextElementSibling, count);
+    assert.equal(count.nextElementSibling, button);
+    assert.equal(button.dataset.state, 'complete');
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 1);
+});
+
 test('rerendered Instagram actions relocate the existing button and keep its state', () => {
     const post = instagramPost('ABC123');
     const fixture = run('instagram', [post.root]);
@@ -161,14 +211,121 @@ test('vertical Reel action rails remain supported', () => {
     assert.equal(post.wrapper.nextElementSibling, post.root.querySelector('[data-downloader-button]'));
 });
 
-test('X video post gets download after share; image and text posts do not', () => {
+test('X video, image and mixed posts get a download after share; text and avatars do not', () => {
     const video = xPost('123', true, 'Partager le post');
     const photo = xPost('456', false);
-    run('x', [video.root, photo.root]);
-    const button = video.root.querySelector('[data-downloader-button]');
-    assert.ok(button);
-    assert.equal(video.row.children[video.row.children.indexOf(video.wrapper) + 1], button);
-    assert.equal(photo.root.querySelector('[data-downloader-button]'), null);
+    photo.root.append(xPhoto('456', 1));
+    const mixed = xPost('789', true);
+    mixed.root.append(xPhoto('789', 1));
+    const text = xPost('101', false);
+    text.root.querySelector('img').setAttribute('src', 'https://pbs.twimg.com/profile_images/avatar.jpg');
+    run('x', [video.root, photo.root, mixed.root, text.root]);
+    for (const post of [video, photo, mixed]) {
+        const button = post.root.querySelector('[data-downloader-button]');
+        assert.ok(button);
+        assert.equal(post.wrapper.nextElementSibling, button);
+        assert.equal(button.parentElement, post.row);
+    }
+    assert.equal(text.root.querySelector('[data-downloader-button]'), null);
+});
+
+test('X photo grid downloads all four originals once, including PNG and legacy URL forms', async () => {
+    const post = xPost('456', false);
+    for (const [index, address] of [
+        'https://pbs.twimg.com/media/ONE?format=jpg&name=small',
+        'https://pbs.twimg.com/media/TWO.png:large',
+        'https://pbs.twimg.com/media/THREE.jpg?name=900x900',
+        'https://pbs.twimg.com/media/FOUR?format=webp&name=medium'
+    ].entries()) post.root.append(xPhoto('456', index + 1, address));
+    // A duplicated responsive image must not create a duplicate Photos item.
+    post.root.append(xPhoto('456', 1, 'https://pbs.twimg.com/media/ONE?format=jpg&name=large'));
+    const fixture = run('x', [post.root]);
+    const messages = [];
+    fixture.context.browser.runtime.sendMessage = async message => { messages.push(message); return {ok: true, saved: 4}; };
+    const button = post.root.querySelector('[data-downloader-button]');
+    await fixture.context.testInternals.download(button, post.root);
+    assert.equal(messages.length, 1);
+    assert.equal(messages[0].complete, true);
+    assert.equal(messages[0].requiresVideoResolution, false);
+    assert.deepEqual(Array.from(messages[0].media, item => item.url), [
+        'https://pbs.twimg.com/media/ONE?format=jpg&name=orig',
+        'https://pbs.twimg.com/media/TWO?format=png&name=orig',
+        'https://pbs.twimg.com/media/THREE?format=jpg&name=orig',
+        'https://pbs.twimg.com/media/FOUR?format=webp&name=orig'
+    ]);
+    assert.equal(button.dataset.state, 'complete');
+});
+
+test('X mixed posts extract their photos and resolve videos without saving posters or quoted media', () => {
+    const post = xPost('456', true);
+    post.root.append(xPhoto('456', 1));
+    post.root.querySelector('[data-testid="videoPlayer"]').append(
+        element('div', {'data-testid': 'tweetPhoto'}, element('img', {src: 'https://pbs.twimg.com/ext_tw_video_thumb/poster.jpg'})));
+    post.root.append(element('div', {role: 'link'},
+        element('a', {href: 'https://x.com/bob/status/999'}, element('time')),
+        xPhoto('999', 2), element('div', {'data-testid': 'videoPlayer'}, element('video'))));
+    post.root.append(element('div', {'data-testid': 'quoteTweet'}, xPhoto('456', 3)));
+    const fixture = run('x', [post.root]);
+    const result = fixture.context.testInternals.xMedia(post.root, post.link.href);
+    assert.equal(result.hasVideo, true);
+    assert.equal(result.media.length, 1);
+    assert.equal(result.media[0].url, 'https://pbs.twimg.com/media/PHOTO_1?format=jpg&name=orig');
+});
+
+test('X photo-only posts ignore quoted videos and media from nested articles', () => {
+    const post = xPost('456', false);
+    post.root.append(xPhoto('456', 1));
+    post.root.append(element('div', {role: 'link'},
+        element('a', {href: 'https://x.com/bob/status/999'}, element('time')), element('video')));
+    const nested = xPost('777', true);
+    nested.root.append(xPhoto('777', 2));
+    post.root.append(nested.root);
+    const fixture = run('x', [post.root]);
+    const result = fixture.context.testInternals.xMedia(post.root, post.link.href);
+    assert.equal(result.hasVideo, false);
+    assert.equal(result.media.length, 1);
+    for (let iteration = 0; iteration < 3; iteration++) { fixture.context.mutate(); fixture.flush(); }
+    assert.equal(post.wrapper.nextElementSibling.dataset.postUrl, post.link.href);
+    assert.equal(nested.wrapper.nextElementSibling.dataset.postUrl, nested.link.href);
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 2);
+});
+
+test('X detail pages without their own time link never select a quoted post permalink', async () => {
+    const post = xPost('456', false);
+    post.link.remove();
+    post.root.append(xPhoto('456', 1), element('div', {role: 'link'},
+        element('a', {href: 'https://x.com/bob/status/999'}, element('time')), xPhoto('999', 2)));
+    const fixture = run('x', [post.root], 'https://x.com/alice/status/456');
+    const messages = [];
+    fixture.context.browser.runtime.sendMessage = async message => { messages.push(message); return {ok: true, saved: 1}; };
+    await fixture.context.testInternals.download(post.root.querySelector('[data-downloader-button]'), post.root);
+    assert.equal(messages[0].postURL, 'https://x.com/alice/status/456');
+    assert.equal(messages[0].media.length, 1);
+});
+
+test('X incomplete photo grids fail without sending a partial download request', async () => {
+    const post = xPost('456', false);
+    post.root.append(xPhoto('456', 1), xPhoto('456', 2, ''));
+    const fixture = run('x', [post.root]);
+    const button = post.root.querySelector('[data-downloader-button]');
+    await fixture.context.testInternals.download(button, post.root);
+    assert.equal(button.dataset.state, 'error');
+    assert.match(button.title, /xMediaUnavailable/);
+});
+
+test('X SPA rows add photos after lazy loading and remove downloads after reuse for text', () => {
+    const post = xPost('456', false);
+    const fixture = run('x', [post.root]);
+    const photo = xPhoto('456', 1);
+    post.root.append(photo);
+    fixture.context.mutate();
+    fixture.flush();
+    assert.equal(post.root.querySelectorAll('[data-downloader-button]').length, 1);
+    photo.remove();
+    post.link.setAttribute('href', 'https://x.com/alice/status/999');
+    fixture.context.mutate();
+    fixture.flush();
+    assert.equal(post.root.querySelector('[data-downloader-button]'), null);
 });
 
 test('Story button identifies current Story and resets after automatic navigation', () => {

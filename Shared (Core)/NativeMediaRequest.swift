@@ -3,7 +3,13 @@ import Foundation
 struct MediaSaveError: LocalizedError, Sendable {
     let code: String
     let message: String
-    var errorDescription: String? { message }
+    var errorDescription: String? { Self.localizedMessage(message) }
+
+    // The embedded resolver and older saved jobs carry English diagnostics. Keep
+    // unknown system or third-party details intact when there is no catalog entry.
+    static func localizedMessage(_ message: String) -> String {
+        Bundle.main.localizedString(forKey: message, value: message, table: "Download")
+    }
 }
 
 enum MediaKind: String, Codable, Sendable { case image, video }

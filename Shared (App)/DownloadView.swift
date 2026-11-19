@@ -175,7 +175,7 @@ struct DownloadView: View {
                 .foregroundStyle(.secondary)
             }
             if let error = instagramSession?.errorMessage {
-                Text(error).font(.caption).foregroundStyle(.red)
+                Text(MediaSaveError.localizedMessage(error)).font(.caption).foregroundStyle(.red)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Text("Use your Safari login for Instagram downloads on this device.")
@@ -209,7 +209,7 @@ struct DownloadView: View {
     private var safariSettings: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Safari extension").font(.subheadline.weight(.semibold))
-            Text("Download Instagram posts, Stories and X videos directly in Safari.")
+            Text("Download Instagram posts, Stories and X photos and videos directly in Safari.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 #if os(macOS)
@@ -272,7 +272,7 @@ private struct DownloadJobView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(job.title.isEmpty ? job.sourceURL.host ?? "Download" : job.title)
+                    Text(job.title.isEmpty ? job.sourceURL.host ?? String(localized: "Download") : job.title)
                         .font(.subheadline.weight(.semibold))
                         .lineLimit(2)
                     Text(job.sourceURL.absoluteString)
@@ -309,7 +309,7 @@ private struct DownloadJobView: View {
                 }
             }
             if let error = job.error, job.phase == .failed {
-                Text(error).font(.caption).foregroundStyle(.red)
+                Text(MediaSaveError.localizedMessage(error)).font(.caption).foregroundStyle(.red)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
             }

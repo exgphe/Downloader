@@ -33,13 +33,15 @@ enum NativePhotoSaver {
             }
         }
         guard status == .authorized || status == .limited else {
+            if status == .restricted {
+                throw MediaSaveError(code: "photosRestricted", message: "Photos access is restricted on this device.")
+            }
             #if os(macOS)
-            let settings = "System Settings > Privacy & Security > Photos"
+            let message = String(localized: "Allow Downloader to add photos in System Settings > Privacy & Security > Photos, then try again.", table: "Download")
             #else
-            let settings = "Settings > Privacy & Security > Photos"
+            let message = String(localized: "Allow Downloader to add photos in Settings > Privacy & Security > Photos, then try again.", table: "Download")
             #endif
-            throw MediaSaveError(code: status == .restricted ? "photosRestricted" : "photosDenied",
-                                 message: "Photos access is \(status == .restricted ? "restricted" : "denied"). Allow Downloader to add photos in \(settings), then try again.")
+            throw MediaSaveError(code: "photosDenied", message: message)
         }
     }
 
@@ -66,7 +68,9 @@ enum NativePhotoSaver {
                 if success {
                     continuation.resume()
                 } else {
-                    continuation.resume(throwing: MediaSaveError(code: "photosSaveFailed", message: "Photos could not save this \(kind.rawValue). \(error?.localizedDescription ?? "The media format may not be supported.")"))
+                    let detail = error?.localizedDescription ?? String(localized: "The media format may not be supported.", table: "Download")
+                    let message = String(localized: "Photos could not save this item. \(detail)", table: "Download")
+                    continuation.resume(throwing: MediaSaveError(code: "photosSaveFailed", message: message))
                 }
             }
         }

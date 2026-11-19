@@ -11,6 +11,7 @@ final class ExtensionLayoutSmoke: NSObject, WKNavigationDelegate {
     private var widths = [360, 480, 960]
     private var output: URL!
     private var checks = 0
+    private var platform = "instagram"
 
     static func main() {
         let app = NSApplication.shared
@@ -21,7 +22,11 @@ final class ExtensionLayoutSmoke: NSObject, WKNavigationDelegate {
     }
 
     func start() throws {
-        guard CommandLine.arguments.count == 3 else { fatalError("Usage: layout-test REPO OUTPUT.png") }
+        guard (3...4).contains(CommandLine.arguments.count) else { fatalError("Usage: layout-test REPO OUTPUT.png [x]") }
+        if CommandLine.arguments.count == 4 {
+            guard CommandLine.arguments[3] == "x" else { fatalError("Unsupported layout fixture") }
+            platform = "x"
+        }
         let root = URL(fileURLWithPath: CommandLine.arguments[1])
         output = URL(fileURLWithPath: CommandLine.arguments[2])
         func read(_ path: String) throws -> String { try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8) }
@@ -30,14 +35,14 @@ final class ExtensionLayoutSmoke: NSObject, WKNavigationDelegate {
         // loadHTMLString has an about:blank location. Only the URL is supplied
         // by the harness; collection, injection and CSS remain product code.
         script += "\n" + (try read("Shared (Extension)/Resources/content.js"))
-            .replacingOccurrences(of: "location.href", with: "'https://www.instagram.com/'")
+            .replacingOccurrences(of: "location.href", with: platform == "x" ? "'https://x.com/home'" : "'https://www.instagram.com/'")
         config.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
-        webView = WKWebView(frame: NSRect(x: 0, y: 0, width: 960, height: 1150), configuration: config)
+        webView = WKWebView(frame: NSRect(x: 0, y: 0, width: 960, height: platform == "x" ? 1150 : 1800), configuration: config)
         webView.navigationDelegate = self
         window = NSWindow(contentRect: webView.frame, styleMask: [.borderless], backing: .buffered, defer: false)
         window.contentView = webView
         window.orderFront(nil)
-        let html = try read("Tests/extension/layout.html") + "<style>" + (try read("Shared (Extension)/Resources/content.css")) + "</style>"
+        let html = try read(platform == "x" ? "Tests/extension/x-layout.html" : "Tests/extension/layout.html") + "<style>" + (try read("Shared (Extension)/Resources/content.css")) + "</style>"
         webView.loadHTMLString(html, baseURL: root)
         DispatchQueue.main.asyncAfter(deadline: .now() + 25) { print("WebKit layout test timed out"); exit(1) }
     }
@@ -47,23 +52,25 @@ final class ExtensionLayoutSmoke: NSObject, WKNavigationDelegate {
     private func next() {
         guard !widths.isEmpty else { snapshot(); return }
         let width = widths.removeFirst()
-        window.setContentSize(NSSize(width: width, height: 1150))
-        webView.setFrameSize(NSSize(width: width, height: 1150))
+        let height = platform == "x" ? 1150 : 1800
+        window.setContentSize(NSSize(width: width, height: height))
+        webView.setFrameSize(NSSize(width: width, height: height))
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.webView.evaluateJavaScript("layoutReport()") { result, error in
-                guard error == nil, let rows = result as? [[String: Any]], rows.count == 4 else {
+                guard error == nil, let rows = result as? [[String: Any]], rows.count == (self.platform == "x" ? 3 : 7) else {
                     print("Missing layout report: \(String(describing: error))"); exit(1)
                 }
                 for row in rows {
                     guard row["count"] as? Int == 1, row["parent"] as? String == row["expected"] as? String,
                           row["afterShare"] as? Bool == true, row["aligned"] as? Bool == true,
                           row["following"] as? Bool == true, row["dimensions"] as? Bool == true,
-                          row["overflow"] as? Bool == false else {
+                          row["overflow"] as? Bool == false, row["mediaValid"] as? Bool != false,
+                          row["afterCount"] as? Bool != false else {
                         print("Layout failed at \(width)px: \(row)"); exit(1)
                     }
                     self.checks += 1
                 }
-                print("WebKit \(width)px: feed, deep wrappers, grouped actions and Reel rail passed")
+                print("WebKit \(width)px: \(self.platform) layout and media checks passed")
                 self.next()
             }
         }

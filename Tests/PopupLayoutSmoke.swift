@@ -29,13 +29,13 @@ final class PopupLayoutSmoke: NSObject, WKNavigationDelegate {
         guard CommandLine.arguments.count == 3 else { fatalError("Usage: popup-test REPO OUTPUT.png") }
         root = URL(fileURLWithPath: CommandLine.arguments[1])
         output = URL(fileURLWithPath: CommandLine.arguments[2])
-        for locale in ["en", "fr", "zh_TW", "zh_CN"] {
+        for locale in ["en", "ar", "de", "es", "fr", "hi", "ja", "ko", "pt_BR", "zh_CN", "zh_TW"] {
             for platform in ["macOS", "iOS", "visionOS"] { cases.append((locale, platform, false)) }
             cases.append((locale, "visionOS", true))
         }
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 600, height: 650), styleMask: [.borderless], backing: .buffered, defer: false)
         window.orderFront(nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 35) { print("Popup test timed out"); exit(1) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 90) { print("Popup test timed out"); exit(1) }
         try next()
     }
 
@@ -48,7 +48,7 @@ final class PopupLayoutSmoke: NSObject, WKNavigationDelegate {
         let fixture = """
         const messages = \(messages);
         window.browser = {
-            i18n: {getMessage: (key, value) => (messages[key]?.message || key).replace('$arg1$', value || ''), getUILanguage: () => '\(locale)'},
+            i18n: {getMessage: (key, value) => key === '@@bidi_dir' ? '\(locale == "ar" ? "rtl" : "ltr")' : (messages[key]?.message || '').replace('$version$', value || ''), getUILanguage: () => '\(locale)'},
             cookies: {getAll() { throw Error('Cookie access is forbidden in a layout test'); }},
             runtime: {sendMessage: async request => {
                 await new Promise(resolve => setTimeout(resolve, 30));
@@ -90,7 +90,7 @@ final class PopupLayoutSmoke: NSObject, WKNavigationDelegate {
             const buttons = [...document.querySelectorAll('.session-actions button')];
             const spatialButtons = html.dataset.platform !== 'visionOS' || buttons.every(b => b.getBoundingClientRect().height >= 44);
             return {ready: window.popupReady === true, width: html.getBoundingClientRect().width, bodyWidth: box.width,
-                iconLoaded: document.querySelector('.mark img').naturalWidth > 0,
+                direction: getComputedStyle(html).direction, iconLoaded: document.querySelector('.mark img').naturalWidth > 0,
                 overflow, spatialButtons, scrollable: body.scrollHeight <= body.clientHeight || getComputedStyle(body).overflowY === 'auto'};
         })()
         """
@@ -98,6 +98,7 @@ final class PopupLayoutSmoke: NSObject, WKNavigationDelegate {
             guard error == nil, let report = result as? [String: Any], report["ready"] as? Bool == true,
                   report["width"] as? Int == width, report["bodyWidth"] as? Int == width,
                   (report["overflow"] as? [String])?.isEmpty == true, report["spatialButtons"] as? Bool == true,
+                  report["direction"] as? String == (self.current.0 == "ar" ? "rtl" : "ltr"),
                   report["iconLoaded"] as? Bool == true,
                   report["scrollable"] as? Bool == true else {
                 print("Popup failed \(self.current): \(String(describing: result)) \(String(describing: error))"); exit(1)
